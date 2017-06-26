@@ -69,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ObfuscationSettings.cs" />
+    <Compile Include="KrangPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuantumNwk\EventArguments\OccupancyStateEventArgs.cs" />
     <Compile Include="QuantumNwk\Integrations\AbstractShadeIntegration.cs" />
