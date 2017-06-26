@@ -75,7 +75,7 @@
     <Compile Include="EventArguments\RoomLoadLevelEventArgs.cs" />
     <Compile Include="EventArguments\RoomOccupancyEventArgs.cs" />
     <Compile Include="EventArguments\RoomPresetChangeEventArgs.cs" />
-    <Compile Include="ObfuscationSettings.cs" />
+    <None Include="ObfuscationSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>
