@@ -1,4 +1,5 @@
-﻿using ICD.Common.Attributes.Properties;
+﻿using System;
+using ICD.Common.Attributes.Properties;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings;
@@ -21,6 +22,11 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// Gets the originator factory name.
 		/// </summary>
 		public override string FactoryName { get { return FACTORY_NAME; } }
+
+		/// <summary>
+		/// Gets the type of the originator for this settings instance.
+		/// </summary>
+		public override Type OriginatorType { get { return typeof(LutronQuantumNwkDevice); } }
 
 		public string IntegrationConfig { get; set; }
 
@@ -49,18 +55,6 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 
 			if (!string.IsNullOrEmpty(IntegrationConfig))
 				writer.WriteElementString(INTEGRATION_CONFIG_ELEMENT, IntegrationConfig);
-		}
-
-		/// <summary>
-		/// Creates a new originator instance from the settings.
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		public override IOriginator ToOriginator(IDeviceFactory factory)
-		{
-			LutronQuantumNwkDevice output = new LutronQuantumNwkDevice();
-			output.ApplySettings(this, factory);
-			return output;
 		}
 
 		/// <summary>
