@@ -1,4 +1,5 @@
-﻿using ICD.Common.Properties;
+﻿using System;
+using ICD.Common.Properties;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Attributes.Factories;
 using ICD.Connect.Settings.Core;
@@ -14,17 +15,9 @@ namespace ICD.Connect.Lighting.Mock
 		/// </summary>
 		public override string FactoryName { get { return FACTORY_NAME; } }
 
-		/// <summary>
-		/// Creates a new originator instance from the settings.
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		public override IOriginator ToOriginator(IDeviceFactory factory)
+		public override Type OriginatorType
 		{
-			MockLightingProcessorDevice output = new MockLightingProcessorDevice();
-			output.ApplySettings(this, factory);
-
-			return output;
+			get { return typeof(MockLightingProcessorDevice); }
 		}
 
 		/// <summary>
