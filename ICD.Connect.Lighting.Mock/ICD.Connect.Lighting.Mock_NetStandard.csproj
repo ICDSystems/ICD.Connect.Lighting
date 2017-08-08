@@ -25,4 +25,8 @@
     <None Remove="ICD.SimplSharp.projectinfo" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ICD.Connect.Lighting\ICD.Connect.Lighting_NetStandard.csproj" />
+  </ItemGroup>
+
 </Project>

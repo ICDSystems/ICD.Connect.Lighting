@@ -25,4 +25,8 @@
     <None Remove="ICD.SimplSharp.projectinfo" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\ICD.Connect.Devices\ICD.Connect.Devices\ICD.Connect.Devices_NetStandard.csproj" />
+  </ItemGroup>
+
 </Project>
