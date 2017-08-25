@@ -220,7 +220,10 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// <returns></returns>
 		public static string TrimMode(string data)
 		{
-			if (s_Modes.Any(m => data.StartsWith(m.ToString())))
+			// Workaround for compiler warning
+			string data1 = data;
+
+			if (s_Modes.Any(m => data1.StartsWith(m.ToString())))
 				data = data.Substring(1);
 			return data;
 		}
