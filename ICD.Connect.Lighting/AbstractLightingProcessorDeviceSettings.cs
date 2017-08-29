@@ -1,4 +1,4 @@
-﻿using ICD.Connect.Settings;
+﻿using ICD.Connect.Devices;
 
 namespace ICD.Connect.Lighting
 {
