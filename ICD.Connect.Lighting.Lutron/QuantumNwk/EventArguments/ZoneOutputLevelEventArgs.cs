@@ -5,7 +5,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk.EventArguments
 	public sealed class ZoneOutputLevelEventArgs : EventArgs
 	{
 		private readonly int m_IntegrationId;
-		private float m_Percentage;
+		private readonly float m_Percentage;
 
 		/// <summary>
 		/// Gets the zone integration id.
