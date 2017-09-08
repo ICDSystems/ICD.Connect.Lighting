@@ -1,4 +1,5 @@
 using ICD.Common.Properties;
+using ICD.Common.Utils;
 using Newtonsoft.Json;
 
 namespace ICD.Connect.Lighting
@@ -118,10 +119,20 @@ namespace ICD.Connect.Lighting
 
 		#region Methods
 
+		/// <summary>
+		/// Gets the string representation for this instance.
+		/// </summary>
+		/// <returns></returns>
 		public override string ToString()
 		{
-			return string.Format("{0}(Type={1}, Id={2}, Room={3}, Name=\"{4}\")", GetType().Name, m_ControlType, m_Id, m_Room,
-			                     m_Name);
+			ReprBuilder builder = new ReprBuilder(this);
+			
+			builder.AppendProperty("Id", m_Id);
+			builder.AppendProperty("Type", m_ControlType);
+			builder.AppendProperty("Room", m_Room);
+			builder.AppendProperty("Name", m_Name);
+
+			return builder.ToString();
 		}
 
 		/// <summary>
