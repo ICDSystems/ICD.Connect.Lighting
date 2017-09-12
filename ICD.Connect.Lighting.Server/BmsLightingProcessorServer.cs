@@ -7,13 +7,12 @@ using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
-using ICD.Connect.Lighting;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Protocol.EventArguments;
 using ICD.Connect.Protocol.Network.RemoteProcedure;
 using ICD.Connect.Protocol.Network.Tcp;
 
-namespace ICD.SimplSharp.BmsOS.Devices.Lighting
+namespace ICD.Connect.Lighting.Server
 {
 	/// <summary>
 	/// Server for hosting ILightingProcessorDevices.

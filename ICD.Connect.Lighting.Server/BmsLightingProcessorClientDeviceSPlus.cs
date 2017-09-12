@@ -1,14 +1,13 @@
 ﻿#if SIMPLSHARP
 using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
-using ICD.Connect.Lighting;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Protocol.Network.Tcp;
 using System.Collections.Generic;
 using System.Linq;
 using Crestron.SimplSharp;
 
-namespace ICD.SimplSharp.BmsOS.Devices.Lighting
+namespace ICD.Connect.Lighting.Server
 {
 	public class BmsLightingProcessorClientDeviceSPlus
 	{

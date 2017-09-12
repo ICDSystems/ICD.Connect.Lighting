@@ -1,11 +1,10 @@
 ﻿using System;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Xml;
-using ICD.Connect.Lighting;
 using ICD.Connect.Settings.Attributes;
 using ICD.Connect.Settings.Attributes.Factories;
 
-namespace ICD.SimplSharp.BmsOS.Devices.Lighting
+namespace ICD.Connect.Lighting.Server
 {
 	/// <summary>
 	/// Settings for the BmsLightingProcessorClientDevice.

@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using ICD.Connect.Lighting;
 using ICD.Connect.Lighting.EventArguments;
 
-namespace ICD.SimplSharp.BmsOS.Devices.Lighting
+namespace ICD.Connect.Lighting.Server
 {
 	public sealed partial class BmsLightingProcessorClientDevice : ILightingProcessorDevice
 	{

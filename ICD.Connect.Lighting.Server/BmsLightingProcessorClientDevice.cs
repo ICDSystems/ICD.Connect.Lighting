@@ -8,7 +8,6 @@ using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Timers;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
-using ICD.Connect.Lighting;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Mock.Controls;
 using ICD.Connect.Protocol.Extensions;
@@ -16,7 +15,7 @@ using ICD.Connect.Protocol.Network.RemoteProcedure;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Settings.Core;
 
-namespace ICD.SimplSharp.BmsOS.Devices.Lighting
+namespace ICD.Connect.Lighting.Server
 {
 	/// <summary>
 	/// Provides a way to communicate with the lighting features of BmsOS.
