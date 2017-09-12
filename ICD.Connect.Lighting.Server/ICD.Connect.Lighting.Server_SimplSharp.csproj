@@ -105,7 +105,7 @@
       <Name>ICD.Connect.Settings_SimplSharp</Name>
     </ProjectReference>
     <ProjectReference Include="..\ICD.Connect.Lighting.Mock\ICD.Connect.Lighting.Mock_SimplSharp.csproj">
-      <Project>{0A62C1C8-8A7A-4F0A-8523-EE228AB078CB}</Project>
+      <Project>{4B00A27F-68BE-4C1B-AE3B-6DDBE7CAEB19}</Project>
       <Name>ICD.Connect.Lighting.Mock_SimplSharp</Name>
     </ProjectReference>
     <ProjectReference Include="..\ICD.Connect.Lighting\ICD.Connect.Lighting_SimplSharp.csproj">
