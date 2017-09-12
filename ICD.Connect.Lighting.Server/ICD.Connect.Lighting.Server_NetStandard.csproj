@@ -21,4 +21,15 @@
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="ICD.Connect.Lighting.projectinfo" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ICD.Connect.Protocol\ICD.Connect.Protocol.Network\ICD.Connect.Protocol.Network_NetStandard.csproj" />
+    <ProjectReference Include="..\..\ICD.Connect.Protocol\ICD.Connect.Protocol\ICD.Connect.Protocol_NetStandard.csproj" />
+    <ProjectReference Include="..\ICD.Connect.Lighting.Mock\ICD.Connect.Lighting.Mock_NetStandard.csproj" />
+    <ProjectReference Include="..\ICD.Connect.Lighting\ICD.Connect.Lighting_NetStandard.csproj" />
+  </ItemGroup>
+
 </Project>
