@@ -9,7 +9,7 @@ namespace ICD.Connect.Lighting.Server
 	/// <summary>
 	/// Settings for the BmsLightingProcessorClientDevice.
 	/// </summary>
-	public sealed class BmsLightingProcessorClientDeviceSettings : AbstractLightingProcessorDeviceSettings
+	public sealed class LightingProcessorClientDeviceSettings : AbstractLightingProcessorDeviceSettings
 	{
 		private const string FACTORY_NAME = "BmsLightingProcessorClient";
 
@@ -24,7 +24,7 @@ namespace ICD.Connect.Lighting.Server
 		/// <summary>
 		/// Gets the type of the originator for this settings instance.
 		/// </summary>
-		public override Type OriginatorType { get { return typeof(BmsLightingProcessorClientDevice); } }
+		public override Type OriginatorType { get { return typeof(LightingProcessorClientDevice); } }
 
 		[SettingsProperty(SettingsProperty.ePropertyType.PortId)]
 		public int? Port { get; set; }
@@ -54,12 +54,12 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="xml"></param>
 		/// <returns></returns>
 		[PublicAPI, XmlDeviceSettingsFactoryMethod(FACTORY_NAME)]
-		public static BmsLightingProcessorClientDeviceSettings FromXml(string xml)
+		public static LightingProcessorClientDeviceSettings FromXml(string xml)
 		{
 			int? port = XmlUtils.TryReadChildElementContentAsInt(xml, PORT_ELEMENT);
 			int roomId = XmlUtils.TryReadChildElementContentAsInt(xml, ROOM_ID_ELEMENT) ?? 0;
 
-			BmsLightingProcessorClientDeviceSettings output = new BmsLightingProcessorClientDeviceSettings
+			LightingProcessorClientDeviceSettings output = new LightingProcessorClientDeviceSettings
 			{
 				Port = port,
 				RoomId = roomId

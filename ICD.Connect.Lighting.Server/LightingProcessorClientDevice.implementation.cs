@@ -3,7 +3,7 @@ using ICD.Connect.Lighting.EventArguments;
 
 namespace ICD.Connect.Lighting.Server
 {
-	public sealed partial class BmsLightingProcessorClientDevice : ILightingProcessorDevice
+	public sealed partial class LightingProcessorClientDevice : ILightingProcessorDevice
 	{
 		/// <summary>
 		/// Gets the available rooms.

@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Common.Properties;
+#if SIMPLSHARP
 using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Connect.Lighting.EventArguments;
@@ -9,11 +10,12 @@ using Crestron.SimplSharp;
 
 namespace ICD.Connect.Lighting.Server
 {
-	public class BmsLightingProcessorClientDeviceSPlus
+	[PublicAPI("S+")]
+	public sealed class LightingProcessorClientDeviceSPlus
 	{
 		#region Fields
 
-		private BmsLightingProcessorClientDevice m_LightingProcessorClient;
+		private LightingProcessorClientDevice m_LightingProcessorClient;
 
 		private AsyncTcpClient m_TcpClient;
 
@@ -54,7 +56,7 @@ namespace ICD.Connect.Lighting.Server
 
 
 			m_TcpClient = new AsyncTcpClient {Address = address.ToString(), Port = port};
-			m_LightingProcessorClient = new BmsLightingProcessorClientDevice();
+			m_LightingProcessorClient = new LightingProcessorClientDevice();
 			m_LightingProcessorClient.SetRoomId((int)roomId);
 
 			SubscribeToLightingDevice();

@@ -18,7 +18,7 @@ namespace ICD.Connect.Lighting.Server
 	/// Server for hosting ILightingProcessorDevices.
 	/// </summary>
 	[PublicAPI]
-	public sealed class BmsLightingProcessorServer : IConsoleNode, IDisposable
+	public sealed class LightingProcessorServer : IConsoleNode, IDisposable
 	{
 		public const string REGISTER_FEEDBACK_RPC = "RegisterFeedback";
 
@@ -62,7 +62,7 @@ namespace ICD.Connect.Lighting.Server
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public BmsLightingProcessorServer()
+		public LightingProcessorServer()
 		{
 			m_ClientRoomMap = new Dictionary<uint, int>();
 			m_ClientRoomSection = new SafeCriticalSection();
@@ -135,7 +135,7 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="client"></param>
 		private void InitializeClient(uint client)
 		{
-			m_RpcController.CallMethod(client, BmsLightingProcessorClientDevice.CLEAR_CONTROLS_RPC);
+			m_RpcController.CallMethod(client, LightingProcessorClientDevice.CLEAR_CONTROLS_RPC);
 
 			if (m_Processor == null)
 				return;
@@ -144,7 +144,7 @@ namespace ICD.Connect.Lighting.Server
 			if (!TryGetRoomForClient(client, out room))
 				return;
 
-			m_RpcController.CallMethod(client, BmsLightingProcessorClientDevice.SET_CACHED_ROOM_RPC, room);
+			m_RpcController.CallMethod(client, LightingProcessorClientDevice.SET_CACHED_ROOM_RPC, room);
 
 			// Send the loads
 			foreach (LightingProcessorControl load in m_Processor.GetLoadsForRoom(room))
@@ -153,7 +153,7 @@ namespace ICD.Connect.Lighting.Server
 
 				float percentage = m_Processor.GetLoadLevel(load);
 				if (Math.Abs(percentage) > 0.0001f)
-					m_RpcController.CallMethod(client, BmsLightingProcessorClientDevice.SET_CACHED_LOAD_LEVEL_RPC, load.Id, percentage);
+					m_RpcController.CallMethod(client, LightingProcessorClientDevice.SET_CACHED_LOAD_LEVEL_RPC, load.Id, percentage);
 			}
 
 			SendControlsToClient(client, m_Processor.GetShadesForRoom(room));
@@ -163,12 +163,12 @@ namespace ICD.Connect.Lighting.Server
 			// Send the room occupancy
 			RoomOccupancyEventArgs.eOccupancyState occupancy = m_Processor.GetOccupancyForRoom(room);
 			if (occupancy != default(RoomOccupancyEventArgs.eOccupancyState))
-				m_RpcController.CallMethod(client, BmsLightingProcessorClientDevice.SET_CACHED_OCCUPANCY_RPC, occupancy);
+				m_RpcController.CallMethod(client, LightingProcessorClientDevice.SET_CACHED_OCCUPANCY_RPC, occupancy);
 
 			// Send the room preset
 			int? activePreset = m_Processor.GetPresetForRoom(room);
 			if (activePreset != null)
-				m_RpcController.CallMethod(client, BmsLightingProcessorClientDevice.SET_CACHED_ACTIVE_PRESET_RPC, activePreset);
+				m_RpcController.CallMethod(client, LightingProcessorClientDevice.SET_CACHED_ACTIVE_PRESET_RPC, activePreset);
 		}
 
 		/// <summary>
@@ -210,7 +210,7 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="control"></param>
 		private void SendControlToClient(uint client, LightingProcessorControl control)
 		{
-			m_RpcController.CallMethod(client, BmsLightingProcessorClientDevice.ADD_CACHED_CONTROL_RPC, control);
+			m_RpcController.CallMethod(client, LightingProcessorClientDevice.ADD_CACHED_CONTROL_RPC, control);
 		}
 
 		#endregion
@@ -254,7 +254,7 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="args"></param>
 		private void ProcessorOnRoomPresetChanged(object sender, RoomPresetChangeEventArgs args)
 		{
-			const string key = BmsLightingProcessorClientDevice.SET_CACHED_ACTIVE_PRESET_RPC;
+			const string key = LightingProcessorClientDevice.SET_CACHED_ACTIVE_PRESET_RPC;
 			CallActionForClientsByRoomId(args.RoomId, clientId => m_RpcController.CallMethod(clientId, key, args.Preset));
 		}
 
@@ -265,7 +265,7 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="args"></param>
 		private void ProcessorOnRoomOccupancyChanged(object sender, RoomOccupancyEventArgs args)
 		{
-			const string key = BmsLightingProcessorClientDevice.SET_CACHED_OCCUPANCY_RPC;
+			const string key = LightingProcessorClientDevice.SET_CACHED_OCCUPANCY_RPC;
 			CallActionForClientsByRoomId(args.RoomId, clientId => m_RpcController.CallMethod(clientId, key, args.OccupancyState));
 		}
 
@@ -276,7 +276,7 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="args"></param>
 		private void ProcessorOnRoomLoadLevelChanged(object sender, RoomLoadLevelEventArgs args)
 		{
-			const string key = BmsLightingProcessorClientDevice.SET_CACHED_LOAD_LEVEL_RPC;
+			const string key = LightingProcessorClientDevice.SET_CACHED_LOAD_LEVEL_RPC;
 			CallActionForClientsByRoomId(args.RoomId,
 			                             clientId => m_RpcController.CallMethod(clientId, key, args.LoadId, args.Percentage));
 		}

@@ -20,7 +20,7 @@ namespace ICD.Connect.Lighting.Server
 	/// <summary>
 	/// Provides a way to communicate with the lighting features of BmsOS.
 	/// </summary>
-	public sealed partial class BmsLightingProcessorClientDevice : AbstractDevice<BmsLightingProcessorClientDeviceSettings>
+	public sealed partial class LightingProcessorClientDevice : AbstractDevice<LightingProcessorClientDeviceSettings>
 	{
 		// How often to check the connection and reconnect if necessary.
 		private const long CONNECTION_CHECK_MILLISECONDS = 30 * 1000;
@@ -71,7 +71,7 @@ namespace ICD.Connect.Lighting.Server
 
 				ClearCache();
 				if (m_IsConnected)
-					m_RpcController.CallMethod(BmsLightingProcessorServer.REGISTER_FEEDBACK_RPC, m_RoomId);
+					m_RpcController.CallMethod(LightingProcessorServer.REGISTER_FEEDBACK_RPC, m_RoomId);
 
 				OnConnectedStateChanged.Raise(this, new BoolEventArgs(m_IsConnected));
 			}
@@ -80,7 +80,7 @@ namespace ICD.Connect.Lighting.Server
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public BmsLightingProcessorClientDevice()
+		public LightingProcessorClientDevice()
 		{
 			m_RpcController = new ClientSerialRpcController(this);
 
@@ -176,7 +176,7 @@ namespace ICD.Connect.Lighting.Server
 			ClearCache();
 
 			if (IsConnected)
-				m_RpcController.CallMethod(BmsLightingProcessorServer.REGISTER_FEEDBACK_RPC, m_RoomId);
+				m_RpcController.CallMethod(LightingProcessorServer.REGISTER_FEEDBACK_RPC, m_RoomId);
 		}
 
 		#endregion
@@ -349,7 +349,7 @@ namespace ICD.Connect.Lighting.Server
 		/// Override to apply properties to the settings instance.
 		/// </summary>
 		/// <param name="settings"></param>
-		protected override void CopySettingsFinal(BmsLightingProcessorClientDeviceSettings settings)
+		protected override void CopySettingsFinal(LightingProcessorClientDeviceSettings settings)
 		{
 			base.CopySettingsFinal(settings);
 
@@ -373,7 +373,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="settings"></param>
 		/// <param name="factory"></param>
-		protected override void ApplySettingsFinal(BmsLightingProcessorClientDeviceSettings settings, IDeviceFactory factory)
+		protected override void ApplySettingsFinal(LightingProcessorClientDeviceSettings settings, IDeviceFactory factory)
 		{
 			base.ApplySettingsFinal(settings, factory);
 
@@ -458,7 +458,7 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public void SetPreset(int? preset)
 		{
-			m_RpcController.CallMethod(BmsLightingProcessorServer.SET_ROOM_PRESET_RPC, m_Room.Id, preset);
+			m_RpcController.CallMethod(LightingProcessorServer.SET_ROOM_PRESET_RPC, m_Room.Id, preset);
 		}
 
 		/// <summary>
@@ -483,7 +483,7 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public void SetLoadLevel(int load, float percentage)
 		{
-			m_RpcController.CallMethod(BmsLightingProcessorServer.SET_LOAD_LEVEL_RPC, m_RoomId, load, percentage);
+			m_RpcController.CallMethod(LightingProcessorServer.SET_LOAD_LEVEL_RPC, m_RoomId, load, percentage);
 		}
 
 		/// <summary>
@@ -504,7 +504,7 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public void StartRaisingLoadLevel(int load)
 		{
-			m_RpcController.CallMethod(BmsLightingProcessorServer.START_RAISING_LOAD_LEVEL_RPC, m_RoomId, load);
+			m_RpcController.CallMethod(LightingProcessorServer.START_RAISING_LOAD_LEVEL_RPC, m_RoomId, load);
 		}
 
 		/// <summary>
@@ -514,7 +514,7 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public void StartLoweringLoadLevel(int load)
 		{
-			m_RpcController.CallMethod(BmsLightingProcessorServer.START_LOWERING_LOAD_LEVEL_RPC, m_RoomId, load);
+			m_RpcController.CallMethod(LightingProcessorServer.START_LOWERING_LOAD_LEVEL_RPC, m_RoomId, load);
 		}
 
 		/// <summary>
@@ -524,7 +524,7 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public void StopRampingLoadLevel(int load)
 		{
-			m_RpcController.CallMethod(BmsLightingProcessorServer.STOP_RAMPING_LOAD_LEVEL_RPC, m_RoomId, load);
+			m_RpcController.CallMethod(LightingProcessorServer.STOP_RAMPING_LOAD_LEVEL_RPC, m_RoomId, load);
 		}
 
 		#endregion
@@ -538,7 +538,7 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public void StartRaisingShade(int shade)
 		{
-			m_RpcController.CallMethod(BmsLightingProcessorServer.START_RAISING_SHADE_RPC, m_RoomId, shade);
+			m_RpcController.CallMethod(LightingProcessorServer.START_RAISING_SHADE_RPC, m_RoomId, shade);
 		}
 
 		/// <summary>
@@ -548,7 +548,7 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public void StartLoweringShade(int shade)
 		{
-			m_RpcController.CallMethod(BmsLightingProcessorServer.START_LOWERING_SHADE_RPC, m_RoomId, shade);
+			m_RpcController.CallMethod(LightingProcessorServer.START_LOWERING_SHADE_RPC, m_RoomId, shade);
 		}
 
 		/// <summary>
@@ -558,7 +558,7 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public void StopMovingShade(int shade)
 		{
-			m_RpcController.CallMethod(BmsLightingProcessorServer.STOP_MOVING_SHADE_RPC, m_RoomId, shade);
+			m_RpcController.CallMethod(LightingProcessorServer.STOP_MOVING_SHADE_RPC, m_RoomId, shade);
 		}
 
 		#endregion
@@ -572,7 +572,7 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public void StartRaisingShadeGroup(int shadeGroup)
 		{
-			m_RpcController.CallMethod(BmsLightingProcessorServer.START_RAISING_SHADE_GROUP_RPC, m_RoomId, shadeGroup);
+			m_RpcController.CallMethod(LightingProcessorServer.START_RAISING_SHADE_GROUP_RPC, m_RoomId, shadeGroup);
 		}
 
 		/// <summary>
@@ -582,7 +582,7 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public void StartLoweringShadeGroup(int shadeGroup)
 		{
-			m_RpcController.CallMethod(BmsLightingProcessorServer.START_LOWERING_SHADE_GROUP_RPC, m_RoomId, shadeGroup);
+			m_RpcController.CallMethod(LightingProcessorServer.START_LOWERING_SHADE_GROUP_RPC, m_RoomId, shadeGroup);
 		}
 
 		/// <summary>
@@ -592,7 +592,7 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public void StopMovingShadeGroup(int shadeGroup)
 		{
-			m_RpcController.CallMethod(BmsLightingProcessorServer.STOP_MOVING_SHADE_GROUP_RPC, m_RoomId, shadeGroup);
+			m_RpcController.CallMethod(LightingProcessorServer.STOP_MOVING_SHADE_GROUP_RPC, m_RoomId, shadeGroup);
 		}
 
 		#endregion
