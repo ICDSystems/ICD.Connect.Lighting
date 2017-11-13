@@ -2,6 +2,7 @@
 using ICD.Common.Properties;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
+using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Lighting.Lutron.QuantumNwk
@@ -28,7 +29,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 
 		public string IntegrationConfig { get; set; }
 
-		[SettingsProperty(SettingsProperty.ePropertyType.PortId)]
+		[SettingsProperty(SettingsProperty.ePropertyType.Id, typeof(ISerialPort))]
 		public int? Port { get; set; }
 
 		public string Username { get; set; }
