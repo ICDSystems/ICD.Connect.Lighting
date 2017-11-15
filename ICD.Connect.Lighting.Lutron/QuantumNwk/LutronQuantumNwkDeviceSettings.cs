@@ -4,6 +4,7 @@ using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Settings.Attributes;
+using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 {
@@ -27,9 +28,10 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// </summary>
 		public override Type OriginatorType { get { return typeof(LutronQuantumNwkDevice); } }
 
+		[PathSettingsProperty("Lutron", ".xml")]
 		public string IntegrationConfig { get; set; }
 
-		[SettingsProperty(SettingsProperty.ePropertyType.Id, typeof(ISerialPort))]
+		[OriginatorIdSettingsProperty(typeof(ISerialPort))]
 		public int? Port { get; set; }
 
 		public string Username { get; set; }
@@ -46,14 +48,9 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		{
 			base.WriteElements(writer);
 
-			if (Port != null)
-				writer.WriteElementString(PORT_ELEMENT, IcdXmlConvert.ToString((int)Port));
-
-			if (!string.IsNullOrEmpty(Username))
-				writer.WriteElementString(USERNAME_ELEMENT, Username);
-
-			if (!string.IsNullOrEmpty(IntegrationConfig))
-				writer.WriteElementString(INTEGRATION_CONFIG_ELEMENT, IntegrationConfig);
+			writer.WriteElementString(PORT_ELEMENT, IcdXmlConvert.ToString(Port));
+			writer.WriteElementString(USERNAME_ELEMENT, Username);
+			writer.WriteElementString(INTEGRATION_CONFIG_ELEMENT, IntegrationConfig);
 		}
 
 		/// <summary>
@@ -64,15 +61,11 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
 		public static LutronQuantumNwkDeviceSettings FromXml(string xml)
 		{
-			int? port = XmlUtils.TryReadChildElementContentAsInt(xml, PORT_ELEMENT);
-			string username = XmlUtils.TryReadChildElementContentAsString(xml, USERNAME_ELEMENT);
-			string integrationConfig = XmlUtils.TryReadChildElementContentAsString(xml, INTEGRATION_CONFIG_ELEMENT);
-
 			LutronQuantumNwkDeviceSettings output = new LutronQuantumNwkDeviceSettings
 			{
-				Port = port,
-				Username = username,
-				IntegrationConfig = integrationConfig
+				Port = XmlUtils.TryReadChildElementContentAsInt(xml, PORT_ELEMENT),
+				Username = XmlUtils.TryReadChildElementContentAsString(xml, USERNAME_ELEMENT),
+				IntegrationConfig = XmlUtils.TryReadChildElementContentAsString(xml, INTEGRATION_CONFIG_ELEMENT)
 			};
 
 			ParseXml(output, xml);
