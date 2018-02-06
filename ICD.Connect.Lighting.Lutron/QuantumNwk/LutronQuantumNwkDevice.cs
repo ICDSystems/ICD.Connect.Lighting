@@ -8,7 +8,7 @@ using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.IO;
-using ICD.Common.Services.Logging;
+using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Timers;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ICD.Common.Utils.Attributes.Rpc;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
@@ -10,6 +9,7 @@ using ICD.Connect.API.Nodes;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Protocol.EventArguments;
 using ICD.Connect.Protocol.Network.RemoteProcedure;
+using ICD.Connect.Protocol.Network.Attributes.Rpc;
 using ICD.Connect.Protocol.Network.Tcp;
 
 namespace ICD.Connect.Lighting.Server
