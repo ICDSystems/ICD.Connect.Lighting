@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ICD.Common.Attributes.Rpc;
+using ICD.Common.Utils.Attributes.Rpc;
 using ICD.Common.Properties;
 using ICD.Common.Services.Logging;
 using ICD.Common.Utils.EventArguments;

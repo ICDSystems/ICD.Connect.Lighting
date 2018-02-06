@@ -1,8 +1,9 @@
 ﻿using System;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Xml;
+using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Settings.Attributes;
-using ICD.Connect.Settings.Attributes.Factories;
+using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Lighting.Server
 {
@@ -26,7 +27,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		public override Type OriginatorType { get { return typeof(LightingProcessorClientDevice); } }
 
-		[SettingsProperty(SettingsProperty.ePropertyType.PortId)]
+		[OriginatorIdSettingsProperty(typeof(ISerialPort))]
 		public int? Port { get; set; }
 
 		/// <summary>
@@ -53,7 +54,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		[PublicAPI, XmlDeviceSettingsFactoryMethod(FACTORY_NAME)]
+		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
 		public static LightingProcessorClientDeviceSettings FromXml(string xml)
 		{
 			int? port = XmlUtils.TryReadChildElementContentAsInt(xml, PORT_ELEMENT);
