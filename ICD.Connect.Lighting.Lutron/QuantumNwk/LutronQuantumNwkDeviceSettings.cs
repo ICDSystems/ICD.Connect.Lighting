@@ -68,7 +68,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 				IntegrationConfig = XmlUtils.TryReadChildElementContentAsString(xml, INTEGRATION_CONFIG_ELEMENT)
 			};
 
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 
