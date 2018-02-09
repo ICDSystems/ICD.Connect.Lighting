@@ -1,5 +1,4 @@
 ﻿using System;
-using ICD.Common.Properties;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
 using ICD.Connect.Protocol.Ports;
@@ -8,6 +7,7 @@ using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 {
+	[KrangSettings(FACTORY_NAME)]
 	public sealed class LutronQuantumNwkDeviceSettings : AbstractDeviceSettings
 	{
 		private const string FACTORY_NAME = "LutronQuantumNwk";
@@ -54,22 +54,16 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		}
 
 		/// <summary>
-		/// Loads the settings from XML.
+		/// Updates the settings from xml.
 		/// </summary>
 		/// <param name="xml"></param>
-		/// <returns></returns>
-		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-		public static LutronQuantumNwkDeviceSettings FromXml(string xml)
+		public override void ParseXml(string xml)
 		{
-			LutronQuantumNwkDeviceSettings output = new LutronQuantumNwkDeviceSettings
-			{
-				Port = XmlUtils.TryReadChildElementContentAsInt(xml, PORT_ELEMENT),
-				Username = XmlUtils.TryReadChildElementContentAsString(xml, USERNAME_ELEMENT),
-				IntegrationConfig = XmlUtils.TryReadChildElementContentAsString(xml, INTEGRATION_CONFIG_ELEMENT)
-			};
+			base.ParseXml(xml);
 
-			output.ParseXml(xml);
-			return output;
+			Port = XmlUtils.TryReadChildElementContentAsInt(xml, PORT_ELEMENT);
+			Username = XmlUtils.TryReadChildElementContentAsString(xml, USERNAME_ELEMENT);
+			IntegrationConfig = XmlUtils.TryReadChildElementContentAsString(xml, INTEGRATION_CONFIG_ELEMENT);
 		}
 
 		#endregion
