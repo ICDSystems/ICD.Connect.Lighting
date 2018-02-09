@@ -1,5 +1,4 @@
 ﻿using System;
-using ICD.Common.Properties;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Settings.Attributes;
@@ -10,6 +9,7 @@ namespace ICD.Connect.Lighting.Server
 	/// <summary>
 	/// Settings for the BmsLightingProcessorClientDevice.
 	/// </summary>
+	[KrangSettings(FACTORY_NAME)]
 	public sealed class LightingProcessorClientDeviceSettings : AbstractLightingProcessorDeviceSettings
 	{
 		private const string FACTORY_NAME = "BmsLightingProcessorClient";
@@ -43,31 +43,20 @@ namespace ICD.Connect.Lighting.Server
 		{
 			base.WriteElements(writer);
 
-			if (Port != null)
-				writer.WriteElementString(PORT_ELEMENT, IcdXmlConvert.ToString((int)Port));
-
+			writer.WriteElementString(PORT_ELEMENT, IcdXmlConvert.ToString(Port));
 			writer.WriteElementString(ROOM_ID_ELEMENT, IcdXmlConvert.ToString(RoomId));
 		}
 
 		/// <summary>
-		/// Loads the settings from XML.
+		/// Updates the settings from xml.
 		/// </summary>
 		/// <param name="xml"></param>
-		/// <returns></returns>
-		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-		public static LightingProcessorClientDeviceSettings FromXml(string xml)
+		public override void ParseXml(string xml)
 		{
-			int? port = XmlUtils.TryReadChildElementContentAsInt(xml, PORT_ELEMENT);
-			int roomId = XmlUtils.TryReadChildElementContentAsInt(xml, ROOM_ID_ELEMENT) ?? 0;
+			base.ParseXml(xml);
 
-			LightingProcessorClientDeviceSettings output = new LightingProcessorClientDeviceSettings
-			{
-				Port = port,
-				RoomId = roomId
-			};
-
-			ParseXml(output, xml);
-			return output;
+			Port = XmlUtils.TryReadChildElementContentAsInt(xml, PORT_ELEMENT);
+			RoomId = XmlUtils.TryReadChildElementContentAsInt(xml, ROOM_ID_ELEMENT) ?? 0;
 		}
 	}
 }
