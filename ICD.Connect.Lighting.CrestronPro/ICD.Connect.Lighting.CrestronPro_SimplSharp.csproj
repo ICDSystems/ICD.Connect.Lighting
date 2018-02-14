@@ -44,7 +44,7 @@
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <GenerateSerializationAssemblies>off</GenerateSerializationAssemblies>
-    <DefineConstants>SIMPLSHARP</DefineConstants>
+    <DefineConstants>DEBUG;SIMPLSHARP</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Crestron.SimplSharpPro.DeviceSupport, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1099c178b3b54c3b, processorArchitecture=MSIL">
