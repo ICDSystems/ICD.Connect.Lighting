@@ -13,7 +13,7 @@ namespace ICD.Connect.Lighting.Shades
 		private const string SHADES_ELEMENT = "Shades";
 		private const string SHADE_ELEMENT = "Shade";
 
-		public IEnumerable<int?> ShadesIds { get; set; }  
+		public IEnumerable<int?> ShadeIds { get; set; }  
 
 		/// <summary>
 		/// Gets the originator factory name.
@@ -33,7 +33,7 @@ namespace ICD.Connect.Lighting.Shades
 		{
 			base.WriteElements(writer);
 
-			XmlUtils.WriteListToXml(writer, ShadesIds.Order(), SHADES_ELEMENT, SHADE_ELEMENT);
+			XmlUtils.WriteListToXml(writer, ShadeIds.Order(), SHADES_ELEMENT, SHADE_ELEMENT);
 		}
 
 		/// <summary>
@@ -44,7 +44,7 @@ namespace ICD.Connect.Lighting.Shades
 		{
 			base.ParseXml(xml);
 
-			ShadesIds =  XmlUtils.ReadListFromXml(xml, SHADES_ELEMENT, SHADE_ELEMENT, c => XmlUtils.TryReadElementContentAsInt(c));
+			ShadeIds =  XmlUtils.ReadListFromXml(xml, SHADES_ELEMENT, SHADE_ELEMENT, c => XmlUtils.TryReadElementContentAsInt(c));
 		}
 	}
 }
