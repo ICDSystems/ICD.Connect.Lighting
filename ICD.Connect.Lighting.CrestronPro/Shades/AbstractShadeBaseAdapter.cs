@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.API.Commands;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Lighting.Shades;
 using ICD.Connect.Lighting.Shades.Controls;
 
@@ -36,7 +39,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-			return Shade.IsOnline;
+			return Shade != null && Shade.IsOnline;
 		}
 
 		protected void SetShade(TShade shade)
