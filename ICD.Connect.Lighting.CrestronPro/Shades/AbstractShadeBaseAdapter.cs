@@ -133,7 +133,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 
 		public float GetPosition()
 		{
-			return MathUtils.MapRange(0, uint.MaxValue, 0, 1, Shade.PositionFeedback.UShortValue);
+			return MathUtils.MapRange(0, (float)ushort.MaxValue, 0, 1, (float)Shade.PositionFeedback.UShortValue);
 		}
 
 		public void SetPosition(float position)
