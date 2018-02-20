@@ -55,7 +55,7 @@ namespace ICD.Connect.Lighting.Shades.Controls
 		{
 			base.BuildConsoleStatus(addRow);
 
-			addRow("Shade Position", GetPosition());
+			addRow("Shade Position", GetPosition().ToString("0.00"));
 		}
 
 		#endregion
