@@ -5,8 +5,10 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Lighting.Environment;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Mock.Controls;
+using ICD.Connect.Lighting.Processors;
 
 namespace ICD.Connect.Lighting.Mock
 {
@@ -165,7 +167,7 @@ namespace ICD.Connect.Lighting.Mock
 		/// <param name="room"></param>
 		/// <param name="load"></param>
 		/// <returns></returns>
-		private MockLightingLoadControl GetLoad(int room, int load)
+		private ILightingLoadEnvironmentPeripheral GetLoad(int room, int load)
 		{
 			return GetRoom(room).GetLoad(load);
 		}
@@ -176,7 +178,7 @@ namespace ICD.Connect.Lighting.Mock
 		/// <param name="room"></param>
 		/// <param name="shade"></param>
 		/// <returns></returns>
-		private MockLightingShadeControl GetShade(int room, int shade)
+		private IShadeEnvironmentPeripheral GetShade(int room, int shade)
 		{
 			return GetRoom(room).GetShade(shade);
 		}
@@ -187,7 +189,7 @@ namespace ICD.Connect.Lighting.Mock
 		/// <param name="room"></param>
 		/// <param name="shadeGroup"></param>
 		/// <returns></returns>
-		private MockLightingShadeGroupControl GetShadeGroup(int room, int shadeGroup)
+		private IShadeEnvironmentPeripheral GetShadeGroup(int room, int shadeGroup)
 		{
 			return GetRoom(room).GetShadeGroup(shadeGroup);
 		}
@@ -239,32 +241,30 @@ namespace ICD.Connect.Lighting.Mock
 		/// Called when the room occupancy changes.
 		/// </summary>
 		/// <param name="sender"></param>
-		/// <param name="occupancy"></param>
-		private void RoomOnOccupancyChanged(MockLightingRoom sender, RoomOccupancyEventArgs.eOccupancyState occupancy)
+		/// <param name="args"></param>
+		private void RoomOnOccupancyChanged(object sender, RoomOccupancyEventArgs args)
 		{
-			RaiseOnRoomOccupancyChanged(sender.Id, occupancy);
+			RaiseOnRoomOccupancyChanged(args.RoomId, args.OccupancyState);
 		}
 
 		/// <summary>
 		/// Called when the room load level changes.
 		/// </summary>
 		/// <param name="sender"></param>
-		/// <param name="load"></param>
-		/// <param name="percentage"></param>
-		private void RoomOnLoadLevelChanged(MockLightingRoom sender, MockLightingLoadControl load, float percentage)
+		/// <param name="args"></param>
+		private void RoomOnLoadLevelChanged(object sender, RoomLoadLevelEventArgs args)
 		{
-			RaiseOnRoomLoadLevelChanged(sender.Id, load.Id, percentage);
+			RaiseOnRoomLoadLevelChanged(args.RoomId, args.LoadId, args.Percentage);
 		}
 
 		/// <summary>
 		/// Called when the room preset changes.
 		/// </summary>
 		/// <param name="sender"></param>
-		/// <param name="preset"></param>
-		private void RoomOnActivePresetChanged(MockLightingRoom sender, int? preset)
+		/// <param name="args"></param>
+		private void RoomOnActivePresetChanged(object sender, RoomPresetChangeEventArgs args)
 		{
-			if (sender != null)
-				RaiseOnRoomPresetChanged(sender.Id, preset);
+			RaiseOnRoomPresetChanged(args.RoomId, args.Preset);
 		}
 
 		private void RoomOnControlsChanged(object sender, EventArgs eventArgs)

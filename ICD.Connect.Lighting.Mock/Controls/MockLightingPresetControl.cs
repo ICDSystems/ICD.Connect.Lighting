@@ -1,6 +1,8 @@
-﻿namespace ICD.Connect.Lighting.Mock.Controls
+﻿using ICD.Connect.Lighting.Environment;
+
+namespace ICD.Connect.Lighting.Mock.Controls
 {
-	public sealed class MockLightingPresetControl : AbstractMockLightingControl
+	public sealed class MockLightingPresetControl : AbstractMockLightingControl, IPresetEnvironmentPeripheral
 	{
 		public override LightingProcessorControl.eControlType ControlType
 		{
@@ -16,6 +18,11 @@
 		public MockLightingPresetControl(int id, int room, string name)
 			: base(id, room, name)
 		{
+		}
+
+		public override void Dispose()
+		{
+			
 		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using ICD.Common.Utils.Xml;
+using ICD.Connect.Lighting.Processors;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Settings.Attributes;
 using ICD.Connect.Settings.Attributes.SettingsProperties;

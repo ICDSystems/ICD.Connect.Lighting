@@ -6,7 +6,7 @@ using ICD.Connect.API.Commands;
 using ICD.Connect.Devices;
 using ICD.Connect.Lighting.EventArguments;
 
-namespace ICD.Connect.Lighting
+namespace ICD.Connect.Lighting.Processors
 {
 	/// <summary>
 	/// Base class for lighting processor devices.

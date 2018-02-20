@@ -4,6 +4,7 @@ using System.Linq;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Lutron.QuantumNwk.EventArguments;
+using ICD.Connect.Lighting.Processors;
 
 namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 {

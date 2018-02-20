@@ -6,10 +6,11 @@ using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Timers;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Lighting.Environment;
 
 namespace ICD.Connect.Lighting.Mock.Controls
 {
-	public sealed class MockLightingLoadControl : AbstractMockLightingControl, IDisposable
+	public sealed class MockLightingLoadControl : AbstractMockLightingControl, IDisposable, ILightingLoadEnvironmentPeripheral
 	{
 		// The step size for each increment/decrement of a load level.
 		private const float INCREMENT_DELTA = 0.05f;
@@ -62,7 +63,7 @@ namespace ICD.Connect.Lighting.Mock.Controls
 
 		#region Methods
 
-		public void Dispose()
+		public override void Dispose()
 		{
 			OnLoadLevelChanged = null;
 

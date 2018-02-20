@@ -303,32 +303,30 @@ namespace ICD.Connect.Lighting.Server
 		/// Called when the room occupancy changes.
 		/// </summary>
 		/// <param name="sender"></param>
-		/// <param name="occupancy"></param>
-		private void RoomOnOccupancyChanged(MockLightingRoom sender, RoomOccupancyEventArgs.eOccupancyState occupancy)
+		/// <param name="args"></param>
+		private void RoomOnOccupancyChanged(object sender, RoomOccupancyEventArgs args)
 		{
-			OnRoomOccupancyChanged.Raise(this, new RoomOccupancyEventArgs(sender.Id, occupancy));
+			OnRoomOccupancyChanged.Raise(this, new RoomOccupancyEventArgs(args.RoomId, args.OccupancyState));
 		}
 
 		/// <summary>
 		/// Called when a load level changes.
 		/// </summary>
 		/// <param name="sender"></param>
-		/// <param name="load"></param>
-		/// <param name="percentage"></param>
-		private void RoomOnLoadLevelChanged(MockLightingRoom sender, MockLightingLoadControl load, float percentage)
+		/// <param name="args"></param>
+		private void RoomOnLoadLevelChanged(object sender, RoomLoadLevelEventArgs args)
 		{
-			OnRoomLoadLevelChanged.Raise(this, new RoomLoadLevelEventArgs(sender.Id, load.Id, percentage));
+			OnRoomLoadLevelChanged.Raise(this, new RoomLoadLevelEventArgs(args.RoomId, args.LoadId, args.Percentage));
 		}
 
 		/// <summary>
 		/// Called when the room preset changes.
 		/// </summary>
 		/// <param name="sender"></param>
-		/// <param name="preset"></param>
-		private void RoomOnActivePresetChanged(MockLightingRoom sender, int? preset)
+		/// <param name="args"></param>
+		private void RoomOnActivePresetChanged(object sender, RoomPresetChangeEventArgs args)
 		{
-			if (sender != null)
-				OnRoomPresetChanged.Raise(this, new RoomPresetChangeEventArgs(sender.Id, preset));
+			OnRoomPresetChanged.Raise(this, new RoomPresetChangeEventArgs(args.RoomId, args.Preset));
 		}
 
 		/// <summary>

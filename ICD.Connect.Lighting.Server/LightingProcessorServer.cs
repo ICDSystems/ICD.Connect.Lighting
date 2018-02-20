@@ -7,6 +7,7 @@ using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Lighting.EventArguments;
+using ICD.Connect.Lighting.Processors;
 using ICD.Connect.Protocol.EventArguments;
 using ICD.Connect.Protocol.Network.RemoteProcedure;
 using ICD.Connect.Protocol.Network.Attributes.Rpc;

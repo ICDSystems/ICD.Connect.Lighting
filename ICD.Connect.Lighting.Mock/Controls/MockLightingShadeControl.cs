@@ -17,5 +17,10 @@
 			: base(id, room, name)
 		{
 		}
+
+		public override void Dispose()
+		{
+			
+		}
 	}
 }

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using ICD.Common.Utils.EventArguments;
 using ICD.Common.Properties;
+using ICD.Common.Utils.EventArguments;
 using ICD.Connect.Devices;
 using ICD.Connect.Lighting.EventArguments;
 
-namespace ICD.Connect.Lighting
+namespace ICD.Connect.Lighting.Processors
 {
 	/// <summary>
 	/// ILightingProcessorDevice represents a lighting system with controls for

@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using ICD.Connect.API.Commands;
+using ICD.Connect.Lighting.Environment;
+using ICD.Connect.Lighting.Shades;
 
 namespace ICD.Connect.Lighting.Mock.Controls
 {
-	public abstract class AbstractMockShadeLightingControl : AbstractMockLightingControl
+	public abstract class AbstractMockShadeLightingControl : AbstractMockLightingControl, IShadeEnvironmentPeripheral
 	{
 		/// <summary>
 		/// Constructor.
@@ -15,6 +17,8 @@ namespace ICD.Connect.Lighting.Mock.Controls
 			: base(id, room, name)
 		{
 		}
+
+		public eShadeDirection LastDirection { get { return eShadeDirection.Neither; } }
 
 		/// <summary>
 		/// Starts raising the shade.

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ICD.Connect.Lighting.EventArguments;
+using ICD.Connect.Lighting.Processors;
 
 namespace ICD.Connect.Lighting.Server
 {
@@ -11,11 +12,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <returns></returns>
 		IEnumerable<int> ILightingProcessorDevice.GetRooms()
 		{
-			// Compiler says no
-			//if (m_Room != null)
-			//	yield return m_Room.Id;
-
-			return m_Room == null ? new int[0] : new[] {m_Room.Id};
+			if (m_Room != null)
+				yield return m_Room.Id;
 		}
 
 		/// <summary>

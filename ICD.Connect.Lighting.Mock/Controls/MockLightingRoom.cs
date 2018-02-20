@@ -6,23 +6,16 @@ using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Lighting.Environment;
 using ICD.Connect.Lighting.EventArguments;
 
 namespace ICD.Connect.Lighting.Mock.Controls
 {
-	public sealed class MockLightingRoom : IConsoleNode, IDisposable
+	public sealed class MockLightingRoom : IConsoleNode, IDisposable, IEnvironmentRoom
 	{
-		public delegate void OccupancyChangedCallback(
-			MockLightingRoom sender, RoomOccupancyEventArgs.eOccupancyState occupancy);
-
-		public delegate void RoomLoadLevelChangedCallback(
-			MockLightingRoom sender, MockLightingLoadControl load, float percentage);
-
-		public delegate void ActivePresetCallback(MockLightingRoom sender, int? preset);
-
-		public event ActivePresetCallback OnActivePresetChanged;
-		public event OccupancyChangedCallback OnOccupancyChanged;
-		public event RoomLoadLevelChangedCallback OnLoadLevelChanged;
+		public event EventHandler<RoomPresetChangeEventArgs> OnActivePresetChanged;
+		public event EventHandler<RoomOccupancyEventArgs> OnOccupancyChanged;
+		public event EventHandler<RoomLoadLevelEventArgs> OnLoadLevelChanged;
 		public event EventHandler OnControlsChanged;
 
 		private readonly List<int> m_Loads;
@@ -30,10 +23,10 @@ namespace ICD.Connect.Lighting.Mock.Controls
 		private readonly List<int> m_Shades;
 		private readonly List<int> m_ShadeGroups;
 
-		private readonly Dictionary<int, MockLightingLoadControl> m_IdToLoad;
-		private readonly Dictionary<int, MockLightingPresetControl> m_IdToPreset;
-		private readonly Dictionary<int, MockLightingShadeControl> m_IdToShade;
-		private readonly Dictionary<int, MockLightingShadeGroupControl> m_IdToShadeGroup;
+		private readonly Dictionary<int, ILightingLoadEnvironmentPeripheral> m_IdToLoad;
+		private readonly Dictionary<int, IPresetEnvironmentPeripheral> m_IdToPreset;
+		private readonly Dictionary<int, IShadeEnvironmentPeripheral> m_IdToShade;
+		private readonly Dictionary<int, IShadeEnvironmentPeripheral> m_IdToShadeGroup;
 
 		private readonly SafeCriticalSection m_CacheSection;
 
@@ -61,9 +54,7 @@ namespace ICD.Connect.Lighting.Mock.Controls
 
 				m_ActivePreset = value;
 
-				ActivePresetCallback handler = OnActivePresetChanged;
-				if (handler != null)
-					handler(this, m_ActivePreset);
+				OnActivePresetChanged.Raise(this, new RoomPresetChangeEventArgs(Id, value));
 			}
 		}
 
@@ -80,9 +71,7 @@ namespace ICD.Connect.Lighting.Mock.Controls
 
 				m_Occupancy = value;
 
-				OccupancyChangedCallback handler = OnOccupancyChanged;
-				if (handler != null)
-					handler(this, m_Occupancy);
+				OnOccupancyChanged.Raise(this, new RoomOccupancyEventArgs(Id, value));
 			}
 		}
 
@@ -109,10 +98,10 @@ namespace ICD.Connect.Lighting.Mock.Controls
 			m_Shades = new List<int>();
 			m_ShadeGroups = new List<int>();
 
-			m_IdToLoad = new Dictionary<int, MockLightingLoadControl>();
-			m_IdToPreset = new Dictionary<int, MockLightingPresetControl>();
-			m_IdToShade = new Dictionary<int, MockLightingShadeControl>();
-			m_IdToShadeGroup = new Dictionary<int, MockLightingShadeGroupControl>();
+			m_IdToLoad = new Dictionary<int, ILightingLoadEnvironmentPeripheral>();
+			m_IdToPreset = new Dictionary<int, IPresetEnvironmentPeripheral>();
+			m_IdToShade = new Dictionary<int, IShadeEnvironmentPeripheral>();
+			m_IdToShadeGroup = new Dictionary<int, IShadeEnvironmentPeripheral>();
 			m_CacheSection = new SafeCriticalSection();
 
 			m_Id = id;
@@ -122,7 +111,7 @@ namespace ICD.Connect.Lighting.Mock.Controls
 
 		public void Dispose()
 		{
-			foreach (MockLightingLoadControl load in m_IdToLoad.Values)
+			foreach (ILightingLoadEnvironmentPeripheral load in m_IdToLoad.Values)
 			{
 				Unsubscribe(load);
 				load.Dispose();
@@ -139,7 +128,7 @@ namespace ICD.Connect.Lighting.Mock.Controls
 			m_IdToShadeGroup.Clear();
 		}
 
-		public void AddLoad(MockLightingLoadControl load)
+		public void AddLoad(ILightingLoadEnvironmentPeripheral load)
 		{
 			m_CacheSection.Enter();
 
@@ -147,7 +136,7 @@ namespace ICD.Connect.Lighting.Mock.Controls
 			{
 				// Remove existing
 				m_Loads.Remove(load.Id);
-				MockLightingLoadControl existing = m_IdToLoad.GetDefault(load.Id, null);
+				ILightingLoadEnvironmentPeripheral existing = m_IdToLoad.GetDefault(load.Id, null);
 				Unsubscribe(existing);
 				if (existing != null)
 					existing.Dispose();
@@ -165,7 +154,7 @@ namespace ICD.Connect.Lighting.Mock.Controls
 			OnControlsChanged.Raise(this);
 		}
 
-		public void AddShade(MockLightingShadeControl shade)
+		public void AddShade(IShadeEnvironmentPeripheral shade)
 		{
 			m_CacheSection.Enter();
 
@@ -183,7 +172,7 @@ namespace ICD.Connect.Lighting.Mock.Controls
 			OnControlsChanged.Raise(this);
 		}
 
-		public void AddShadeGroup(MockLightingShadeGroupControl shadeGroup)
+		public void AddShadeGroup(IShadeEnvironmentPeripheral shadeGroup)
 		{
 			m_CacheSection.Enter();
 
@@ -201,7 +190,7 @@ namespace ICD.Connect.Lighting.Mock.Controls
 			OnControlsChanged.Raise(this);
 		}
 
-		public void AddPreset(MockLightingPresetControl preset)
+		public void AddPreset(IPresetEnvironmentPeripheral preset)
 		{
 			m_CacheSection.Enter();
 
@@ -251,31 +240,24 @@ namespace ICD.Connect.Lighting.Mock.Controls
 			}
 		}
 
-		public MockLightingLoadControl GetLoad(int load)
+		public ILightingLoadEnvironmentPeripheral GetLoad(int load)
 		{
 			return m_CacheSection.Execute(() => m_IdToLoad[load]);
 		}
 
-		public MockLightingShadeControl GetShade(int shade)
+		public IShadeEnvironmentPeripheral GetShade(int shade)
 		{
 			return m_CacheSection.Execute(() => m_IdToShade[shade]);
 		}
 
-		public MockLightingShadeGroupControl GetShadeGroup(int shadeGroup)
+		public IShadeEnvironmentPeripheral GetShadeGroup(int shadeGroup)
 		{
 			return m_CacheSection.Execute(() => m_IdToShadeGroup[shadeGroup]);
 		}
 
-		public MockLightingPresetControl GetPreset(int preset)
+		public IPresetEnvironmentPeripheral GetPreset(int preset)
 		{
 			return m_CacheSection.Execute(() => m_IdToPreset[preset]);
-		}
-
-		public IEnumerable<LightingProcessorControl> GetLoads()
-		{
-			return m_CacheSection.Execute(() => m_Loads.Select(i => m_IdToLoad[i])
-			                                           .Select(l => l.ToLightingProcessorControl())
-			                                           .ToArray());
 		}
 
 		public IEnumerable<LightingProcessorControl> GetShades()
@@ -283,6 +265,13 @@ namespace ICD.Connect.Lighting.Mock.Controls
 			return m_CacheSection.Execute(() => m_Shades.Select(i => m_IdToShade[i])
 			                                            .Select(s => s.ToLightingProcessorControl())
 			                                            .ToArray());
+		}
+
+		public IEnumerable<LightingProcessorControl> GetLoads()
+		{
+			return m_CacheSection.Execute(() => m_Loads.Select(i => m_IdToLoad[i])
+			                                           .Select(l => l.ToLightingProcessorControl())
+			                                           .ToArray());
 		}
 
 		public IEnumerable<LightingProcessorControl> GetShadeGroups()
@@ -307,7 +296,7 @@ namespace ICD.Connect.Lighting.Mock.Controls
 		/// Subscribe to the load events.
 		/// </summary>
 		/// <param name="load"></param>
-		private void Subscribe(MockLightingLoadControl load)
+		private void Subscribe(ILightingLoadEnvironmentPeripheral load)
 		{
 			if (load == null)
 				return;
@@ -319,7 +308,7 @@ namespace ICD.Connect.Lighting.Mock.Controls
 		/// Unsubscribe from the load events.
 		/// </summary>
 		/// <param name="load"></param>
-		private void Unsubscribe(MockLightingLoadControl load)
+		private void Unsubscribe(ILightingLoadEnvironmentPeripheral load)
 		{
 			if (load == null)
 				return;
@@ -338,9 +327,7 @@ namespace ICD.Connect.Lighting.Mock.Controls
 			if (load == null)
 				return;
 
-			RoomLoadLevelChangedCallback handler = OnLoadLevelChanged;
-			if (handler != null)
-				handler(this, load, data.Data);
+			OnLoadLevelChanged.Raise(this, new RoomLoadLevelEventArgs(Id, load.Id, data.Data));
 		}
 
 		#endregion
@@ -353,13 +340,13 @@ namespace ICD.Connect.Lighting.Mock.Controls
 		/// <returns></returns>
 		public IEnumerable<IConsoleNodeBase> GetConsoleNodes()
 		{
-			MockLightingLoadControl[] loads = m_CacheSection.Execute(() => m_IdToLoad.Values.ToArray());
+			ILightingLoadEnvironmentPeripheral[] loads = m_CacheSection.Execute(() => m_IdToLoad.Values.ToArray());
 			yield return ConsoleNodeGroup.KeyNodeMap("Loads", loads, control => (uint)control.Id);
 
-			MockLightingShadeControl[] shades = m_CacheSection.Execute(() => m_IdToShade.Values.ToArray());
+			IShadeEnvironmentPeripheral[] shades = m_CacheSection.Execute(() => m_IdToShade.Values.ToArray());
 			yield return ConsoleNodeGroup.KeyNodeMap("Shades", shades, control => (uint)control.Id);
 
-			MockLightingShadeGroupControl[] shadeGroups = m_CacheSection.Execute(() => m_IdToShadeGroup.Values.ToArray());
+			IShadeEnvironmentPeripheral[] shadeGroups = m_CacheSection.Execute(() => m_IdToShadeGroup.Values.ToArray());
 			yield return ConsoleNodeGroup.KeyNodeMap("ShadeGroups", shadeGroups, control => (uint)control.Id);
 		}
 

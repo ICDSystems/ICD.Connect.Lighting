@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Lighting.Environment;
 
 namespace ICD.Connect.Lighting.Mock.Controls
 {
-	public abstract class AbstractMockLightingControl : IConsoleNode
+	public abstract class AbstractMockLightingControl : IConsoleNode, IEnvironmentPeripheral
 	{
 		private readonly int m_Id;
 		private readonly int m_Room;
@@ -50,6 +51,8 @@ namespace ICD.Connect.Lighting.Mock.Controls
 		{
 			return new LightingProcessorControl(ControlType, m_Id, m_Room, m_Name);
 		}
+
+		public abstract void Dispose();
 
 		#region Console Commands
 

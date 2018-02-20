@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
-using ICD.Connect.API.Commands;
-using ICD.Connect.API.Nodes;
 using ICD.Connect.Lighting.Shades;
 using ICD.Connect.Lighting.Shades.Controls;
 
