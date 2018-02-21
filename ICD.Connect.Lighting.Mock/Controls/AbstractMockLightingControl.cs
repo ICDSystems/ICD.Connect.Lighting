@@ -13,7 +13,7 @@ namespace ICD.Connect.Lighting.Mock.Controls
 
 		#region Properties
 
-		public abstract LightingProcessorControl.eControlType ControlType { get; }
+		public abstract LightingProcessorControl.ePeripheralType PeripheralType { get; }
 		public int Id { get { return m_Id; } }
 		public int Room { get { return m_Room; } }
 		public string Name { get { return m_Name; } }
@@ -49,7 +49,7 @@ namespace ICD.Connect.Lighting.Mock.Controls
 		/// <returns></returns>
 		public LightingProcessorControl ToLightingProcessorControl()
 		{
-			return new LightingProcessorControl(ControlType, m_Id, m_Room, m_Name);
+			return new LightingProcessorControl(PeripheralType, m_Id, m_Room, m_Name);
 		}
 
 		public abstract void Dispose();

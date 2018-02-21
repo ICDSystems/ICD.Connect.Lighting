@@ -221,18 +221,18 @@ namespace ICD.Connect.Lighting.Mock.Controls
 			int room = control.Room;
 			string name = control.Name;
 
-			switch (control.ControlType)
+			switch (control.PeripheralType)
 			{
-				case LightingProcessorControl.eControlType.Load:
+				case LightingProcessorControl.ePeripheralType.Load:
 					AddLoad(new MockLightingLoadControl(id, room, name));
 					break;
-				case LightingProcessorControl.eControlType.Shade:
+				case LightingProcessorControl.ePeripheralType.Shade:
 					AddShade(new MockLightingShadeControl(id, room, name));
 					break;
-				case LightingProcessorControl.eControlType.ShadeGroup:
+				case LightingProcessorControl.ePeripheralType.ShadeGroup:
 					AddShadeGroup(new MockLightingShadeGroupControl(id, room, name));
 					break;
-				case LightingProcessorControl.eControlType.Preset:
+				case LightingProcessorControl.ePeripheralType.Preset:
 					AddPreset(new MockLightingPresetControl(id, room, name));
 					break;
 				default:

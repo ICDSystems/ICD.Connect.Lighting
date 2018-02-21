@@ -13,7 +13,7 @@ namespace ICD.Connect.Lighting.Environment
 		private IShadeWithStop m_Shade;
 		private eShadeDirection m_LastDirection = eShadeDirection.Neither;
 
-		public LightingProcessorControl.eControlType ControlType { get; private set; }
+		public LightingProcessorControl.ePeripheralType PeripheralType { get; private set; }
 		public int Id { get; private set; }
 		public int Room { get; private set; }
 		public string Name { get; private set; }
@@ -44,9 +44,9 @@ namespace ICD.Connect.Lighting.Environment
 
 			m_Shade = shade;
 
-			ControlType = m_Shade is IShadeGroup
-				              ? LightingProcessorControl.eControlType.ShadeGroup
-				              : LightingProcessorControl.eControlType.Shade;
+			PeripheralType = m_Shade is IShadeGroup
+				              ? LightingProcessorControl.ePeripheralType.ShadeGroup
+				              : LightingProcessorControl.ePeripheralType.Shade;
 
 			Subscribe(shade);
 		}

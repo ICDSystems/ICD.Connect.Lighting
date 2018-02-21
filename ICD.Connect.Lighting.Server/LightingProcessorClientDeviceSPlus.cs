@@ -218,9 +218,9 @@ namespace ICD.Connect.Lighting.Server
 			}
 
 
-			switch (shadeDevice.ControlType)
+			switch (shadeDevice.PeripheralType)
 			{
-				case LightingProcessorControl.eControlType.Shade:
+				case LightingProcessorControl.ePeripheralType.Shade:
 					switch (action)
 					{
 						case 0:
@@ -234,7 +234,7 @@ namespace ICD.Connect.Lighting.Server
 							break;
 					}
 					break;
-				case LightingProcessorControl.eControlType.ShadeGroup:
+				case LightingProcessorControl.ePeripheralType.ShadeGroup:
 					switch (action)
 					{
 						case 0:

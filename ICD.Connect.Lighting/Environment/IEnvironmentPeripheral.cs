@@ -5,7 +5,7 @@ namespace ICD.Connect.Lighting.Environment
 {
 	public interface IEnvironmentPeripheral: IDisposable, IConsoleNode
 	{
-		LightingProcessorControl.eControlType ControlType { get; }
+		LightingProcessorControl.ePeripheralType PeripheralType { get; }
 		int Id { get; }
 		int Room { get; }
 		string Name { get; }

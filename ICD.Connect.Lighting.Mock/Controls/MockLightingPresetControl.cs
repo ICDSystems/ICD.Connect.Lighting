@@ -4,9 +4,9 @@ namespace ICD.Connect.Lighting.Mock.Controls
 {
 	public sealed class MockLightingPresetControl : AbstractMockLightingControl, IPresetEnvironmentPeripheral
 	{
-		public override LightingProcessorControl.eControlType ControlType
+		public override LightingProcessorControl.ePeripheralType PeripheralType
 		{
-			get { return LightingProcessorControl.eControlType.Preset; }
+			get { return LightingProcessorControl.ePeripheralType.Preset; }
 		}
 
 		/// <summary>

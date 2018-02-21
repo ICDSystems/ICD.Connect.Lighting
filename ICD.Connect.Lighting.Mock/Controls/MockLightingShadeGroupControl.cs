@@ -2,9 +2,9 @@
 {
 	public sealed class MockLightingShadeGroupControl : AbstractMockShadeLightingControl
 	{
-		public override LightingProcessorControl.eControlType ControlType
+		public override LightingProcessorControl.ePeripheralType PeripheralType
 		{
-			get { return LightingProcessorControl.eControlType.ShadeGroup; }
+			get { return LightingProcessorControl.ePeripheralType.ShadeGroup; }
 		}
 
 		/// <summary>

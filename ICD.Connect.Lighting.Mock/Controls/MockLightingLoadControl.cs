@@ -26,9 +26,9 @@ namespace ICD.Connect.Lighting.Mock.Controls
 
 		#region Properties
 
-		public override LightingProcessorControl.eControlType ControlType
+		public override LightingProcessorControl.ePeripheralType PeripheralType
 		{
-			get { return LightingProcessorControl.eControlType.Load; }
+			get { return LightingProcessorControl.ePeripheralType.Load; }
 		}
 
 		public float LoadLevel

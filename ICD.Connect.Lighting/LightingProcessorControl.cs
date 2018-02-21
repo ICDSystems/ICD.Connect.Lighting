@@ -6,7 +6,7 @@ namespace ICD.Connect.Lighting
 {
 	public struct LightingProcessorControl
 	{
-		public enum eControlType
+		public enum ePeripheralType
 		{
 			[PublicAPI] Load,
 			[PublicAPI] Shade,
@@ -14,7 +14,7 @@ namespace ICD.Connect.Lighting
 			[PublicAPI] Preset
 		}
 
-		private readonly eControlType m_ControlType;
+		private readonly ePeripheralType m_PeripheralType;
 		private readonly int m_Id;
 		private readonly int m_Room;
 		private readonly string m_Name;
@@ -25,7 +25,7 @@ namespace ICD.Connect.Lighting
 		/// Gets the type of lighting control.
 		/// </summary>
 		[PublicAPI]
-		public eControlType ControlType { get { return m_ControlType; } }
+		public ePeripheralType PeripheralType { get { return m_PeripheralType; } }
 
 		/// <summary>
 		/// Gets the id of the control.
@@ -50,14 +50,14 @@ namespace ICD.Connect.Lighting
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		/// <param name="controlType"></param>
+		/// <param name="peripheralType"></param>
 		/// <param name="id"></param>
 		/// <param name="room"></param>
 		/// <param name="name"></param>
 		[JsonConstructor]
-		public LightingProcessorControl(eControlType controlType, int id, int room, string name)
+		public LightingProcessorControl(ePeripheralType peripheralType, int id, int room, string name)
 		{
-			m_ControlType = controlType;
+			m_PeripheralType = peripheralType;
 			m_Id = id;
 			m_Room = room;
 			m_Name = name;
@@ -73,7 +73,7 @@ namespace ICD.Connect.Lighting
 		[PublicAPI]
 		public static LightingProcessorControl Load(int id, int room, string name)
 		{
-			return new LightingProcessorControl(eControlType.Load, id, room, name);
+			return new LightingProcessorControl(ePeripheralType.Load, id, room, name);
 		}
 
 		/// <summary>
@@ -86,7 +86,7 @@ namespace ICD.Connect.Lighting
 		[PublicAPI]
 		public static LightingProcessorControl Shade(int id, int room, string name)
 		{
-			return new LightingProcessorControl(eControlType.Shade, id, room, name);
+			return new LightingProcessorControl(ePeripheralType.Shade, id, room, name);
 		}
 
 		/// <summary>
@@ -99,7 +99,7 @@ namespace ICD.Connect.Lighting
 		[PublicAPI]
 		public static LightingProcessorControl ShadeGroup(int id, int room, string name)
 		{
-			return new LightingProcessorControl(eControlType.ShadeGroup, id, room, name);
+			return new LightingProcessorControl(ePeripheralType.ShadeGroup, id, room, name);
 		}
 
 		/// <summary>
@@ -112,7 +112,7 @@ namespace ICD.Connect.Lighting
 		[PublicAPI]
 		public static LightingProcessorControl Preset(int id, int room, string name)
 		{
-			return new LightingProcessorControl(eControlType.Preset, id, room, name);
+			return new LightingProcessorControl(ePeripheralType.Preset, id, room, name);
 		}
 
 		#endregion
@@ -128,7 +128,7 @@ namespace ICD.Connect.Lighting
 			ReprBuilder builder = new ReprBuilder(this);
 			
 			builder.AppendProperty("Id", m_Id);
-			builder.AppendProperty("Type", m_ControlType);
+			builder.AppendProperty("Type", m_PeripheralType);
 			builder.AppendProperty("Room", m_Room);
 			builder.AppendProperty("Name", m_Name);
 
@@ -179,7 +179,7 @@ namespace ICD.Connect.Lighting
 			unchecked
 			{
 				int hash = 17;
-				hash = hash * 23 + (int)m_ControlType;
+				hash = hash * 23 + (int)m_PeripheralType;
 				hash = hash * 23 + m_Id;
 				hash = hash * 23 + (m_Name == null ? 0 : m_Name.GetHashCode());
 				return hash;
