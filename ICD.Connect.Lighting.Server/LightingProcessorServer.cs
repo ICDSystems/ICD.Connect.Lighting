@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
+using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Processors;
+using ICD.Connect.Lighting.Shades;
+using ICD.Connect.Lighting.Shades.Controls;
 using ICD.Connect.Protocol.EventArguments;
 using ICD.Connect.Protocol.Network.RemoteProcedure;
 using ICD.Connect.Protocol.Network.Attributes.Rpc;
 using ICD.Connect.Protocol.Network.Tcp;
+using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Lighting.Server
 {
@@ -19,8 +25,9 @@ namespace ICD.Connect.Lighting.Server
 	/// Server for hosting ILightingProcessorDevices.
 	/// </summary>
 	[PublicAPI]
-	public sealed class LightingProcessorServer : IConsoleNode, IDisposable
+	public sealed class LightingProcessorServer : AbstractLightingProcessorDevice<LightingProcessorServerSettings>
 	{
+		#region RPC Constants
 		public const string REGISTER_FEEDBACK_RPC = "RegisterFeedback";
 
 		public const string SET_ROOM_PRESET_RPC = "SetRoomPreset";
@@ -37,7 +44,9 @@ namespace ICD.Connect.Lighting.Server
 		public const string START_RAISING_SHADE_GROUP_RPC = "StartRaisingShadeGroup";
 		public const string START_LOWERING_SHADE_GROUP_RPC = "StartLoweringShadeGroup";
 		public const string STOP_MOVING_SHADE_GROUP_RPC = "StopMovingShadeGroup";
+		#endregion
 
+		#region Private Members
 		private readonly ServerSerialRpcController m_RpcController;
 
 		private AsyncTcpServer m_Server;
@@ -45,18 +54,7 @@ namespace ICD.Connect.Lighting.Server
 
 		private readonly Dictionary<uint, int> m_ClientRoomMap;
 		private readonly SafeCriticalSection m_ClientRoomSection;
-
-		#region Properties
-
-		/// <summary>
-		/// Gets the name of the node.
-		/// </summary>
-		public string ConsoleName { get { return "LightingServer"; } }
-
-		/// <summary>
-		/// Gets the help information for the node.
-		/// </summary>
-		public string ConsoleHelp { get { return "The BmsOS lighting server"; } }
+		private Dictionary<int, IcdHashSet<IShadeDevice>> m_ShadeOriginatorsByRoom = new Dictionary<int, IcdHashSet<IShadeDevice>>();
 
 		#endregion
 
@@ -71,12 +69,10 @@ namespace ICD.Connect.Lighting.Server
 			m_RpcController = new ServerSerialRpcController(this);
 		}
 
-		#region Methods
-
 		/// <summary>
 		/// Release resources.
 		/// </summary>
-		public void Dispose()
+		protected override void DisposeFinal(bool disposing)
 		{
 			SetServer(null);
 			SetLightingProcessor(null);
@@ -117,7 +113,14 @@ namespace ICD.Connect.Lighting.Server
 			InitializeClients();
 		}
 
-		#endregion
+		/// <summary>
+		/// Gets the current online status of the device.
+		/// </summary>
+		/// <returns></returns>
+		protected override bool GetIsOnlineStatus()
+		{
+			return m_Server.Active;
+		}
 
 		#region Private Methods
 
@@ -454,6 +457,13 @@ namespace ICD.Connect.Lighting.Server
 		[Rpc(START_RAISING_SHADE_RPC), UsedImplicitly]
 		private void StartRaisingShade(uint clientId, int room, int shade)
 		{
+			IShadeWithStop shadeOriginator = GetShadeOriginatorFromShadeOriginatorsByRoom(room, shade);
+			if (shadeOriginator != null)
+			{
+				shadeOriginator.Open();
+				return;
+			}
+
 			m_Processor.StartRaisingShade(room, shade);
 		}
 
@@ -466,6 +476,13 @@ namespace ICD.Connect.Lighting.Server
 		[Rpc(START_LOWERING_SHADE_RPC), UsedImplicitly]
 		private void StartLoweringShade(uint clientId, int room, int shade)
 		{
+			IShadeWithStop shadeOriginator = GetShadeOriginatorFromShadeOriginatorsByRoom(room, shade);
+			if (shadeOriginator != null)
+			{
+				shadeOriginator.Close();
+				return;
+			}
+
 			m_Processor.StartLoweringShade(room, shade);
 		}
 
@@ -478,6 +495,13 @@ namespace ICD.Connect.Lighting.Server
 		[Rpc(STOP_MOVING_SHADE_RPC), UsedImplicitly]
 		private void StopMovingShade(uint clientId, int room, int shade)
 		{
+			IShadeWithStop shadeOriginator = GetShadeOriginatorFromShadeOriginatorsByRoom(room, shade);
+			if (shadeOriginator != null)
+			{
+				shadeOriginator.Stop();
+				return;
+			}
+
 			m_Processor.StopMovingShade(room, shade);
 		}
 
@@ -494,6 +518,13 @@ namespace ICD.Connect.Lighting.Server
 		[Rpc(START_RAISING_SHADE_GROUP_RPC), UsedImplicitly]
 		private void StartRaisingShadeGroup(uint clientId, int room, int shadeGroup)
 		{
+			IShadeWithStop shadeOriginator = GetShadeOriginatorFromShadeOriginatorsByRoom(room, shadeGroup);
+			if (shadeOriginator != null)
+			{
+				shadeOriginator.Open();
+				return;
+			}
+
 			m_Processor.StartRaisingShadeGroup(room, shadeGroup);
 		}
 
@@ -506,6 +537,13 @@ namespace ICD.Connect.Lighting.Server
 		[Rpc(START_LOWERING_SHADE_GROUP_RPC), UsedImplicitly]
 		private void StartLoweringShadeGroup(uint clientId, int room, int shadeGroup)
 		{
+			IShadeWithStop shadeOriginator = GetShadeOriginatorFromShadeOriginatorsByRoom(room, shadeGroup);
+			if (shadeOriginator != null)
+			{
+				shadeOriginator.Close();
+				return;
+			}
+
 			m_Processor.StartLoweringShadeGroup(room, shadeGroup);
 		}
 
@@ -518,6 +556,13 @@ namespace ICD.Connect.Lighting.Server
 		[Rpc(STOP_MOVING_SHADE_GROUP_RPC), UsedImplicitly]
 		private void StopMovingShadeGroup(uint clientId, int room, int shadeGroup)
 		{
+			IShadeWithStop shadeOriginator = GetShadeOriginatorFromShadeOriginatorsByRoom(room, shadeGroup);
+			if (shadeOriginator != null)
+			{
+				shadeOriginator.Stop();
+				return;
+			}
+
 			m_Processor.StopMovingShadeGroup(room, shadeGroup);
 		}
 
@@ -525,13 +570,245 @@ namespace ICD.Connect.Lighting.Server
 
 		#endregion
 
+		#region ILightingProcessorDevice
+		/// <summary>
+		/// Gets the available rooms.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<int> GetRooms()
+		{
+			return m_Processor == null
+					   ? Enumerable.Empty<int>()
+					   : m_Processor.GetRooms();
+		}
+
+		/// <summary>
+		/// Returns true if the given room is available.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <returns></returns>
+		public override bool ContainsRoom(int room)
+		{
+			return m_Processor != null && m_Processor.ContainsRoom(room);
+		}
+
+		/// <summary>
+		/// Gets the available light loads for the room.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <returns></returns>
+		public override IEnumerable<LightingProcessorControl> GetLoadsForRoom(int room)
+		{
+			return m_Processor.GetLoadsForRoom(room);
+		}
+
+		/// <summary>
+		/// Gets the available individual shades for the room.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <returns></returns>
+		public override IEnumerable<LightingProcessorControl> GetShadesForRoom(int room)
+		{
+			return m_Processor.GetShadesForRoom(room);
+		}
+
+		/// <summary>
+		/// Gets the available shade groups for the room.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <returns></returns>
+		public override IEnumerable<LightingProcessorControl> GetShadeGroupsForRoom(int room)
+		{
+			return m_Processor.GetShadeGroupsForRoom(room);
+		}
+
+		/// <summary>
+		/// Gets the available presets for the room.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <returns></returns>
+		public override IEnumerable<LightingProcessorControl> GetPresetsForRoom(int room)
+		{
+			return m_Processor.GetPresetsForRoom(room);
+		}
+
+		/// <summary>
+		/// Gets the current occupancy state for the given room.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <returns></returns>
+		public override RoomOccupancyEventArgs.eOccupancyState GetOccupancyForRoom(int room)
+		{
+			return m_Processor.GetOccupancyForRoom(room);
+		}
+
+		/// <summary>
+		/// Sets the preset for the given room.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="preset"></param>
+		public override void SetPresetForRoom(int room, int? preset)
+		{
+			m_Processor.SetPresetForRoom(room, preset);
+		}
+
+		/// <summary>
+		/// Gets the current preset for the given room.
+		/// </summary>
+		/// <param name="room"></param>
+		public override int? GetPresetForRoom(int room)
+		{
+			return m_Processor.GetPresetForRoom(room);
+		}
+
+		/// <summary>
+		/// Sets the lighting level for the given load.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="load"></param>
+		/// <param name="percentage"></param>
+		public override void SetLoadLevel(int room, int load, float percentage)
+		{
+			m_Processor.SetLoadLevel(room, load, percentage);
+		}
+
+		/// <summary>
+		/// Gets the current lighting level for the given load.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="load"></param>
+		public override float GetLoadLevel(int room, int load)
+		{
+			return m_Processor.GetLoadLevel(room, load);
+		}
+
+		/// <summary>
+		/// Starts raising the lighting level for the given load.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="load"></param>
+		public override void StartRaisingLoadLevel(int room, int load)
+		{
+			m_Processor.StartRaisingLoadLevel(room, load);
+		}
+
+		/// <summary>
+		/// Starts lowering the lighting level for the given load.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="load"></param>
+		public override void StartLoweringLoadLevel(int room, int load)
+		{
+			m_Processor.StartLoweringLoadLevel(room, load);
+		}
+
+		/// <summary>
+		/// Stops raising/lowering the lighting level for the given load.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="load"></param>
+		public override void StopRampingLoadLevel(int room, int load)
+		{
+			m_Processor.StopRampingLoadLevel(room, load);
+		}
+
+		/// <summary>
+		/// Starts raising the shade.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="shade"></param>
+		public override void StartRaisingShade(int room, int shade)
+		{
+			m_Processor.StartRaisingShade(room, shade);
+		}
+
+		/// <summary>
+		/// Starts lowering the shade.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="shade"></param>
+		public override void StartLoweringShade(int room, int shade)
+		{
+			m_Processor.StartLoweringShade(room, shade);
+		}
+
+		/// <summary>
+		/// Stops moving the shade.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="shade"></param>
+		public override void StopMovingShade(int room, int shade)
+		{
+			m_Processor.StopMovingShade(room, shade);
+		}
+
+		/// <summary>
+		/// Starts raising the shade group.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="shadeGroup"></param>
+		public override void StartRaisingShadeGroup(int room, int shadeGroup)
+		{
+			m_Processor.StartRaisingShadeGroup(room, shadeGroup);
+		}
+
+		/// <summary>
+		/// Starts lowering the shade group.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="shadeGroup"></param>
+		public override void StartLoweringShadeGroup(int room, int shadeGroup)
+		{
+			m_Processor.StartLoweringShadeGroup(room, shadeGroup);
+		}
+
+		/// <summary>
+		/// Stops moving the shade group.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="shadeGroup"></param>
+		public override void StopMovingShadeGroup(int room, int shadeGroup)
+		{
+			m_Processor.StopMovingShadeGroup(room, shadeGroup);
+		}
+
+		#endregion
+
+		#region Private Helper Methods
+		[CanBeNull]
+		private IShadeWithStop GetShadeOriginatorFromShadeOriginatorsByRoom(int room, int id)
+		{
+			if (!m_ShadeOriginatorsByRoom.ContainsKey(room))
+				return null;
+
+			var shadeOriginator = m_ShadeOriginatorsByRoom[room].FirstOrDefault(originator => originator.Id == id);
+
+			if (shadeOriginator is IShadeWithStop)
+			{
+				return shadeOriginator as IShadeWithStop;
+			}
+
+			return null;
+		}
+		#endregion
+
 		#region Console
+
+		/// <summary>
+		/// Gets the name of the node.
+		/// </summary>
+		public override string ConsoleName { get { return "LightingServer"; } }
+
+		/// <summary>
+		/// Gets the help information for the node.
+		/// </summary>
+		public override string ConsoleHelp { get { return "The BmsOS lighting server"; } }
 
 		/// <summary>
 		/// Gets the child console nodes.
 		/// </summary>
 		/// <returns></returns>
-		public IEnumerable<IConsoleNodeBase> GetConsoleNodes()
+		public override IEnumerable<IConsoleNodeBase> GetConsoleNodes()
 		{
 			IConsoleNode processor = m_Processor as IConsoleNode;
 			if (processor != null)
@@ -542,7 +819,7 @@ namespace ICD.Connect.Lighting.Server
 		/// Calls the delegate for each console status item.
 		/// </summary>
 		/// <param name="addRow"></param>
-		public void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
 		{
 		}
 
@@ -550,9 +827,125 @@ namespace ICD.Connect.Lighting.Server
 		/// Gets the child console commands.
 		/// </summary>
 		/// <returns></returns>
-		public IEnumerable<IConsoleCommand> GetConsoleCommands()
+		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
 		{
-			yield break;
+			foreach (IConsoleCommand command in GetBaseConsoleCommands())
+			{
+				yield return command;
+			}
+		}
+
+		/// <summary>
+		/// Gets the base classes console commands to workaround crestron sandbox issues.
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
+		{
+			return base.GetConsoleCommands();
+		} 
+
+		#endregion
+
+		#region Settings
+
+		/// <summary>
+		/// Override to apply settings to the instance.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		protected override void ApplySettingsFinal(LightingProcessorServerSettings settings, IDeviceFactory factory)
+		{
+			base.ApplySettingsFinal(settings, factory);
+
+			if (settings.LightingProcessorId == null)
+			{
+				LogApplySettingsError("No Lighting Processor Id Found");
+				return;
+			}
+
+			m_Processor = factory.GetOriginatorById<ILightingProcessorDevice>(settings.LightingProcessorId.Value);
+
+			if (m_Processor == null)
+			{
+				LogApplySettingsError("No Lighting Processor found with Id:" + settings.LightingProcessorId.Value);
+				return;
+			}
+
+			foreach (var shade in settings.ShadeIds.Concat(settings.ShadeGroupIds))
+			{
+				IShadeDevice shadeOriginator = factory.GetOriginatorById<IShadeDevice>(shade);
+				if (shadeOriginator == null)
+					continue;
+
+				int? roomId = settings.FindRoomIdForPeripheral(shade);
+				if (roomId == null)
+					continue;
+
+				if (!m_ShadeOriginatorsByRoom.ContainsKey(roomId.Value))
+				{
+					m_ShadeOriginatorsByRoom[roomId.Value] = new IcdHashSet<IShadeDevice>();
+				}
+				m_ShadeOriginatorsByRoom[roomId.Value].Add(shadeOriginator);
+			}
+		}
+
+		/// <summary>
+		/// Override to apply properties to the settings instance.
+		/// </summary>
+		/// <param name="settings"></param>
+		protected override void CopySettingsFinal(LightingProcessorServerSettings settings)
+		{
+			base.CopySettingsFinal(settings);
+
+			settings.ClearIdCollections();
+
+			settings.LightingProcessorId = m_Processor == null ? null : (int?)m_Processor.Id;
+
+			settings.RoomIds = GetRooms();
+
+			foreach (var room in GetRooms())
+			{
+				foreach (var load in GetLoadsForRoom(room))
+				{
+					settings.AddLoad(room, load.Id);
+				}
+
+				foreach (var shade in GetShadesForRoom(room))
+				{
+					settings.AddShade(room, shade.Id);
+				}
+
+				foreach (var group in GetShadeGroupsForRoom(room))
+				{
+					settings.AddShadeGroup(room, group.Id);
+				}
+
+				foreach (var preset in GetPresetsForRoom(room))
+				{
+					settings.AddPreset(room, preset.Id);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Override to clear the instance settings.
+		/// </summary>
+		protected override void ClearSettingsFinal()
+		{
+			base.ClearSettingsFinal();
+
+			m_Processor = null;
+
+			m_ShadeOriginatorsByRoom = null;
+		}
+
+		private void LogApplySettingsError(string message)
+		{
+			Logger.AddEntry(eSeverity.Error,
+							"Failed to apply settings for Lighting Processor Server {0}."
+							+ IcdEnvironment.NewLine
+							+ message,
+							string.Format("{0}: {1}", Id, Name));
 		}
 
 		#endregion
