@@ -564,7 +564,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			if (data == LutronUtils.QNET || data == LutronUtils.CRLF)
 				return;
 
-			if (data.ToLower().Contains("login"))
+			if (data.ToLower().Contains("login:"))
 			{
 				SendData((Username ?? string.Empty) + LutronUtils.CRLF);
 				return;
@@ -586,8 +586,19 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// <param name="data"></param>
 		private void ParseError(string data)
 		{
-			int id = LutronUtils.GetIntegrationId(data);
+			int id;
 			string message;
+			try
+			{
+				 id = LutronUtils.GetIntegrationId(data);
+			}
+			catch (FormatException e)
+			{
+				message = String.Format("Couldn't get error code for  data {0}", data);
+				Log(eSeverity.Error, message);
+				return;
+			}
+			
 
 			switch (id)
 			{
