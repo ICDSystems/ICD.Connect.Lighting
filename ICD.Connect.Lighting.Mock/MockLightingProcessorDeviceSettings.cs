@@ -7,7 +7,7 @@ namespace ICD.Connect.Lighting.Mock
 	[KrangSettings(FACTORY_NAME)]
 	public sealed class MockLightingProcessorDeviceSettings : AbstractLightingProcessorDeviceSettings
 	{
-		private const string FACTORY_NAME = "MockLightingProcessorDevice";
+		private const string FACTORY_NAME = "MockLightingProcessor";
 
 		/// <summary>
 		/// Gets the originator factory name.

@@ -58,7 +58,7 @@ namespace ICD.Connect.Lighting.Server
 
 			LoadIds.Add(id);
 
-			AddRoomToPeripheralsByRoomIdCollection(roomId, id);
+			AddPeripheralToPeripheralsByRoomIdCollection(roomId, id);
 		}
 
 		public void AddShade(int roomId, int id)
@@ -70,7 +70,7 @@ namespace ICD.Connect.Lighting.Server
 
 			ShadeIds.Add(id);
 
-			AddRoomToPeripheralsByRoomIdCollection(roomId, id);
+			AddPeripheralToPeripheralsByRoomIdCollection(roomId, id);
 		}
         
 		public void AddShadeGroup(int roomId, int id)
@@ -82,7 +82,7 @@ namespace ICD.Connect.Lighting.Server
 
 			ShadeGroupIds.Add(id);
 
-			AddRoomToPeripheralsByRoomIdCollection(roomId, id);
+			AddPeripheralToPeripheralsByRoomIdCollection(roomId, id);
 		}
 
 		public void AddPreset(int roomId, int id)
@@ -97,11 +97,11 @@ namespace ICD.Connect.Lighting.Server
 
 		public void ClearIdCollections()
 		{
-			m_PeripheralsByRoomId = null;
-			LoadIds = null;
-			ShadeIds = null;
-			ShadeGroupIds = null;
-			PresetIds = null;
+			m_PeripheralsByRoomId = new Dictionary<int, IcdHashSet<int>>();
+			LoadIds = new IcdHashSet<int>();
+			ShadeIds = new IcdHashSet<int>();
+			ShadeGroupIds = new IcdHashSet<int>();
+			PresetIds = new IcdHashSet<int>();
 		}
 
 		/// <summary>
@@ -242,7 +242,7 @@ namespace ICD.Connect.Lighting.Server
 			int id = XmlUtils.ReadElementContentAsInt(content);
 			int roomId = XmlUtils.GetAttributeAsInt(content, ROOM_ID_ELEMENT);
 
-			AddRoomToPeripheralsByRoomIdCollection(roomId, id);
+			AddPeripheralToPeripheralsByRoomIdCollection(roomId, id);
 
 			return id;
 		}
@@ -283,7 +283,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="roomId"></param>
 		/// <param name="id"></param>
-		private void AddRoomToPeripheralsByRoomIdCollection(int roomId, int id)
+		private void AddPeripheralToPeripheralsByRoomIdCollection(int roomId, int id)
 		{
 			if (m_PeripheralsByRoomId == null)
 			{
@@ -292,6 +292,12 @@ namespace ICD.Connect.Lighting.Server
 					{roomId, new IcdHashSet<int>()}
 				};
 			}
+
+			if (!m_PeripheralsByRoomId.ContainsKey(roomId))
+			{
+				m_PeripheralsByRoomId[roomId] = new IcdHashSet<int>();
+			}
+
 			m_PeripheralsByRoomId[roomId].Add(id);
 		}
 	}

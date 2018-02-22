@@ -54,7 +54,7 @@ namespace ICD.Connect.Lighting.Server
 
 		private readonly Dictionary<uint, int> m_ClientRoomMap;
 		private readonly SafeCriticalSection m_ClientRoomSection;
-		private Dictionary<int, IcdHashSet<IShadeDevice>> m_ShadeOriginatorsByRoom = new Dictionary<int, IcdHashSet<IShadeDevice>>();
+		private readonly Dictionary<int, IcdHashSet<IShadeDevice>> m_ShadeOriginatorsByRoom = new Dictionary<int, IcdHashSet<IShadeDevice>>();
 
 		#endregion
 
@@ -119,7 +119,7 @@ namespace ICD.Connect.Lighting.Server
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-			return m_Server.Active;
+			return m_Server != null && m_Server.Active;
 		}
 
 		#region Private Methods
@@ -282,7 +282,7 @@ namespace ICD.Connect.Lighting.Server
 		{
 			const string key = LightingProcessorClientDevice.SET_CACHED_LOAD_LEVEL_RPC;
 			CallActionForClientsByRoomId(args.RoomId,
-			                             clientId => m_RpcController.CallMethod(clientId, key, args.LoadId, args.Percentage));
+										 clientId => m_RpcController.CallMethod(clientId, key, args.LoadId, args.Percentage));
 		}
 
 		/// <summary>
@@ -457,14 +457,7 @@ namespace ICD.Connect.Lighting.Server
 		[Rpc(START_RAISING_SHADE_RPC), UsedImplicitly]
 		private void StartRaisingShade(uint clientId, int room, int shade)
 		{
-			IShadeWithStop shadeOriginator = GetShadeOriginatorFromShadeOriginatorsByRoom(room, shade);
-			if (shadeOriginator != null)
-			{
-				shadeOriginator.Open();
-				return;
-			}
-
-			m_Processor.StartRaisingShade(room, shade);
+			StartRaisingShade(room, shade);
 		}
 
 		/// <summary>
@@ -476,14 +469,7 @@ namespace ICD.Connect.Lighting.Server
 		[Rpc(START_LOWERING_SHADE_RPC), UsedImplicitly]
 		private void StartLoweringShade(uint clientId, int room, int shade)
 		{
-			IShadeWithStop shadeOriginator = GetShadeOriginatorFromShadeOriginatorsByRoom(room, shade);
-			if (shadeOriginator != null)
-			{
-				shadeOriginator.Close();
-				return;
-			}
-
-			m_Processor.StartLoweringShade(room, shade);
+			StartLoweringShade(room, shade);
 		}
 
 		/// <summary>
@@ -495,14 +481,7 @@ namespace ICD.Connect.Lighting.Server
 		[Rpc(STOP_MOVING_SHADE_RPC), UsedImplicitly]
 		private void StopMovingShade(uint clientId, int room, int shade)
 		{
-			IShadeWithStop shadeOriginator = GetShadeOriginatorFromShadeOriginatorsByRoom(room, shade);
-			if (shadeOriginator != null)
-			{
-				shadeOriginator.Stop();
-				return;
-			}
-
-			m_Processor.StopMovingShade(room, shade);
+			StopMovingShade(room, shade);
 		}
 
 		#endregion
@@ -518,14 +497,7 @@ namespace ICD.Connect.Lighting.Server
 		[Rpc(START_RAISING_SHADE_GROUP_RPC), UsedImplicitly]
 		private void StartRaisingShadeGroup(uint clientId, int room, int shadeGroup)
 		{
-			IShadeWithStop shadeOriginator = GetShadeOriginatorFromShadeOriginatorsByRoom(room, shadeGroup);
-			if (shadeOriginator != null)
-			{
-				shadeOriginator.Open();
-				return;
-			}
-
-			m_Processor.StartRaisingShadeGroup(room, shadeGroup);
+			StartRaisingShadeGroup(room, shadeGroup);
 		}
 
 		/// <summary>
@@ -537,14 +509,7 @@ namespace ICD.Connect.Lighting.Server
 		[Rpc(START_LOWERING_SHADE_GROUP_RPC), UsedImplicitly]
 		private void StartLoweringShadeGroup(uint clientId, int room, int shadeGroup)
 		{
-			IShadeWithStop shadeOriginator = GetShadeOriginatorFromShadeOriginatorsByRoom(room, shadeGroup);
-			if (shadeOriginator != null)
-			{
-				shadeOriginator.Close();
-				return;
-			}
-
-			m_Processor.StartLoweringShadeGroup(room, shadeGroup);
+			StartLoweringShadeGroup(room, shadeGroup);
 		}
 
 		/// <summary>
@@ -556,14 +521,7 @@ namespace ICD.Connect.Lighting.Server
 		[Rpc(STOP_MOVING_SHADE_GROUP_RPC), UsedImplicitly]
 		private void StopMovingShadeGroup(uint clientId, int room, int shadeGroup)
 		{
-			IShadeWithStop shadeOriginator = GetShadeOriginatorFromShadeOriginatorsByRoom(room, shadeGroup);
-			if (shadeOriginator != null)
-			{
-				shadeOriginator.Stop();
-				return;
-			}
-
-			m_Processor.StopMovingShadeGroup(room, shadeGroup);
+			StopMovingShadeGroup(room, shadeGroup);
 		}
 
 		#endregion
@@ -577,9 +535,9 @@ namespace ICD.Connect.Lighting.Server
 		/// <returns></returns>
 		public override IEnumerable<int> GetRooms()
 		{
-			return m_Processor == null
-					   ? Enumerable.Empty<int>()
-					   : m_Processor.GetRooms();
+			return m_ShadeOriginatorsByRoom.Keys.Union(m_Processor == null
+													   ? Enumerable.Empty<int>()
+													   : m_Processor.GetRooms());
 		}
 
 		/// <summary>
@@ -609,7 +567,15 @@ namespace ICD.Connect.Lighting.Server
 		/// <returns></returns>
 		public override IEnumerable<LightingProcessorControl> GetShadesForRoom(int room)
 		{
-			return m_Processor.GetShadesForRoom(room);
+			List<LightingProcessorControl> list = new List<LightingProcessorControl>();
+			if (m_ShadeOriginatorsByRoom.ContainsKey(room))
+			{
+				list.AddRange(m_ShadeOriginatorsByRoom[room].Where(orig => !(orig is ShadeGroup))
+															.Select(originator => new LightingProcessorControl(
+															LightingProcessorControl.ePeripheralType.Shade,
+															originator.Id, room, originator.Name)));
+			}
+			return m_Processor.GetShadesForRoom(room).Concat(list);
 		}
 
 		/// <summary>
@@ -619,7 +585,12 @@ namespace ICD.Connect.Lighting.Server
 		/// <returns></returns>
 		public override IEnumerable<LightingProcessorControl> GetShadeGroupsForRoom(int room)
 		{
-			return m_Processor.GetShadeGroupsForRoom(room);
+			List<LightingProcessorControl> list = new List<LightingProcessorControl>();
+			list.AddRange(m_ShadeOriginatorsByRoom[room].Where(orig => (orig is ShadeGroup))
+			                                            .Select(originator => new LightingProcessorControl(
+			                                            LightingProcessorControl.ePeripheralType.ShadeGroup,
+			                                            originator.Id, room, originator.Name)));
+			return m_Processor.GetShadeGroupsForRoom(room).Concat(list);
 		}
 
 		/// <summary>
@@ -719,6 +690,13 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="shade"></param>
 		public override void StartRaisingShade(int room, int shade)
 		{
+			IShadeWithStop shadeOriginator = GetShadeOriginatorFromShadeOriginatorsByRoom(room, shade);
+			if (shadeOriginator != null)
+			{
+				shadeOriginator.Open();
+				return;
+			}
+
 			m_Processor.StartRaisingShade(room, shade);
 		}
 
@@ -729,6 +707,13 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="shade"></param>
 		public override void StartLoweringShade(int room, int shade)
 		{
+			IShadeWithStop shadeOriginator = GetShadeOriginatorFromShadeOriginatorsByRoom(room, shade);
+			if (shadeOriginator != null)
+			{
+				shadeOriginator.Close();
+				return;
+			}
+
 			m_Processor.StartLoweringShade(room, shade);
 		}
 
@@ -739,6 +724,13 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="shade"></param>
 		public override void StopMovingShade(int room, int shade)
 		{
+			IShadeWithStop shadeOriginator = GetShadeOriginatorFromShadeOriginatorsByRoom(room, shade);
+			if (shadeOriginator != null)
+			{
+				shadeOriginator.Stop();
+				return;
+			}
+
 			m_Processor.StopMovingShade(room, shade);
 		}
 
@@ -749,6 +741,13 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="shadeGroup"></param>
 		public override void StartRaisingShadeGroup(int room, int shadeGroup)
 		{
+			IShadeWithStop shadeOriginator = GetShadeOriginatorFromShadeOriginatorsByRoom(room, shadeGroup);
+			if (shadeOriginator != null)
+			{
+				shadeOriginator.Open();
+				return;
+			}
+
 			m_Processor.StartRaisingShadeGroup(room, shadeGroup);
 		}
 
@@ -759,6 +758,13 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="shadeGroup"></param>
 		public override void StartLoweringShadeGroup(int room, int shadeGroup)
 		{
+			IShadeWithStop shadeOriginator = GetShadeOriginatorFromShadeOriginatorsByRoom(room, shadeGroup);
+			if (shadeOriginator != null)
+			{
+				shadeOriginator.Close();
+				return;
+			}
+
 			m_Processor.StartLoweringShadeGroup(room, shadeGroup);
 		}
 
@@ -769,6 +775,13 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="shadeGroup"></param>
 		public override void StopMovingShadeGroup(int room, int shadeGroup)
 		{
+			IShadeWithStop shadeOriginator = GetShadeOriginatorFromShadeOriginatorsByRoom(room, shadeGroup);
+			if (shadeOriginator != null)
+			{
+				shadeOriginator.Stop();
+				return;
+			}
+
 			m_Processor.StopMovingShadeGroup(room, shadeGroup);
 		}
 
@@ -781,7 +794,7 @@ namespace ICD.Connect.Lighting.Server
 			if (!m_ShadeOriginatorsByRoom.ContainsKey(room))
 				return null;
 
-			var shadeOriginator = m_ShadeOriginatorsByRoom[room].FirstOrDefault(originator => originator.Id == id);
+			IShadeDevice shadeOriginator = m_ShadeOriginatorsByRoom[room].FirstOrDefault(originator => originator.Id == id);
 
 			if (shadeOriginator is IShadeWithStop)
 			{
@@ -842,7 +855,7 @@ namespace ICD.Connect.Lighting.Server
 		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
 		{
 			return base.GetConsoleCommands();
-		} 
+		}
 
 		#endregion
 
@@ -871,7 +884,7 @@ namespace ICD.Connect.Lighting.Server
 				return;
 			}
 
-			foreach (var shade in settings.ShadeIds.Concat(settings.ShadeGroupIds))
+			foreach (int shade in settings.ShadeIds.Concat(settings.ShadeGroupIds))
 			{
 				IShadeDevice shadeOriginator = factory.GetOriginatorById<IShadeDevice>(shade);
 				if (shadeOriginator == null)
@@ -903,26 +916,41 @@ namespace ICD.Connect.Lighting.Server
 
 			settings.RoomIds = GetRooms();
 
-			foreach (var room in GetRooms())
+			foreach (int room in GetRooms())
 			{
-				foreach (var load in GetLoadsForRoom(room))
+				if (m_Processor.ContainsRoom(room))
 				{
-					settings.AddLoad(room, load.Id);
-				}
+					foreach (LightingProcessorControl load in GetLoadsForRoom(room))
+					{
+						settings.AddLoad(room, load.Id);
+					}
 
-				foreach (var shade in GetShadesForRoom(room))
-				{
-					settings.AddShade(room, shade.Id);
-				}
+					foreach (LightingProcessorControl shade in GetShadesForRoom(room))
+					{
+						settings.AddShade(room, shade.Id);
+					}
 
-				foreach (var group in GetShadeGroupsForRoom(room))
-				{
-					settings.AddShadeGroup(room, group.Id);
-				}
+					foreach (LightingProcessorControl group in GetShadeGroupsForRoom(room))
+					{
+						settings.AddShadeGroup(room, group.Id);
+					}
 
-				foreach (var preset in GetPresetsForRoom(room))
+					foreach (LightingProcessorControl preset in GetPresetsForRoom(room))
+					{
+						settings.AddPreset(room, preset.Id);
+					}
+				}
+				if (m_ShadeOriginatorsByRoom.ContainsKey(room))
 				{
-					settings.AddPreset(room, preset.Id);
+					foreach (IShadeDevice shade in m_ShadeOriginatorsByRoom[room].Where(shade => !(shade is ShadeGroup)))
+					{
+						settings.AddShade(room, shade.Id);
+					}
+
+					foreach (IShadeDevice shade in m_ShadeOriginatorsByRoom[room].Where(shade => (shade is ShadeGroup)))
+					{
+						settings.AddShadeGroup(room, shade.Id);
+					}
 				}
 			}
 		}
@@ -936,7 +964,7 @@ namespace ICD.Connect.Lighting.Server
 
 			m_Processor = null;
 
-			m_ShadeOriginatorsByRoom = null;
+			m_ShadeOriginatorsByRoom.Clear();
 		}
 
 		private void LogApplySettingsError(string message)
