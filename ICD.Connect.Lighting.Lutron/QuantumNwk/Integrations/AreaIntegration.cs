@@ -6,6 +6,8 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;
+using ICD.Connect.API.Commands;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Lighting.Lutron.QuantumNwk.EventArguments;
 
 namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
@@ -551,6 +553,61 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 			ZoneIntegration zone = sender as ZoneIntegration;
 			if (zone != null)
 				OnZoneOutputLevelChanged.Raise(this, new ZoneOutputLevelEventArgs(zone.IntegrationId, args.Data));
+		}
+
+		#endregion
+
+
+		#region Console
+
+		/// <summary>
+		/// Gets the child console nodes.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleNodeBase> GetConsoleNodes()
+		{
+			foreach (IConsoleNodeBase node in GetBaseConsoleNodes())
+				yield return node;
+
+			yield return ConsoleNodeGroup.IndexNodeMap("Zones", GetZoneIntegrations());
+			yield return ConsoleNodeGroup.IndexNodeMap("Shade Groups", GetShadeGroupIntegrations());
+			yield return ConsoleNodeGroup.IndexNodeMap("Shades", GetShadeIntegrations());
+			yield return ConsoleNodeGroup.IndexNodeMap("Scenes", GetSceneIntegrations());
+		}
+
+		private IEnumerable<IConsoleNodeBase> GetBaseConsoleNodes()
+		{
+			return base.GetConsoleNodes();
+		}
+
+		/// <summary>
+		/// Gets the child console commands.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
+		{
+			foreach (IConsoleCommand command in GetBaseConsoleCommands())
+				yield return command;
+
+			yield return new GenericConsoleCommand<int>("SetScene", "Set the scene for the area", s => SetScene(s));
+		}
+
+		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
+		{
+			return base.GetConsoleCommands();
+		}
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+			addRow("Room Id", Room);
+			addRow("Scene", Scene);
+			addRow("Occupancy", OccupancyState);
 		}
 
 		#endregion

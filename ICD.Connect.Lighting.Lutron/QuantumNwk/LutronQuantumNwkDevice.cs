@@ -11,6 +11,7 @@ using ICD.Common.Utils.IO;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Timers;
 using ICD.Common.Utils.Xml;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Lutron.QuantumNwk.EventArguments;
@@ -63,6 +64,11 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		public event EventHandler<IntEventArgs> OnRoomControlsChanged;
 
 		private readonly ISerialBuffer m_SerialBuffer;
+
+		/// <summary>
+		/// True when the system is logged in, or NWK> is on the prompt
+		/// </summary>
+		private bool m_ConnectionIsReady;
 
 		// Maintain integration order
 		private readonly List<int> m_Areas;
@@ -443,6 +449,10 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// </summary>
 		private void CommandTimerCallback()
 		{
+			// If not logged in, don't send data
+			if (!m_ConnectionIsReady)
+				return;
+
 			string data = null;
 
 			m_CommandQueuesSection.Enter();
@@ -523,6 +533,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			else
 			{
 				Log(eSeverity.Critical, "Lost connection");
+				m_ConnectionIsReady = false;
 				Initialized = false;
 			}
 		}
@@ -561,10 +572,16 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			if (string.IsNullOrEmpty(data))
 				return;
 
-			if (data == LutronUtils.QNET || data == LutronUtils.CRLF)
+			if (data == LutronUtils.QNET || data == LutronUtils.LOGIN_SUCCESS)
+			{
+				m_ConnectionIsReady = true;
+				return;
+			}
+
+			if (data == LutronUtils.CRLF)
 				return;
 
-			if (data.ToLower().Contains("login:"))
+			if (data.ToLower().Contains(LutronUtils.LOGIN_PROMPT))
 			{
 				SendData((Username ?? string.Empty) + LutronUtils.CRLF);
 				return;
@@ -592,7 +609,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			{
 				 id = LutronUtils.GetIntegrationId(data);
 			}
-			catch (FormatException e)
+			catch (FormatException)
 			{
 				message = String.Format("Couldn't get error code for  data {0}", data);
 				Log(eSeverity.Error, message);
@@ -826,6 +843,27 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			if (!string.IsNullOrEmpty(settings.IntegrationConfig))
 				LoadIntegrationConfig(settings.IntegrationConfig);
 		}
+
+		#endregion
+
+		#region Console
+
+		/// <summary>
+		/// Gets the child console nodes.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleNodeBase> GetConsoleNodes()
+		{
+			foreach (IConsoleNodeBase node in GetBaseConsoleNodes())
+				yield return node;
+
+			yield return ConsoleNodeGroup.IndexNodeMap("Areas", GetAreaIntegrations());
+		}
+
+		private IEnumerable<IConsoleNodeBase> GetBaseConsoleNodes()
+		{
+			return base.GetConsoleNodes();
+		} 
 
 		#endregion
 	}

@@ -14,6 +14,9 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 
 		public const string QNET = "QNET>";
 
+		public const string LOGIN_PROMPT = "login:";
+		public const string LOGIN_SUCCESS = "connection established";
+
 		public const string COMMAND_AREA = "AREA";
 		public const string COMMAND_DEVICE = "DEVICE";
 		public const string COMMAND_OUTPUT = "OUTPUT";

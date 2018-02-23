@@ -27,6 +27,12 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			LutronUtils.QNET
 		};
 
+		//These cause the buffer to immideately return, incluing the short circuit string
+		private readonly string[] m_ShortCircuits =
+		{
+			LutronUtils.LOGIN_PROMPT
+		};
+
 		/// <summary>
 		/// Constructor.
 		/// </summary>
@@ -86,17 +92,27 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 				{
 					while (true)
 					{
-						string delimiter;
-						int index = data.IndexOf(m_Delimiters, out delimiter);
+						string delimiter, shortCircuit;
+						int delimiterIndex = data.IndexOf(m_Delimiters, out delimiter);
+						int shortCircuitIndex = data.IndexOf(m_ShortCircuits, out shortCircuit);
 
-						if (index < 0)
+						if (delimiterIndex < 0 && shortCircuitIndex < 0)
 						{
 							m_RxData.Append(data);
 							break;
 						}
 
-						m_RxData.Append(data.Substring(0, index));
-						data = data.Substring(index + delimiter.Length);
+						if (delimiterIndex >= 0)
+						{
+							m_RxData.Append(data.Substring(0, delimiterIndex));
+							data = data.Substring(delimiterIndex + delimiter.Length);
+						}
+						else
+						{
+							// Short Circuit includes the short circuit string, delimiter does not
+							m_RxData.Append(data.Substring(0, shortCircuitIndex + shortCircuit.Length));
+							data = data.Substring(shortCircuitIndex + shortCircuit.Length);
+						}
 
 						string output = m_RxData.Pop();
 						OnCompletedSerial.Raise(this, new StringEventArgs(output));

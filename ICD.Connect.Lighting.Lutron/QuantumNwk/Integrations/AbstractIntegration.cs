@@ -1,14 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Xml;
+using ICD.Connect.API.Commands;
+using ICD.Connect.API.Nodes;
 
 namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 {
 	/// <summary>
 	/// Base class for all Lutron QuantumNwk integrations that communicate with the device.
 	/// </summary>
-	public abstract class AbstractIntegration : IDisposable
+	public abstract class AbstractIntegration : IDisposable, IConsoleNode
 	{
 		private readonly int m_IntegrationId;
 		private readonly string m_Name;
@@ -187,5 +190,43 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Gets the name of the node.
+		/// </summary>
+		public string ConsoleName { get { return Name; } }
+
+		/// <summary>
+		/// Gets the help information for the node.
+		/// </summary>
+		public string ConsoleHelp { get { return "Lutron Integration Component"; } }
+
+		/// <summary>
+		/// Gets the child console nodes.
+		/// </summary>
+		/// <returns></returns>
+		public virtual IEnumerable<IConsoleNodeBase> GetConsoleNodes()
+		{
+			yield break;
+		}
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public virtual void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			addRow("Name", Name);
+			addRow("Id", IntegrationId);
+		}
+
+		/// <summary>
+		/// Gets the child console commands.
+		/// </summary>
+		/// <returns></returns>
+		public virtual IEnumerable<IConsoleCommand> GetConsoleCommands()
+		{
+			yield break;
+		}
 	}
 }

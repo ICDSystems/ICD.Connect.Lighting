@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.API.Commands;
+using ICD.Connect.API.Nodes;
 
 namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 {
@@ -160,6 +163,40 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 					OutputLevel = LutronUtils.PercentageParameterToFloat(parameters[0]);
 					break;
 			}
+		}
+
+		#endregion
+
+		#region Console
+
+		/// <summary>
+		/// Gets the child console commands.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
+		{
+			foreach (IConsoleCommand command in GetBaseConsoleCommands())
+				yield return command;
+
+			yield return new GenericConsoleCommand<float>("SetLevel", "Set the level for this zone", l => SetOutputLevel(l));
+			yield return new ConsoleCommand("StartRaising", "Start raising the level", () => StartRaising());
+			yield return new ConsoleCommand("StartLowering", "Start lowering the level", () => StartLowering());
+			yield return new ConsoleCommand("Stop", "Stop raise/lower operations", () => StopRaisingLowering());
+		}
+
+		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
+		{
+			return base.GetConsoleCommands();
+		}
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+			addRow("Output Level", OutputLevel.ToString("n2"));
 		}
 
 		#endregion
