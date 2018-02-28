@@ -82,6 +82,7 @@
     <Compile Include="Processors\LightingProcessorDeviceSettings.cs" />
     <Compile Include="Shades\AbstractShadeDevice.cs" />
     <Compile Include="Shades\AbstractShadeDeviceSettings.cs" />
+    <Compile Include="Shades\eShadeType.cs" />
     <Compile Include="Shades\ShadeGroupSettings.cs" />
     <Compile Include="Shades\IShadeGroup.cs" />
     <Compile Include="Shades\Controls\IShadeInMotionFeedbackControl.cs" />
