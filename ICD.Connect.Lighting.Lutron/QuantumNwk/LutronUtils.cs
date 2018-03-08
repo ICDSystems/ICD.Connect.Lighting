@@ -34,7 +34,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 
 		public const string CRLF = "\x0D\x0A";
 
-		public const string NULL_VALUE = "xx";
+		public const string NULL_VALUE = "XX";
 
 		public const int ERROR_PARAMETER_COUNT = 1;
 		public const int ERROR_OBJECT_DOES_NOT_EXIST = 2;

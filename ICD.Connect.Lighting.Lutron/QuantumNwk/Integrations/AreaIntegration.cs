@@ -445,7 +445,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 			switch (action)
 			{
 				case ACTION_SCENE:
-					Scene = parameters[0] == LutronUtils.NULL_VALUE
+					Scene = String.Equals(parameters[0],LutronUtils.NULL_VALUE,StringComparison.OrdinalIgnoreCase)
 						        ? (int?)null
 						        : int.Parse(parameters[0]);
 					break;
