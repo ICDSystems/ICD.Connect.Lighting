@@ -1,6 +1,8 @@
 ﻿using System;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
+#endif
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
@@ -9,19 +11,26 @@ using ICD.Connect.Lighting.Shades.Controls;
 
 namespace ICD.Connect.Lighting.CrestronPro.Shades
 {
-	public abstract class AbstractShadeBaseAdapter<TShade, TSettings> 
-		: AbstractShadeDevice<TSettings>,
-		IShadeBaseAdapter
+#if SIMPLSHARP
+	public abstract class AbstractShadeBaseAdapter<TShade, TSettings> : AbstractShadeDevice<TSettings>, IShadeBaseAdapter
 		where TShade : ShadeBase
+#else
+	public abstract class AbstractShadeBaseAdapter<TSettings> : AbstractShadeDevice<TSettings>, IShadeBaseAdapter
+#endif
 		where TSettings : IShadeBaseAdapterSettings, new()
 	{
 		public event EventHandler OnDirectionChanged;
 
+#if SIMPLSHARP
 		private eShadeDirection m_LastDirection = eShadeDirection.Neither;
 
 		protected TShade Shade { get; private set; }
+#endif
 
-		public AbstractShadeBaseAdapter()
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		protected AbstractShadeBaseAdapter()
 		{
 			Controls.Add(new ShadeStopControl<IShadeBaseAdapter>(this, 0));
 			Controls.Add(new ShadeSetPositionControl<IShadeBaseAdapter>(this, 1));
@@ -31,14 +40,30 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 		}
 
 		/// <summary>
+		/// Release resources.
+		/// </summary>
+		/// <param name="disposing"></param>
+		protected override void DisposeFinal(bool disposing)
+		{
+			OnDirectionChanged = null;
+
+			base.DisposeFinal(disposing);
+		}
+
+		/// <summary>
 		/// Gets the current online status of the device.
 		/// </summary>
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
+#if SIMPLSHARP
 			return Shade != null && Shade.IsOnline;
+#else
+			return false;
+#endif
 		}
 
+#if SIMPLSHARP
 		protected void SetShade(TShade shade)
 		{
 			if (shade == Shade)
@@ -77,39 +102,51 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 
 		protected virtual void Subscribe(TShade shade)
 		{
-			
 		}
 
 		protected virtual void Unsubscribe(TShade shade)
 		{
-			
 		}
+#endif
 
 		public override void Open()
 		{
+#if SIMPLSHARP
 			Shade.Open();
 			if (m_LastDirection == eShadeDirection.Open)
 				return;
 			m_LastDirection = eShadeDirection.Open;
 			OnDirectionChanged.Raise(this);
+#else
+			throw new NotSupportedException();
+#endif
 		}
 
 		public override void Close()
 		{
+#if SIMPLSHARP
 			Shade.Close();
 			if (m_LastDirection == eShadeDirection.Close)
 				return;
 			m_LastDirection = eShadeDirection.Close;
 			OnDirectionChanged.Raise(this);
+#else
+			throw new NotSupportedException();
+#endif
 		}
 
 		public void Stop()
 		{
+#if SIMPLSHARP
 			Shade.Stop();
+#else
+			throw new NotSupportedException();
+#endif
 		}
 
 		public eShadeDirection GetLastDirection()
 		{
+#if SIMPLSHARP
 			switch (Shade.LastDirection)
 			{
 				case eShadeMovement.NA:
@@ -121,23 +158,38 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
+#else
+			throw new NotSupportedException();
+#endif
 		}
 
 		public bool GetIsInMotion()
 		{
+#if SIMPLSHARP
 			return Shade.IsRaising.BoolValue || Shade.IsLowering.BoolValue;
+#else
+			throw new NotSupportedException();
+#endif
 		}
 
 		public float GetPosition()
 		{
+#if SIMPLSHARP
 			return MathUtils.MapRange(0, ushort.MaxValue, 0, 1, (float)Shade.PositionFeedback.UShortValue);
+#else
+			throw new NotSupportedException();
+#endif
 		}
 
 		public void SetPosition(float position)
 		{
+#if SIMPLSHARP
 			position = MathUtils.Clamp(position, 0, 1);
 			float floatPosition = MathUtils.MapRange(0, 1, 0, ushort.MaxValue, position);
 			Shade.SetPosition((ushort)floatPosition);
+#else
+			throw new NotSupportedException();
+#endif
 		}
 	}
 }

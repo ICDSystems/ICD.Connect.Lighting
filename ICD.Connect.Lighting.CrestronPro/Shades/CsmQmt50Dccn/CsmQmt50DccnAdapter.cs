@@ -6,8 +6,12 @@ using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 {
+#if SIMPLSHARP
 	public sealed class CsmQmt50DccnAdapter : AbstractShadeWithBasicSettingsAdapter<Crestron.SimplSharpPro.Shades.CsmQmt50Dccn, 
 																			 CsmQmt50DccnAdapterSettings>
+#else
+	public sealed class CsmQmt50DccnAdapter : AbstractShadeWithBasicSettingsAdapter<CsmQmt50DccnAdapterSettings>
+#endif
 	{
 		#region Settings
 
@@ -41,8 +45,6 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 			}
 
 			SetShade(shade);
-#else
-			 throw new NotImplementedException();
 #endif
 		}
 
@@ -61,7 +63,9 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 		{
 			base.ClearSettingsFinal();
 
+#if SIMPLSHARP
 			SetShade(null);
+#endif
 		}
 
 		#endregion
