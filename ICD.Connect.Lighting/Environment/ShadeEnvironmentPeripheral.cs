@@ -131,7 +131,7 @@ namespace ICD.Connect.Lighting.Environment
 		/// <returns></returns>
 		public IEnumerable<IConsoleNodeBase> GetConsoleNodes()
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -140,7 +140,7 @@ namespace ICD.Connect.Lighting.Environment
 		/// <param name="addRow"></param>
 		public void BuildConsoleStatus(AddStatusRowDelegate addRow)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -149,7 +149,7 @@ namespace ICD.Connect.Lighting.Environment
 		/// <returns></returns>
 		public IEnumerable<IConsoleCommand> GetConsoleCommands()
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 		#endregion
 	}

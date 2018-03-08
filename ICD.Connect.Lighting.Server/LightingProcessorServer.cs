@@ -901,9 +901,11 @@ namespace ICD.Connect.Lighting.Server
 				m_ShadeOriginatorsByRoom[roomId.Value].Add(shadeOriginator);
 			}
 
-			var tcpServer = new AsyncTcpServer();
-			tcpServer.Port = settings.ServerPort;
-			tcpServer.MaxNumberOfClients = settings.ServerMaxClients;
+			var tcpServer = new AsyncTcpServer
+			{
+				Port = settings.ServerPort,
+				MaxNumberOfClients = settings.ServerMaxClients
+			};
 			tcpServer.Start();
 			SetServer(tcpServer);
 		}
@@ -930,7 +932,7 @@ namespace ICD.Connect.Lighting.Server
 
 			foreach (int room in GetRooms())
 			{
-				if (m_Processor.ContainsRoom(room))
+				if (m_Processor != null && m_Processor.ContainsRoom(room))
 				{
 					foreach (LightingProcessorControl load in GetLoadsForRoom(room))
 					{
@@ -952,6 +954,7 @@ namespace ICD.Connect.Lighting.Server
 						settings.AddPreset(room, preset.Id);
 					}
 				}
+
 				if (m_ShadeOriginatorsByRoom.ContainsKey(room))
 				{
 					foreach (IShadeDevice shade in m_ShadeOriginatorsByRoom[room].Where(shade => !(shade is ShadeGroup)))

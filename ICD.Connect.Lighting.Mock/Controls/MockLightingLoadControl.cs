@@ -10,7 +10,7 @@ using ICD.Connect.Lighting.Environment;
 
 namespace ICD.Connect.Lighting.Mock.Controls
 {
-	public sealed class MockLightingLoadControl : AbstractMockLightingControl, IDisposable, ILightingLoadEnvironmentPeripheral
+	public sealed class MockLightingLoadControl : AbstractMockLightingControl, ILightingLoadEnvironmentPeripheral
 	{
 		// The step size for each increment/decrement of a load level.
 		private const float INCREMENT_DELTA = 0.05f;

@@ -5,7 +5,7 @@ using ICD.Connect.Lighting.Environment;
 
 namespace ICD.Connect.Lighting.Mock.Controls
 {
-	public abstract class AbstractMockLightingControl : IConsoleNode, IEnvironmentPeripheral
+	public abstract class AbstractMockLightingControl : IEnvironmentPeripheral
 	{
 		private readonly int m_Id;
 		private readonly int m_Room;

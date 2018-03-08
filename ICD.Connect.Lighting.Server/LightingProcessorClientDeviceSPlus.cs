@@ -57,7 +57,7 @@ namespace ICD.Connect.Lighting.Server
 
 			m_TcpClient = new AsyncTcpClient {Address = address.ToString(), Port = port};
 			m_LightingProcessorClient = new LightingProcessorClientDevice();
-			m_LightingProcessorClient.SetRoomId((int)roomId);
+			m_LightingProcessorClient.SetRoomId(roomId);
 
 			SubscribeToLightingDevice();
 

@@ -135,10 +135,8 @@ namespace ICD.Connect.Lighting.Shades
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			foreach (var id in settings.ShadeIds.Where(id => id != null).Select(id => id.Value))
-			{
+			foreach (int id in settings.ShadeIds.ExceptNulls())
 				AddShade(factory.GetOriginatorById(id) as IShadeDevice);
-			}
 		}
 
 		/// <summary>
