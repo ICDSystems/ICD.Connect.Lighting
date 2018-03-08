@@ -28,11 +28,17 @@ namespace ICD.Connect.Lighting.Server
 
 		private const string ROOM_ID_ELEMENT = "RoomId";
 
+		private const string SERVER_PORT_ELEMENT = "ServerPort";
+		private const string SERVER_CLIENTS_ELEMENT = "ServerMaxClients";
+
 		public int? LightingProcessorId { get; set; }
 		public IcdHashSet<int> ShadeIds { get; private set; }
 		public IcdHashSet<int> ShadeGroupIds { get; private set; }
 		public IcdHashSet<int> LoadIds { get; private set; }
 		public IcdHashSet<int> PresetIds { get; set; }
+
+		public ushort ServerPort { get; set; }
+		public int ServerMaxClients { get; set; }
 
 		public IEnumerable<int> RoomIds
 		{
@@ -140,6 +146,9 @@ namespace ICD.Connect.Lighting.Server
 												 content => ParseChildPreset(content))
 								.ToIcdHashSet();
 
+			ServerPort = XmlUtils.ReadChildElementContentAsUShort(xml, SERVER_PORT_ELEMENT);
+			ServerMaxClients = XmlUtils.ReadChildElementContentAsInt(xml, SERVER_CLIENTS_ELEMENT);
+
 		}
 
 		/// <summary>
@@ -151,6 +160,10 @@ namespace ICD.Connect.Lighting.Server
 			base.WriteElements(writer);
 			
 			writer.WriteElementString(LIGHTING_PROCESSOR_ID_ELEMENT, LightingProcessorId.ToString());
+
+			writer.WriteElementString(SERVER_PORT_ELEMENT, IcdXmlConvert.ToString(ServerPort));
+			
+			writer.WriteElementString(SERVER_CLIENTS_ELEMENT, IcdXmlConvert.ToString(ServerMaxClients));
 
 			WriteLoads(writer);
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Crestron.SimplSharp.CrestronSockets;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
@@ -900,6 +901,12 @@ namespace ICD.Connect.Lighting.Server
 				}
 				m_ShadeOriginatorsByRoom[roomId.Value].Add(shadeOriginator);
 			}
+
+			var tcpServer = new AsyncTcpServer();
+			tcpServer.Port = settings.ServerPort;
+			tcpServer.MaxNumberOfClients = settings.ServerMaxClients;
+			tcpServer.Start();
+			SetServer(tcpServer);
 		}
 
 		/// <summary>
@@ -913,6 +920,12 @@ namespace ICD.Connect.Lighting.Server
 			settings.ClearIdCollections();
 
 			settings.LightingProcessorId = m_Processor == null ? null : (int?)m_Processor.Id;
+
+			if (m_Server != null)
+			{
+				settings.ServerPort = m_Server.Port;
+				settings.ServerMaxClients = m_Server.MaxNumberOfClients;
+			}
 
 			settings.RoomIds = GetRooms();
 
@@ -961,6 +974,8 @@ namespace ICD.Connect.Lighting.Server
 		protected override void ClearSettingsFinal()
 		{
 			base.ClearSettingsFinal();
+
+			SetServer(null);
 
 			m_Processor = null;
 
