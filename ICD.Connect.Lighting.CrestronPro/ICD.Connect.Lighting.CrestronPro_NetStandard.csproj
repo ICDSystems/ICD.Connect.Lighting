@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netstandard2.0</TargetFramework>
+	<RootNamespace>ICD.Connect.Lighting.CrestronPRO</RootNamespace>
+	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	<Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;STANDARD</DefineConstants>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <OutputPath>binNetCoreApp\$(Configuration)\</OutputPath>
+    <DefineConstants>TRACE;STANDARD</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="SIMPLSharpLogs\**" />
+    <EmbeddedResource Remove="SIMPLSharpLogs\**" />
+    <None Remove="SIMPLSharpLogs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="ObfuscationSettings.cs" />
+    
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="ICD.Connect.Lighting.projectinfo" />
+    <None Remove="Properties\ControlSystem.cfg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ICD.Connect.Misc\ICD.Connect.Misc.CrestronPro\ICD.Connect.Misc.CrestronPro_NetStandard.csproj" />
+    <ProjectReference Include="..\..\ICD.Connect.Settings\ICD.Connect.Settings\ICD.Connect.Settings_NetStandard.csproj" />
+    <ProjectReference Include="..\ICD.Connect.Lighting\ICD.Connect.Lighting_NetStandard.csproj" />
+  </ItemGroup>
+
+</Project>
