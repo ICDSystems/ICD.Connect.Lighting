@@ -586,7 +586,8 @@ namespace ICD.Connect.Lighting.Server
 		public override IEnumerable<LightingProcessorControl> GetShadeGroupsForRoom(int room)
 		{
 			List<LightingProcessorControl> list = new List<LightingProcessorControl>();
-			list.AddRange(m_ShadeOriginatorsByRoom[room].Where(orig => (orig is ShadeGroup))
+			if (m_ShadeOriginatorsByRoom.ContainsKey(room))
+				list.AddRange(m_ShadeOriginatorsByRoom[room].Where(orig => (orig is ShadeGroup))
 			                                            .Select(originator => new LightingProcessorControl(
 			                                            LightingProcessorControl.ePeripheralType.ShadeGroup,
 			                                            originator.Id, room, originator.Name)));
