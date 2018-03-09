@@ -160,9 +160,9 @@ namespace ICD.Connect.Lighting.Server
 					m_RpcController.CallMethod(client, LightingProcessorClientDevice.SET_CACHED_LOAD_LEVEL_RPC, load.Id, percentage);
 			}
 
-			SendControlsToClient(client, m_Processor.GetShadesForRoom(room));
-			SendControlsToClient(client, m_Processor.GetShadeGroupsForRoom(room));
-			SendControlsToClient(client, m_Processor.GetPresetsForRoom(room));
+			SendControlsToClient(client, GetShadesForRoom(room));
+			SendControlsToClient(client, GetShadeGroupsForRoom(room));
+			SendControlsToClient(client, GetPresetsForRoom(room));
 
 			// Send the room occupancy
 			RoomOccupancyEventArgs.eOccupancyState occupancy = m_Processor.GetOccupancyForRoom(room);
