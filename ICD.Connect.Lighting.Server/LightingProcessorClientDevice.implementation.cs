@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Processors;
 
@@ -23,7 +24,7 @@ namespace ICD.Connect.Lighting.Server
 		/// <returns></returns>
 		bool ILightingProcessorDevice.ContainsRoom(int room)
 		{
-			return m_Room != null && m_Room.Id == room;
+			return m_Room != null;
 		}
 
 		/// <summary>
@@ -33,8 +34,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <returns></returns>
 		IEnumerable<LightingProcessorControl> ILightingProcessorDevice.GetLoadsForRoom(int room)
 		{
-			if (m_Room == null || room != m_Room.Id)
-				throw new KeyNotFoundException();
+			if (m_Room == null)
+				return Enumerable.Empty<LightingProcessorControl>();
 			return GetLoads();
 		}
 
@@ -45,8 +46,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <returns></returns>
 		IEnumerable<LightingProcessorControl> ILightingProcessorDevice.GetShadesForRoom(int room)
 		{
-			if (m_Room == null || room != m_Room.Id)
-				throw new KeyNotFoundException();
+			if (m_Room == null)
+				return Enumerable.Empty<LightingProcessorControl>();
 			return GetShades();
 		}
 
@@ -57,8 +58,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <returns></returns>
 		IEnumerable<LightingProcessorControl> ILightingProcessorDevice.GetShadeGroupsForRoom(int room)
 		{
-			if (m_Room == null || room != m_Room.Id)
-				throw new KeyNotFoundException();
+			if (m_Room == null)
+				return Enumerable.Empty<LightingProcessorControl>();
 			return GetShadeGroups();
 		}
 
@@ -69,8 +70,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <returns></returns>
 		IEnumerable<LightingProcessorControl> ILightingProcessorDevice.GetPresetsForRoom(int room)
 		{
-			if (m_Room == null || room != m_Room.Id)
-				throw new KeyNotFoundException();
+			if (m_Room == null)
+				return Enumerable.Empty<LightingProcessorControl>();
 			return GetPresets();
 		}
 
@@ -81,8 +82,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <returns></returns>
 		RoomOccupancyEventArgs.eOccupancyState ILightingProcessorDevice.GetOccupancyForRoom(int room)
 		{
-			if (m_Room == null || room != m_Room.Id)
-				throw new KeyNotFoundException();
+			if (m_Room == null)
+				return RoomOccupancyEventArgs.eOccupancyState.Unknown;
 			return GetOccupancy();
 		}
 
@@ -93,8 +94,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="preset"></param>
 		void ILightingProcessorDevice.SetPresetForRoom(int room, int? preset)
 		{
-			if (m_Room == null || room != m_Room.Id)
-				throw new KeyNotFoundException();
+			if (m_Room == null)
+				return;
 			SetPreset(preset);
 		}
 
@@ -104,8 +105,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="room"></param>
 		int? ILightingProcessorDevice.GetPresetForRoom(int room)
 		{
-			if (m_Room == null || room != m_Room.Id)
-				throw new KeyNotFoundException();
+			if (m_Room == null)
+				return null;
 			return GetActivePreset();
 		}
 
@@ -117,8 +118,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="percentage"></param>
 		void ILightingProcessorDevice.SetLoadLevel(int room, int load, float percentage)
 		{
-			if (m_Room == null || room != m_Room.Id)
-				throw new KeyNotFoundException();
+			if (m_Room == null)
+				return;
 			SetLoadLevel(load, percentage);
 		}
 
@@ -129,8 +130,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="load"></param>
 		float ILightingProcessorDevice.GetLoadLevel(int room, int load)
 		{
-			if (m_Room == null || room != m_Room.Id)
-				throw new KeyNotFoundException();
+			if (m_Room == null)
+				return 0;
 			return GetLoadLevel(load);
 		}
 
@@ -141,8 +142,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="load"></param>
 		void ILightingProcessorDevice.StartRaisingLoadLevel(int room, int load)
 		{
-			if (m_Room == null || room != m_Room.Id)
-				throw new KeyNotFoundException();
+			if (m_Room == null)
+				return;
 			StartRaisingLoadLevel(load);
 		}
 
@@ -153,8 +154,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="load"></param>
 		void ILightingProcessorDevice.StartLoweringLoadLevel(int room, int load)
 		{
-			if (m_Room == null || room != m_Room.Id)
-				throw new KeyNotFoundException();
+			if (m_Room == null)
+				return;
 			StartLoweringLoadLevel(load);
 		}
 
@@ -165,8 +166,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="load"></param>
 		void ILightingProcessorDevice.StopRampingLoadLevel(int room, int load)
 		{
-			if (m_Room == null || room != m_Room.Id)
-				throw new KeyNotFoundException();
+			if (m_Room == null)
+				return;
 			StopRampingLoadLevel(load);
 		}
 
@@ -177,8 +178,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="shade"></param>
 		void ILightingProcessorDevice.StartRaisingShade(int room, int shade)
 		{
-			if (m_Room == null || room != m_Room.Id)
-				throw new KeyNotFoundException();
+			if (m_Room == null)
+				return;
 			StartRaisingShade(shade);
 		}
 
@@ -189,8 +190,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="shade"></param>
 		void ILightingProcessorDevice.StartLoweringShade(int room, int shade)
 		{
-			if (m_Room == null || room != m_Room.Id)
-				throw new KeyNotFoundException();
+			if (m_Room == null)
+				return;
 			StartLoweringShade(shade);
 		}
 
@@ -201,8 +202,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="shade"></param>
 		void ILightingProcessorDevice.StopMovingShade(int room, int shade)
 		{
-			if (m_Room == null || room != m_Room.Id)
-				throw new KeyNotFoundException();
+			if (m_Room == null)
+				return;
 			StopMovingShade(shade);
 		}
 
@@ -213,8 +214,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="shadeGroup"></param>
 		void ILightingProcessorDevice.StartRaisingShadeGroup(int room, int shadeGroup)
 		{
-			if (m_Room == null || room != m_Room.Id)
-				throw new KeyNotFoundException();
+			if (m_Room == null)
+				return;
 			StartRaisingShadeGroup(shadeGroup);
 		}
 
@@ -225,8 +226,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="shadeGroup"></param>
 		void ILightingProcessorDevice.StartLoweringShadeGroup(int room, int shadeGroup)
 		{
-			if (m_Room == null || room != m_Room.Id)
-				throw new KeyNotFoundException();
+			if (m_Room == null)
+				return;
 			StartLoweringShadeGroup(shadeGroup);
 		}
 
@@ -237,8 +238,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="shadeGroup"></param>
 		void ILightingProcessorDevice.StopMovingShadeGroup(int room, int shadeGroup)
 		{
-			if (m_Room == null || room != m_Room.Id)
-				throw new KeyNotFoundException();
+			if (m_Room == null)
+				return;
 			StopMovingShadeGroup(shadeGroup);
 		}
 	}
