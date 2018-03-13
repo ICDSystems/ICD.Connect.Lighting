@@ -885,6 +885,8 @@ namespace ICD.Connect.Lighting.Server
 				return;
 			}
 
+			Subscribe(m_Processor);
+
 			foreach (int shade in settings.ShadeIds.Concat(settings.ShadeGroupIds))
 			{
 				IShadeDevice shadeOriginator = factory.GetOriginatorById<IShadeDevice>(shade);

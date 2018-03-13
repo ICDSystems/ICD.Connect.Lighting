@@ -75,8 +75,12 @@
     <Compile Include="Controls\MockLightingRoom.cs" />
     <Compile Include="Controls\MockLightingShadeControl.cs" />
     <Compile Include="Controls\MockLightingShadeGroupControl.cs" />
+    <Compile Include="KrangPlugin.cs" />
     <Compile Include="MockLightingProcessorDevice.cs" />
     <Compile Include="MockLightingProcessorDeviceSettings.cs" />
+    <Compile Include="MockShadeDevice.cs" />
+    <Compile Include="MockShadeDeviceSettings.cs" />
+    <None Include="ObfuscationSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>
