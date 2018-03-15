@@ -35,7 +35,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 			Crestron.SimplSharpPro.Shades.CsmQmt50Dccn shade = null;
 			try
 			{
-				shade = new Crestron.SimplSharpPro.Shades.CsmQmt50Dccn(settings.CresnetId, ProgramInfo.ControlSystem);
+				shade = new Crestron.SimplSharpPro.Shades.CsmQmt50Dccn(settings.CresnetId.Value, ProgramInfo.ControlSystem);
 			}
 			catch (ArgumentException e)
 			{
