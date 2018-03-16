@@ -44,7 +44,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 		{
 			base.ParseXml(xml);
 
-			CresnetId = XmlUtils.TryReadChildElementContentAsByte(xml, CRESNET_ID_ELEMENT) ?? 0;
+			CresnetId = XmlUtils.TryReadChildElementContentAsByte(xml, CRESNET_ID_ELEMENT);
 		}
 	}
 }
