@@ -25,7 +25,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 			base.ApplySettingsFinal(settings, factory);
 
 #if SIMPLSHARP
-			if (!CresnetUtils.IsValidId(settings.CresnetId))
+			if (settings.CresnetId == null || !CresnetUtils.IsValidId(settings.CresnetId.Value))
 			{
 				Logger.AddEntry(eSeverity.Error, "{0} failed to instantiate {1} - CresnetId {2} is out of range",
 				                this, typeof(Crestron.SimplSharpPro.Shades.CsmQmt50Dccn).Name, settings.CresnetId);
