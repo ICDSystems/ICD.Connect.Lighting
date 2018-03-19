@@ -1,4 +1,5 @@
 ﻿using System;
+using Crestron.SimplSharp.CrestronXml;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Misc.CrestronPro;
 using ICD.Connect.Misc.CrestronPro.Utils;
@@ -35,7 +36,12 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 			Crestron.SimplSharpPro.Shades.CsmQmt50Dccn shade = null;
 			try
 			{
-				shade = new Crestron.SimplSharpPro.Shades.CsmQmt50Dccn(settings.CresnetId.Value, ProgramInfo.ControlSystem);
+				shade = CresnetUtils.InstantiateCresnetDevice(settings.CresnetId.Value,
+															  settings.BranchId,
+															  settings.ParentId,
+															  factory,
+															  cresnetId => new Crestron.SimplSharpPro.Shades.CsmQmt50Dccn(cresnetId, ProgramInfo.ControlSystem),
+															  (cresnetId, branch) => new Crestron.SimplSharpPro.Shades.CsmQmt50Dccn(cresnetId, branch));
 			}
 			catch (ArgumentException e)
 			{
