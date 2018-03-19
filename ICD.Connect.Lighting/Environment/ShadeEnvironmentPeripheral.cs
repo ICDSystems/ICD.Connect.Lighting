@@ -29,8 +29,8 @@ namespace ICD.Connect.Lighting.Environment
 		public LightingProcessorControl ToLightingProcessorControl()
 		{
 			return m_Shade is IShadeGroup
-				       ? LightingProcessorControl.ShadeGroup(Id, Room, Name)
-				       : LightingProcessorControl.Shade(Id, Room, Name);
+				       ? LightingProcessorControl.ShadeGroup(Id, Room, Name, m_Shade.ShadeType)
+				       : LightingProcessorControl.Shade(Id, Room, Name, m_Shade.ShadeType);
 		}
 
 		public void Dispose()

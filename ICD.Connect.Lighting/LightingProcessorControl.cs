@@ -1,5 +1,6 @@
 using ICD.Common.Properties;
 using ICD.Common.Utils;
+using ICD.Connect.Lighting.Shades;
 using Newtonsoft.Json;
 
 namespace ICD.Connect.Lighting
@@ -15,6 +16,7 @@ namespace ICD.Connect.Lighting
 		}
 
 		private readonly ePeripheralType m_PeripheralType;
+		private readonly eShadeType m_ShadeType;
 		private readonly int m_Id;
 		private readonly int m_Room;
 		private readonly string m_Name;
@@ -61,6 +63,29 @@ namespace ICD.Connect.Lighting
 			m_Id = id;
 			m_Room = room;
 			m_Name = name;
+			m_ShadeType = eShadeType.None;
+		}
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="peripheralType"></param>
+		/// <param name="id"></param>
+		/// <param name="room"></param>
+		/// <param name="name"></param>
+		/// <param name="shadeType"></param>
+		[JsonConstructor]
+		public LightingProcessorControl(ePeripheralType peripheralType, int id, int room, string name, eShadeType shadeType)
+		{
+			m_PeripheralType = peripheralType;
+			m_Id = id;
+			m_Room = room;
+			m_Name = name;
+
+			if (peripheralType != ePeripheralType.Shade && peripheralType != ePeripheralType.ShadeGroup)
+				m_ShadeType = eShadeType.None;
+			else
+				m_ShadeType = shadeType;
 		}
 
 		/// <summary>
@@ -82,11 +107,12 @@ namespace ICD.Connect.Lighting
 		/// <param name="id"></param>
 		/// <param name="room"></param>
 		/// <param name="name"></param>
+		/// <param name="type"></param>
 		/// <returns></returns>
 		[PublicAPI]
-		public static LightingProcessorControl Shade(int id, int room, string name)
+		public static LightingProcessorControl Shade(int id, int room, string name, eShadeType type)
 		{
-			return new LightingProcessorControl(ePeripheralType.Shade, id, room, name);
+			return new LightingProcessorControl(ePeripheralType.Shade, id, room, name, type);
 		}
 
 		/// <summary>
@@ -95,11 +121,12 @@ namespace ICD.Connect.Lighting
 		/// <param name="id"></param>
 		/// <param name="room"></param>
 		/// <param name="name"></param>
+		/// <param name="type"></param>
 		/// <returns></returns>
 		[PublicAPI]
-		public static LightingProcessorControl ShadeGroup(int id, int room, string name)
+		public static LightingProcessorControl ShadeGroup(int id, int room, string name, eShadeType type)
 		{
-			return new LightingProcessorControl(ePeripheralType.ShadeGroup, id, room, name);
+			return new LightingProcessorControl(ePeripheralType.ShadeGroup, id, room, name, type);
 		}
 
 		/// <summary>

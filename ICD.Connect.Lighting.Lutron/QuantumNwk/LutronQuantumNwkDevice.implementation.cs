@@ -33,7 +33,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		{
 			return GetAreaIntegrationsForRoom(room)
 				.SelectMany(a => a.GetShadeIntegrations())
-				.Select(i => LightingProcessorControl.Shade(i.IntegrationId, room, i.Name));
+				.Select(i => LightingProcessorControl.Shade(i.IntegrationId, room, i.Name, i.ShadeType));
 		}
 
 		/// <summary>
@@ -45,7 +45,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		{
 			return GetAreaIntegrationsForRoom(room)
 				.SelectMany(a => a.GetShadeGroupIntegrations())
-				.Select(i => LightingProcessorControl.ShadeGroup(i.IntegrationId, room, i.Name));
+				.Select(i => LightingProcessorControl.ShadeGroup(i.IntegrationId, room, i.Name, i.ShadeType));
 		}
 
 		/// <summary>

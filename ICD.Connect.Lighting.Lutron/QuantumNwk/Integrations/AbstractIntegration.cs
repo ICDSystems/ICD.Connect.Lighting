@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Lighting.Shades;
 
 namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 {
@@ -101,6 +103,13 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 		protected static int GetIntegrationIdFromXml(string xml)
 		{
 			return XmlUtils.GetAttributeAsInt(xml, "integrationId");
+		}
+
+		protected static eShadeType GetShadeTypeFromXml(string xml)
+		{
+			eShadeType shadeType;
+			bool parsed = EnumUtils.TryParseStrict(XmlUtils.GetAttributeAsString(xml, "shadeType"), true, out shadeType);
+			return parsed ? shadeType : eShadeType.None;
 		}
 
 		/// <summary>
