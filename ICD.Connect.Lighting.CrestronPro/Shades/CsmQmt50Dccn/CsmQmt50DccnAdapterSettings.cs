@@ -1,7 +1,6 @@
 ﻿using System;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
-using ICD.Connect.Devices;
 using ICD.Connect.Misc.CrestronPro;
 using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Settings.Attributes;
