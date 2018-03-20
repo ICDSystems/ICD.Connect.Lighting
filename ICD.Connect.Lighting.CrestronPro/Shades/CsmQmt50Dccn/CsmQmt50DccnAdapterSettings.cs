@@ -13,7 +13,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 	{
 		private const string FACTORY_NAME = "CsmQmt50Dccn";
 
-		[IpIdSettingsProperty]
+		[CrestronByteSettingsProperty]
 		public byte? CresnetId { get; set; }
 		public int? ParentId { get; set; }
 		public int? BranchId { get; set; }
