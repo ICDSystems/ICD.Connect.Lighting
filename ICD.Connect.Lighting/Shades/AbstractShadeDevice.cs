@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ICD.Connect.API.Commands;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Settings.Core;
 
@@ -37,6 +38,16 @@ namespace ICD.Connect.Lighting.Shades
 
 		#endregion
 		#region Console
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+			addRow("Shade Type", ShadeType);
+		}
 
 		/// <summary>
 		/// Gets the child console commands.

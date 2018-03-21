@@ -573,7 +573,7 @@ namespace ICD.Connect.Lighting.Server
 				list.AddRange(m_ShadeOriginatorsByRoom[room].Where(orig => !(orig is ShadeGroup))
 															.Select(originator => new LightingProcessorControl(
 															LightingProcessorControl.ePeripheralType.Shade,
-															originator.Id, room, originator.Name)));
+															originator.Id, room, originator.Name, originator.ShadeType)));
 			}
 			return m_Processor.GetShadesForRoom(room).Concat(list);
 		}
@@ -590,7 +590,7 @@ namespace ICD.Connect.Lighting.Server
 				list.AddRange(m_ShadeOriginatorsByRoom[room].Where(orig => (orig is ShadeGroup))
 			                                            .Select(originator => new LightingProcessorControl(
 			                                            LightingProcessorControl.ePeripheralType.ShadeGroup,
-			                                            originator.Id, room, originator.Name)));
+			                                            originator.Id, room, originator.Name, originator.ShadeType)));
 			return m_Processor.GetShadeGroupsForRoom(room).Concat(list);
 		}
 

@@ -47,7 +47,7 @@ namespace ICD.Connect.Lighting.Mock.Controls
 		/// Returns the control data as a LightingProcessorControl struct.
 		/// </summary>
 		/// <returns></returns>
-		public LightingProcessorControl ToLightingProcessorControl()
+		public virtual LightingProcessorControl ToLightingProcessorControl()
 		{
 			return new LightingProcessorControl(PeripheralType, m_Id, m_Room, m_Name);
 		}

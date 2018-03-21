@@ -7,16 +7,20 @@ namespace ICD.Connect.Lighting.Mock.Controls
 {
 	public abstract class AbstractMockShadeLightingControl : AbstractMockLightingControl, IShadeEnvironmentPeripheral
 	{
+
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="room"></param>
 		/// <param name="name"></param>
-		protected AbstractMockShadeLightingControl(int id, int room, string name)
+		protected AbstractMockShadeLightingControl(int id, int room, string name, eShadeType shadeType)
 			: base(id, room, name)
 		{
+			ShadeType = shadeType;
 		}
+
+		public eShadeType ShadeType { get; private set; }
 
 		public eShadeDirection LastDirection { get { return eShadeDirection.Neither; } }
 
@@ -39,6 +43,12 @@ namespace ICD.Connect.Lighting.Mock.Controls
 		/// </summary>
 		public void StopMoving()
 		{
+		}
+
+		public override LightingProcessorControl ToLightingProcessorControl()
+		{
+			var control = base.ToLightingProcessorControl();
+			return new LightingProcessorControl(control.PeripheralType, control.Id, control.Room, control.Name, ShadeType);
 		}
 
 		/// <summary>
