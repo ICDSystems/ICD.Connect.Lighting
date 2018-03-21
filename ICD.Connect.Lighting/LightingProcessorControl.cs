@@ -45,6 +45,12 @@ namespace ICD.Connect.Lighting
 		[PublicAPI]
 		public string Name { get { return m_Name; } }
 
+		/// <summary>
+		/// Gets the type of the shade
+		/// </summary>
+		[PublicAPI]
+		public eShadeType ShadeType { get { return m_ShadeType; }}
+
 		#endregion
 
 		#region Constructors
@@ -56,7 +62,6 @@ namespace ICD.Connect.Lighting
 		/// <param name="id"></param>
 		/// <param name="room"></param>
 		/// <param name="name"></param>
-		[JsonConstructor]
 		public LightingProcessorControl(ePeripheralType peripheralType, int id, int room, string name)
 		{
 			m_PeripheralType = peripheralType;
@@ -158,6 +163,7 @@ namespace ICD.Connect.Lighting
 			builder.AppendProperty("Type", m_PeripheralType);
 			builder.AppendProperty("Room", m_Room);
 			builder.AppendProperty("Name", m_Name);
+			builder.AppendProperty("ShadeType", m_ShadeType);
 
 			return builder.ToString();
 		}

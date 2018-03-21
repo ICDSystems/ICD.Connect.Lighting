@@ -227,10 +227,10 @@ namespace ICD.Connect.Lighting.Mock.Controls
 					AddLoad(new MockLightingLoadControl(id, room, name));
 					break;
 				case LightingProcessorControl.ePeripheralType.Shade:
-					AddShade(new MockLightingShadeControl(id, room, name));
+					AddShade(new MockLightingShadeControl(id, room, name, control.ShadeType));
 					break;
 				case LightingProcessorControl.ePeripheralType.ShadeGroup:
-					AddShadeGroup(new MockLightingShadeGroupControl(id, room, name));
+					AddShadeGroup(new MockLightingShadeGroupControl(id, room, name, control.ShadeType));
 					break;
 				case LightingProcessorControl.ePeripheralType.Preset:
 					AddPreset(new MockLightingPresetControl(id, room, name));

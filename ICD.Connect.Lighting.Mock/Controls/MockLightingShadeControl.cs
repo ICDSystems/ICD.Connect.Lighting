@@ -1,4 +1,6 @@
-﻿namespace ICD.Connect.Lighting.Mock.Controls
+﻿using ICD.Connect.Lighting.Shades;
+
+namespace ICD.Connect.Lighting.Mock.Controls
 {
 	public sealed class MockLightingShadeControl : AbstractMockShadeLightingControl
 	{
@@ -13,8 +15,13 @@
 		/// <param name="id"></param>
 		/// <param name="room"></param>
 		/// <param name="name"></param>
+		public MockLightingShadeControl(int id, int room, string name, eShadeType shadeType)
+			: base(id, room, name, shadeType)
+		{
+		}
+
 		public MockLightingShadeControl(int id, int room, string name)
-			: base(id, room, name)
+			: base(id, room, name, eShadeType.None)
 		{
 		}
 

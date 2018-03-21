@@ -230,6 +230,12 @@ namespace ICD.Connect.Lighting.Processors
 		public static void SetPresetForRoom(this ILightingProcessorDevice extends,
 		                                    LightingProcessorControl preset)
 		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			if (preset == null)
+				throw new ArgumentNullException("preset");
+
 			extends.SetPresetForRoom(preset.Room, preset.Id);
 		}
 
@@ -244,6 +250,9 @@ namespace ICD.Connect.Lighting.Processors
 		public static void SetLoadLevel(this ILightingProcessorDevice extends,
 		                                LightingProcessorControl load, float percentage)
 		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
 			extends.SetLoadLevel(load.Room, load.Id, percentage);
 		}
 
@@ -255,6 +264,9 @@ namespace ICD.Connect.Lighting.Processors
 		public static float GetLoadLevel(this ILightingProcessorDevice extends,
 		                                 LightingProcessorControl load)
 		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
 			return extends.GetLoadLevel(load.Room, load.Id);
 		}
 
@@ -266,6 +278,9 @@ namespace ICD.Connect.Lighting.Processors
 		public static void StartRaisingLoadLevel(this ILightingProcessorDevice extends,
 		                                         LightingProcessorControl load)
 		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
 			extends.StartRaisingLoadLevel(load.Room, load.Id);
 		}
 
@@ -277,6 +292,9 @@ namespace ICD.Connect.Lighting.Processors
 		public static void StartLoweringLoadLevel(this ILightingProcessorDevice extends,
 		                                          LightingProcessorControl load)
 		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
 			extends.StartLoweringLoadLevel(load.Room, load.Id);
 		}
 
@@ -288,6 +306,9 @@ namespace ICD.Connect.Lighting.Processors
 		public static void StopRampingLoadLevel(this ILightingProcessorDevice extends,
 		                                        LightingProcessorControl load)
 		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
 			extends.StopRampingLoadLevel(load.Room, load.Id);
 		}
 
@@ -303,6 +324,9 @@ namespace ICD.Connect.Lighting.Processors
 		public static void StartRaisingShade(this ILightingProcessorDevice extends,
 		                                     LightingProcessorControl shade)
 		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
 			extends.StartRaisingShade(shade.Room, shade.Id);
 		}
 
@@ -314,6 +338,9 @@ namespace ICD.Connect.Lighting.Processors
 		public static void StartLoweringShade(this ILightingProcessorDevice extends,
 		                                      LightingProcessorControl shade)
 		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
 			extends.StartLoweringShade(shade.Room, shade.Id);
 		}
 
@@ -325,6 +352,9 @@ namespace ICD.Connect.Lighting.Processors
 		public static void StopMovingShade(this ILightingProcessorDevice extends,
 		                                   LightingProcessorControl shade)
 		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
 			extends.StopMovingShade(shade.Room, shade.Id);
 		}
 
@@ -340,6 +370,9 @@ namespace ICD.Connect.Lighting.Processors
 		public static void StartRaisingShadeGroup(this ILightingProcessorDevice extends,
 		                                          LightingProcessorControl shadeGroup)
 		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
 			extends.StartRaisingShadeGroup(shadeGroup.Room, shadeGroup.Id);
 		}
 
@@ -351,6 +384,9 @@ namespace ICD.Connect.Lighting.Processors
 		public static void StartLoweringShadeGroup(this ILightingProcessorDevice extends,
 		                                           LightingProcessorControl shadeGroup)
 		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
 			extends.StartLoweringShadeGroup(shadeGroup.Room, shadeGroup.Id);
 		}
 
@@ -362,6 +398,9 @@ namespace ICD.Connect.Lighting.Processors
 		public static void StopMovingShadeGroup(this ILightingProcessorDevice extends,
 		                                        LightingProcessorControl shadeGroup)
 		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
 			extends.StopMovingShadeGroup(shadeGroup.Room, shadeGroup.Id);
 		}
 
