@@ -1,4 +1,5 @@
 ﻿using ICD.Common.Properties;
+using ICD.Connect.Devices.EventArguments;
 #if SIMPLSHARP
 using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
@@ -332,13 +333,13 @@ namespace ICD.Connect.Lighting.Server
 			valueUpdate((ushort)loadIndex, valueUshort);
 		}
 
-		private void LightingProcessorClientOnIsOnlineStateChanged(object sender, BoolEventArgs boolEventArgs)
+		private void LightingProcessorClientOnIsOnlineStateChanged(object sender, DeviceBaseOnlineStateApiEventArgs args)
 		{
 			var valueUpdate = SPlusIsOnlineUpdate;
 			if (valueUpdate == null)
 				return;
 
-			valueUpdate((ushort)(boolEventArgs.Data ? 1 : 0));
+			valueUpdate((ushort)(args.Data ? 1 : 0));
 		}
 
 		private void LightingProcessorClientOnConnectedStateChanged(object sender, BoolEventArgs boolEventArgs)
@@ -510,7 +511,7 @@ namespace ICD.Connect.Lighting.Server
 
 			//Send some updates to S+, just in case
 			LightingProcessorClientOnConnectedStateChanged(this, new BoolEventArgs(false));
-			LightingProcessorClientOnIsOnlineStateChanged(this, new BoolEventArgs(false));
+			LightingProcessorClientOnIsOnlineStateChanged(this, new DeviceBaseOnlineStateApiEventArgs(false));
 		}
 
 		#endregion
