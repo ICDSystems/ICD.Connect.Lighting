@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils.Extensions;
-using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Lutron.QuantumNwk.EventArguments;
 using ICD.Connect.Lighting.Processors;
 
@@ -66,7 +65,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		RoomOccupancyEventArgs.eOccupancyState ILightingProcessorDevice.GetOccupancyForRoom(int room)
+		Misc.Occupancy.eOccupancyState ILightingProcessorDevice.GetOccupancyForRoom(int room)
 		{
 			eOccupancyState state = GetAreaIntegrationsForRoom(room).Select(a => a.OccupancyState)
 			                                                        .Unanimous(eOccupancyState.Unknown);
@@ -238,18 +237,18 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// </summary>
 		/// <param name="occupancy"></param>
 		/// <returns></returns>
-		private static RoomOccupancyEventArgs.eOccupancyState GetOccupancyState(eOccupancyState occupancy)
+		private static Misc.Occupancy.eOccupancyState GetOccupancyState(eOccupancyState occupancy)
 		{
 			switch (occupancy)
 			{
 				case eOccupancyState.Unknown:
-					return RoomOccupancyEventArgs.eOccupancyState.Unknown;
+					return Misc.Occupancy.eOccupancyState.Unknown;
 				case eOccupancyState.Inactive:
-					return RoomOccupancyEventArgs.eOccupancyState.Inactive;
+					return Misc.Occupancy.eOccupancyState.Unknown;
 				case eOccupancyState.Occupied:
-					return RoomOccupancyEventArgs.eOccupancyState.Occupied;
+					return Misc.Occupancy.eOccupancyState.Occupied;
 				case eOccupancyState.Unoccupied:
-					return RoomOccupancyEventArgs.eOccupancyState.Unoccupied;
+					return Misc.Occupancy.eOccupancyState.Unoccupied;
 				default:
 					throw new ArgumentOutOfRangeException("occupancy", "Unexpected eOccupancyState " + occupancy);
 			}

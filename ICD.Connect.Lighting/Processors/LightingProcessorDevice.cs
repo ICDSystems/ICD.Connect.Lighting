@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ICD.Common.Utils;
 using ICD.Connect.Lighting.Environment;
-using ICD.Connect.Lighting.EventArguments;
+using ICD.Connect.Misc.Occupancy;
 
 namespace ICD.Connect.Lighting.Processors
 {
@@ -55,7 +55,7 @@ namespace ICD.Connect.Lighting.Processors
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		public override RoomOccupancyEventArgs.eOccupancyState GetOccupancyForRoom(int room)
+		public override eOccupancyState GetOccupancyForRoom(int room)
 		{
 			throw new System.NotImplementedException();
 		}

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Processors;
+using ICD.Connect.Misc.Occupancy;
 
 namespace ICD.Connect.Lighting.Server
 {
@@ -80,10 +80,10 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		RoomOccupancyEventArgs.eOccupancyState ILightingProcessorDevice.GetOccupancyForRoom(int room)
+		eOccupancyState ILightingProcessorDevice.GetOccupancyForRoom(int room)
 		{
 			if (m_Room == null)
-				return RoomOccupancyEventArgs.eOccupancyState.Unknown;
+				return eOccupancyState.Unknown;
 			return GetOccupancy();
 		}
 

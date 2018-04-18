@@ -8,6 +8,7 @@ using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Lighting.Environment;
 using ICD.Connect.Lighting.EventArguments;
+using ICD.Connect.Misc.Occupancy;
 
 namespace ICD.Connect.Lighting.Mock.Controls
 {
@@ -32,7 +33,7 @@ namespace ICD.Connect.Lighting.Mock.Controls
 
 		private readonly int m_Id;
 		private int? m_ActivePreset;
-		private RoomOccupancyEventArgs.eOccupancyState m_Occupancy;
+		private eOccupancyState m_Occupancy;
 
 		#region Properties
 
@@ -61,7 +62,7 @@ namespace ICD.Connect.Lighting.Mock.Controls
 		/// <summary>
 		/// Gets/sets the room occupancy state.
 		/// </summary>
-		public RoomOccupancyEventArgs.eOccupancyState Occupancy
+		public eOccupancyState Occupancy
 		{
 			get { return m_Occupancy; }
 			set
@@ -368,9 +369,9 @@ namespace ICD.Connect.Lighting.Mock.Controls
 		public IEnumerable<IConsoleCommand> GetConsoleCommands()
 		{
 			string help = string.Format("SetOccupancy <STATE {0}>",
-			                            StringUtils.ArrayFormat(EnumUtils.GetValues<RoomOccupancyEventArgs.eOccupancyState>()));
+			                            StringUtils.ArrayFormat(EnumUtils.GetValues<eOccupancyState>()));
 			yield return
-				new GenericConsoleCommand<RoomOccupancyEventArgs.eOccupancyState>("SetOccupancy", help, state => Occupancy = state);
+				new GenericConsoleCommand<eOccupancyState>("SetOccupancy", help, state => Occupancy = state);
 
 			yield return
 				new GenericConsoleCommand<int>("SetActivePreset", "SetActivePreset <PRESET>", preset => ActivePreset = preset);
