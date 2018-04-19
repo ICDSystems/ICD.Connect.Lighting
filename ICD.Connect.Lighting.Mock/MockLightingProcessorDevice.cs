@@ -9,6 +9,7 @@ using ICD.Connect.Lighting.Environment;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Mock.Controls;
 using ICD.Connect.Lighting.Processors;
+using ICD.Connect.Misc.Occupancy;
 
 namespace ICD.Connect.Lighting.Mock
 {
@@ -351,7 +352,7 @@ namespace ICD.Connect.Lighting.Mock
 		/// <param name="room"></param>
 		/// <param name="occupancy"></param>
 		[PublicAPI]
-		public void SetOccupancyForRoom(int room, RoomOccupancyEventArgs.eOccupancyState occupancy)
+		public void SetOccupancyForRoom(int room, eOccupancyState occupancy)
 		{
 			GetRoom(room).Occupancy = occupancy;
 		}
@@ -362,7 +363,7 @@ namespace ICD.Connect.Lighting.Mock
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		public override RoomOccupancyEventArgs.eOccupancyState GetOccupancyForRoom(int room)
+		public override eOccupancyState GetOccupancyForRoom(int room)
 		{
 			return GetRoom(room).Occupancy;
 		}
@@ -542,9 +543,9 @@ namespace ICD.Connect.Lighting.Mock
 			yield return new GenericConsoleCommand<int>("AddRoom", "AddRoom <ROOM>", a => AddRoom(a));
 
 			string help = string.Format("SetRoomOccupancy <ROOM> <OCCUPANCY {0}>",
-			                            StringUtils.ArrayFormat(EnumUtils.GetValues<RoomOccupancyEventArgs.eOccupancyState>()));
+			                            StringUtils.ArrayFormat(EnumUtils.GetValues<eOccupancyState>()));
 			yield return
-				new GenericConsoleCommand<int, RoomOccupancyEventArgs.eOccupancyState>("SetRoomOccupancy", help,
+				new GenericConsoleCommand<int, eOccupancyState>("SetRoomOccupancy", help,
 				                                                                       (a, b) => SetOccupancyForRoom(a, b));
 		}
 

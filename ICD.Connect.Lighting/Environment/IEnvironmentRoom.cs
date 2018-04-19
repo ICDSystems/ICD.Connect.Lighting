@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ICD.Connect.Lighting.EventArguments;
+using ICD.Connect.Misc.Occupancy;
 
 namespace ICD.Connect.Lighting.Environment
 {
@@ -24,7 +25,7 @@ namespace ICD.Connect.Lighting.Environment
 		/// <summary>
 		/// Gets/sets the room occupancy state.
 		/// </summary>
-		RoomOccupancyEventArgs.eOccupancyState Occupancy { get; set; }
+		eOccupancyState Occupancy { get; set; }
 
 		void AddLoad(ILightingLoadEnvironmentPeripheral load);
 		void AddShade(IShadeEnvironmentPeripheral shade);

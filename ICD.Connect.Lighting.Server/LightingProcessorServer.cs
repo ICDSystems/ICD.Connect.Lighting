@@ -13,6 +13,7 @@ using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Processors;
 using ICD.Connect.Lighting.Shades;
 using ICD.Connect.Lighting.Shades.Controls;
+using ICD.Connect.Misc.Occupancy;
 using ICD.Connect.Protocol.EventArguments;
 using ICD.Connect.Protocol.Network.RemoteProcedure;
 using ICD.Connect.Protocol.Network.Attributes.Rpc;
@@ -165,8 +166,8 @@ namespace ICD.Connect.Lighting.Server
 			SendControlsToClient(client, GetPresetsForRoom(room));
 
 			// Send the room occupancy
-			RoomOccupancyEventArgs.eOccupancyState occupancy = m_Processor.GetOccupancyForRoom(room);
-			if (occupancy != default(RoomOccupancyEventArgs.eOccupancyState))
+			eOccupancyState occupancy = m_Processor.GetOccupancyForRoom(room);
+			if (occupancy != default(eOccupancyState))
 				m_RpcController.CallMethod(client, LightingProcessorClientDevice.SET_CACHED_OCCUPANCY_RPC, occupancy);
 
 			// Send the room preset
@@ -609,7 +610,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		public override RoomOccupancyEventArgs.eOccupancyState GetOccupancyForRoom(int room)
+		public override eOccupancyState GetOccupancyForRoom(int room)
 		{
 			return m_Processor.GetOccupancyForRoom(room);
 		}
