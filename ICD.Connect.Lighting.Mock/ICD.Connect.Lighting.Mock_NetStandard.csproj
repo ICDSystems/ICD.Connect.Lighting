@@ -37,6 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ICD.Connect.Misc\ICD.Connect.Misc\ICD.Connect.Misc_NetStandard.csproj" />
     <ProjectReference Include="..\ICD.Connect.Lighting\ICD.Connect.Lighting_NetStandard.csproj" />
   </ItemGroup>
 
