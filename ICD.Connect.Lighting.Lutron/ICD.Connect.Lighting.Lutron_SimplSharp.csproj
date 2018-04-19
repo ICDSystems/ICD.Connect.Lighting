@@ -100,6 +100,10 @@
       <Project>{FD46A717-5836-4B73-ADD0-2706639DA8ED}</Project>
       <Name>ICD.Connect.Devices_SimplSharp</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\ICD.Connect.Misc\ICD.Connect.Misc\ICD.Connect.Misc_SimplSharp.csproj">
+      <Project>{3BAE6352-77B5-499A-9DA5-2AB198F53183}</Project>
+      <Name>ICD.Connect.Misc_SimplSharp</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ICD.Connect.Protocol\ICD.Connect.Protocol\ICD.Connect.Protocol_SimplSharp.csproj">
       <Project>{2E4E01B8-D4EA-4FB1-9FCE-0A0DC8D83C8A}</Project>
       <Name>ICD.Connect.Protocol_SimplSharp</Name>

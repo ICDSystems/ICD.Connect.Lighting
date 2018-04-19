@@ -1,18 +1,10 @@
 using System;
-using ICD.Common.Properties;
+using ICD.Connect.Misc.Occupancy;
 
 namespace ICD.Connect.Lighting.EventArguments
 {
 	public sealed class RoomOccupancyEventArgs : EventArgs
 	{
-		public enum eOccupancyState
-		{
-			[PublicAPI] Unknown,
-			[PublicAPI] Inactive,
-			[PublicAPI] Occupied,
-			[PublicAPI] Unoccupied
-		}
-
 		private readonly int m_RoomId;
 		private readonly eOccupancyState m_OccupancyState;
 

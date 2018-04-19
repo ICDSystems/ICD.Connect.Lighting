@@ -4,6 +4,7 @@ using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Connect.Devices;
 using ICD.Connect.Lighting.EventArguments;
+using ICD.Connect.Misc.Occupancy;
 
 namespace ICD.Connect.Lighting.Processors
 {
@@ -96,7 +97,7 @@ namespace ICD.Connect.Lighting.Processors
 		/// <param name="room"></param>
 		/// <returns></returns>
 		[PublicAPI]
-		RoomOccupancyEventArgs.eOccupancyState GetOccupancyForRoom(int room);
+		eOccupancyState GetOccupancyForRoom(int room);
 
 		/// <summary>
 		/// Sets the preset for the given room.

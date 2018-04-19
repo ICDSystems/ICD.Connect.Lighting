@@ -5,6 +5,7 @@ using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
 using ICD.Connect.Devices;
 using ICD.Connect.Lighting.EventArguments;
+using ICD.Connect.Misc.Occupancy;
 
 namespace ICD.Connect.Lighting.Processors
 {
@@ -95,7 +96,7 @@ namespace ICD.Connect.Lighting.Processors
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		public abstract RoomOccupancyEventArgs.eOccupancyState GetOccupancyForRoom(int room);
+		public abstract eOccupancyState GetOccupancyForRoom(int room);
 
 		/// <summary>
 		/// Sets the preset for the given room.
@@ -197,7 +198,7 @@ namespace ICD.Connect.Lighting.Processors
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="occupancyState"></param>
-		protected void RaiseOnRoomOccupancyChanged(int room, RoomOccupancyEventArgs.eOccupancyState occupancyState)
+		protected void RaiseOnRoomOccupancyChanged(int room, eOccupancyState occupancyState)
 		{
 			OnRoomOccupancyChanged.Raise(this, new RoomOccupancyEventArgs(room, occupancyState));
 		}

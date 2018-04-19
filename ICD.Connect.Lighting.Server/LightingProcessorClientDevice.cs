@@ -9,6 +9,7 @@ using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Mock.Controls;
+using ICD.Connect.Misc.Occupancy;
 using ICD.Connect.Protocol.Extensions;
 using ICD.Connect.Protocol.Network.RemoteProcedure;
 using ICD.Connect.Protocol.Network.Attributes.Rpc;
@@ -444,9 +445,9 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <returns></returns>
 		[PublicAPI]
-		public RoomOccupancyEventArgs.eOccupancyState GetOccupancy()
+		public eOccupancyState GetOccupancy()
 		{
-			return m_Room == null ? RoomOccupancyEventArgs.eOccupancyState.Unknown : m_Room.Occupancy;
+			return m_Room == null ? eOccupancyState.Unknown : m_Room.Occupancy;
 		}
 
 		/// <summary>
@@ -642,7 +643,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="occupancy"></param>
 		[Rpc(SET_CACHED_OCCUPANCY_RPC), UsedImplicitly]
-		private void SetCachedOccupancy(RoomOccupancyEventArgs.eOccupancyState occupancy)
+		private void SetCachedOccupancy(eOccupancyState occupancy)
 		{
 			m_Room.Occupancy = occupancy;
 		}
