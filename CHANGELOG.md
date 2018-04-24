@@ -6,4 +6,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Changed
- - Changed all lighting pieces to use eOccupancySttae from ICD.Connect.Misc.Occupancy
+ - Changed all lighting pieces to use eOccupancyState from ICD.Connect.Misc.Occupancy
+ - Removed suffix from assembly names
+ - Using API event args
