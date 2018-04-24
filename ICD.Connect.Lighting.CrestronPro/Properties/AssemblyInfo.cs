@@ -4,5 +4,5 @@ using System.Reflection;
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("ICD.Connect.Lighting.CrestronPro_SimplSharp")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
-[assembly: AssemblyVersion("2.0.0.0")]
+[assembly: AssemblyVersion("3.0.0.0")]
 
