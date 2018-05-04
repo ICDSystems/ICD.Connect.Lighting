@@ -7,13 +7,13 @@ namespace ICD.Connect.Lighting.Mock.Controls
 {
 	public abstract class AbstractMockShadeLightingControl : AbstractMockLightingControl, IShadeEnvironmentPeripheral
 	{
-
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="room"></param>
 		/// <param name="name"></param>
+		/// <param name="shadeType"></param>
 		protected AbstractMockShadeLightingControl(int id, int room, string name, eShadeType shadeType)
 			: base(id, room, name)
 		{

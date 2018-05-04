@@ -15,6 +15,7 @@ namespace ICD.Connect.Lighting.Mock.Controls
 		/// <param name="id"></param>
 		/// <param name="room"></param>
 		/// <param name="name"></param>
+		/// <param name="shadeType"></param>
 		public MockLightingShadeControl(int id, int room, string name, eShadeType shadeType)
 			: base(id, room, name, shadeType)
 		{
