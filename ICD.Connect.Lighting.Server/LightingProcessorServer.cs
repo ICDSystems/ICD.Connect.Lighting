@@ -7,7 +7,6 @@ using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
-using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Processors;
@@ -825,38 +824,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <returns></returns>
 		public override IEnumerable<IConsoleNodeBase> GetConsoleNodes()
 		{
-			IConsoleNode processor = m_Processor as IConsoleNode;
-			if (processor != null)
-				yield return processor;
-		}
-
-		/// <summary>
-		/// Calls the delegate for each console status item.
-		/// </summary>
-		/// <param name="addRow"></param>
-		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
-		{
-		}
-
-		/// <summary>
-		/// Gets the child console commands.
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
-		{
-			foreach (IConsoleCommand command in GetBaseConsoleCommands())
-			{
-				yield return command;
-			}
-		}
-
-		/// <summary>
-		/// Gets the base classes console commands to workaround crestron sandbox issues.
-		/// </summary>
-		/// <returns></returns>
-		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
-		{
-			return base.GetConsoleCommands();
+			if (m_Processor != null)
+				yield return m_Processor;
 		}
 
 		#endregion
