@@ -247,7 +247,8 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 
 			try
 			{
-				xml = IcdFile.ReadToEnd(fullPath, Encoding.UTF8);
+				xml = IcdFile.ReadToEnd(fullPath, new UTF8Encoding(false));
+				xml = EncodingUtils.StripUtf8Bom(xml);
 			}
 			catch (Exception e)
 			{
