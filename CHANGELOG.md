@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [3.0.1] - 2018-05-09
+### Changed
+ - Fixed potential issues with loading configs in UTF8-BOM encoding
+
 ## [3.0.0] - 2018-04-24
 ### Changed
  - Changed all lighting pieces to use eOccupancyState from ICD.Connect.Misc.Occupancy
