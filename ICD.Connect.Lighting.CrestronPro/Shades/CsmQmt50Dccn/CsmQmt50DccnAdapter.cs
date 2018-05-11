@@ -2,7 +2,7 @@
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Misc.CrestronPro;
 using ICD.Connect.Misc.CrestronPro.Utils;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings;
 
 namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 {

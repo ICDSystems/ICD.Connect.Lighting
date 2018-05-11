@@ -20,7 +20,7 @@ using ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations;
 using ICD.Connect.Protocol.Extensions;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.SerialBuffers;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings;
 
 namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 {
