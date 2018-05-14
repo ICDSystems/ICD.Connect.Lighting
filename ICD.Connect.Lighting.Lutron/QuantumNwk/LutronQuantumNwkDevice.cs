@@ -252,7 +252,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			}
 			catch (Exception e)
 			{
-				IcdErrorLog.Error("Failed to load integration config {0} - {1}", fullPath, e.Message);
+				Log(eSeverity.Error, "Failed to load integration config {0} - {1}", fullPath, e.Message);
 				return;
 			}
 
