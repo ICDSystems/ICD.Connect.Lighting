@@ -14,6 +14,7 @@ using ICD.Connect.Misc.Occupancy;
 using ICD.Connect.Protocol.Extensions;
 using ICD.Connect.Protocol.Network.RemoteProcedure;
 using ICD.Connect.Protocol.Network.Attributes.Rpc;
+using ICD.Connect.Protocol.Network.Settings;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Settings;
 
@@ -43,6 +44,8 @@ namespace ICD.Connect.Lighting.Server
 
 		private readonly SafeTimer m_ConnectionTimer;
 		private readonly ClientSerialRpcController m_RpcController;
+
+		private readonly NetworkProperties m_NetworkProperties;
 
 		private ISerialPort m_Port;
 		private bool m_IsConnected;
@@ -84,6 +87,8 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		public LightingProcessorClientDevice()
 		{
+			m_NetworkProperties = new NetworkProperties();
+
 			m_RpcController = new ClientSerialRpcController(this);
 
 			m_ConnectionTimer = new SafeTimer(ConnectionTimerCallback, 0, CONNECTION_CHECK_MILLISECONDS);
@@ -340,6 +345,8 @@ namespace ICD.Connect.Lighting.Server
 
 			settings.RoomId = m_RoomId;
 			settings.Port = m_Port == null ? (int?)null : m_Port.Id;
+
+			settings.NetworkProperties.Copy(m_NetworkProperties);
 		}
 
 		/// <summary>
@@ -351,6 +358,8 @@ namespace ICD.Connect.Lighting.Server
 
 			SetPort(null);
 			m_RoomId = 0;
+
+			m_NetworkProperties.Clear();
 		}
 
 		/// <summary>
@@ -361,6 +370,8 @@ namespace ICD.Connect.Lighting.Server
 		protected override void ApplySettingsFinal(LightingProcessorClientDeviceSettings settings, IDeviceFactory factory)
 		{
 			base.ApplySettingsFinal(settings, factory);
+
+			m_NetworkProperties.Copy(settings.NetworkProperties);
 
 			ISerialPort port = null;
 

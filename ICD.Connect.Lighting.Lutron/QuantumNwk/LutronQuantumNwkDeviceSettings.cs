@@ -10,13 +10,18 @@ using ICD.Connect.Settings.Attributes.SettingsProperties;
 namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 {
 	[KrangSettings("LutronQuantumNwk", typeof(LutronQuantumNwkDevice))]
-	public sealed class LutronQuantumNwkDeviceSettings : AbstractDeviceSettings, INetworkProperties, IComSpecProperties
+	public sealed class LutronQuantumNwkDeviceSettings : AbstractDeviceSettings, INetworkSettings, IComSpecSettings
 	{
 		private const string PORT_ELEMENT = "Port";
+		private const string USERNAME_ELEMENT = "Username";
 		private const string INTEGRATION_CONFIG_ELEMENT = "IntegrationConfig";
+
+		private const string DEFAULT_USERNAME = "nwk";
 
 		private readonly NetworkProperties m_NetworkProperties;
 		private readonly ComSpecProperties m_ComSpecProperties;
+
+		private string m_UserName;
 
 		#region Properties
 
@@ -26,6 +31,27 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		[OriginatorIdSettingsProperty(typeof(ISerialPort))]
 		public int? Port { get; set; }
 
+		public string Username
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(m_UserName))
+					m_UserName = DEFAULT_USERNAME;
+				return m_UserName;
+			}
+			set { m_UserName = value; }
+		}
+
+		/// <summary>
+		/// Gets the configurable network properties.
+		/// </summary>
+		public INetworkProperties NetworkProperties { get { return m_NetworkProperties; } }
+
+		/// <summary>
+		/// Gets the configurable Com Spec properties.
+		/// </summary>
+		public IComSpecProperties ComSpecProperties { get { return m_ComSpecProperties; } }
+
 		#endregion
 
 		#region Network
@@ -33,12 +59,20 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// <summary>
 		/// Gets/sets the configurable username.
 		/// </summary>
-		public string Username { get { return m_NetworkProperties.Username; } set { m_NetworkProperties.Username = value; } }
+		public string NetworkUsername
+		{
+			get { return m_NetworkProperties.NetworkUsername; }
+			set { m_NetworkProperties.NetworkUsername = value; }
+		}
 
 		/// <summary>
 		/// Gets/sets the configurable password.
 		/// </summary>
-		public string Password { get { return m_NetworkProperties.Password; } set { m_NetworkProperties.Password = value; } }
+		public string NetworkPassword
+		{
+			get { return m_NetworkProperties.NetworkPassword; }
+			set { m_NetworkProperties.NetworkPassword = value; }
+		}
 
 		/// <summary>
 		/// Gets/sets the configurable network address.
@@ -143,7 +177,6 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		{
 			m_NetworkProperties = new NetworkProperties
 			{
-				Username = "nwk",
 				NetworkPort = 23
 			};
 
@@ -171,6 +204,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			base.WriteElements(writer);
 
 			writer.WriteElementString(PORT_ELEMENT, IcdXmlConvert.ToString(Port));
+			writer.WriteElementString(USERNAME_ELEMENT, Username);
 			writer.WriteElementString(INTEGRATION_CONFIG_ELEMENT, IntegrationConfig);
 
 			m_NetworkProperties.WriteElements(writer);
@@ -186,6 +220,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			base.ParseXml(xml);
 
 			Port = XmlUtils.TryReadChildElementContentAsInt(xml, PORT_ELEMENT);
+			Username = XmlUtils.TryReadChildElementContentAsString(xml, USERNAME_ELEMENT);
 			IntegrationConfig = XmlUtils.TryReadChildElementContentAsString(xml, INTEGRATION_CONFIG_ELEMENT);
 
 			m_NetworkProperties.ParseXml(xml);

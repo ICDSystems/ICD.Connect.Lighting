@@ -11,7 +11,7 @@ namespace ICD.Connect.Lighting.Server
 	/// Settings for the BmsLightingProcessorClientDevice.
 	/// </summary>
 	[KrangSettings("BmsLightingProcessorClient", typeof(LightingProcessorClientDevice))]
-	public sealed class LightingProcessorClientDeviceSettings : AbstractLightingProcessorDeviceSettings, INetworkProperties
+	public sealed class LightingProcessorClientDeviceSettings : AbstractLightingProcessorDeviceSettings, INetworkSettings
 	{
 		private const string PORT_ELEMENT = "Port";
 		private const string ROOM_ID_ELEMENT = "RoomId";
@@ -28,19 +28,32 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		public int RoomId { get; set; }
 
+		/// <summary>
+		/// Gets the configurable network properties.
+		/// </summary>
+		public INetworkProperties NetworkProperties { get { return m_NetworkProperties; } }
+
 		#endregion
 
 		#region Network
 
 		/// <summary>
-		/// Gets/sets the configurable username.
+		/// Gets/sets the configurable network username.
 		/// </summary>
-		public string Username { get { return m_NetworkProperties.Username; } set { m_NetworkProperties.Username = value; } }
+		public string NetworkUsername
+		{
+			get { return m_NetworkProperties.NetworkUsername; }
+			set { m_NetworkProperties.NetworkUsername = value; }
+		}
 
 		/// <summary>
-		/// Gets/sets the configurable password.
+		/// Gets/sets the configurable network password.
 		/// </summary>
-		public string Password { get { return m_NetworkProperties.Password; } set { m_NetworkProperties.Password = value; } }
+		public string NetworkPassword
+		{
+			get { return m_NetworkProperties.NetworkPassword; }
+			set { m_NetworkProperties.NetworkPassword = value; }
+		}
 
 		/// <summary>
 		/// Gets/sets the configurable network address.

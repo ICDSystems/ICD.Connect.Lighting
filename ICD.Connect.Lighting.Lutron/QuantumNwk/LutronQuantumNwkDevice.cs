@@ -18,8 +18,10 @@ using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Lutron.QuantumNwk.EventArguments;
 using ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations;
 using ICD.Connect.Protocol.Extensions;
+using ICD.Connect.Protocol.Network.Settings;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.SerialBuffers;
+using ICD.Connect.Protocol.Settings;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Lighting.Lutron.QuantumNwk
@@ -85,6 +87,9 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		private readonly SafeTimer m_CommandTimer;
 		private readonly SafeTimer m_ConnectionTimer;
 
+		private readonly ComSpecProperties m_ComSpecProperties;
+		private readonly NetworkProperties m_NetworkProperties;
+
 		private ISerialPort m_Port;
 		private bool m_IsConnected;
 		private bool m_Initialized;
@@ -143,6 +148,9 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// </summary>
 		public LutronQuantumNwkDevice()
 		{
+			m_ComSpecProperties = new ComSpecProperties();
+			m_NetworkProperties = new NetworkProperties();
+
 			m_Areas = new List<int>();
 			m_IdToArea = new Dictionary<int, AreaIntegration>();
 			m_RoomToAreas = new Dictionary<int, List<AreaIntegration>>();
@@ -783,6 +791,9 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			settings.IntegrationConfig = m_Config;
 			settings.Username = Username;
 			settings.Port = m_Port == null ? (int?)null : m_Port.Id;
+
+			settings.ComSpecProperties.Copy(m_ComSpecProperties);
+			settings.NetworkProperties.Copy(m_NetworkProperties);
 		}
 
 		/// <summary>
@@ -795,6 +806,9 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			m_Config = null;
 			Username = null;
 			SetPort(null);
+
+			m_ComSpecProperties.Clear();
+			m_NetworkProperties.Clear();
 		}
 
 		/// <summary>
@@ -805,6 +819,9 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		protected override void ApplySettingsFinal(LutronQuantumNwkDeviceSettings settings, IDeviceFactory factory)
 		{
 			base.ApplySettingsFinal(settings, factory);
+
+			m_ComSpecProperties.Copy(settings.ComSpecProperties);
+			m_NetworkProperties.Copy(settings.NetworkProperties);
 
 			Username = settings.Username;
 
