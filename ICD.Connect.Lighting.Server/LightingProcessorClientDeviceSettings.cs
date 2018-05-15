@@ -1,6 +1,6 @@
-﻿using System;
-using ICD.Common.Utils.Xml;
+﻿using ICD.Common.Utils.Xml;
 using ICD.Connect.Lighting.Processors;
+using ICD.Connect.Protocol.Network.Settings;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Settings.Attributes;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
@@ -10,23 +10,15 @@ namespace ICD.Connect.Lighting.Server
 	/// <summary>
 	/// Settings for the BmsLightingProcessorClientDevice.
 	/// </summary>
-	[KrangSettings(FACTORY_NAME)]
-	public sealed class LightingProcessorClientDeviceSettings : AbstractLightingProcessorDeviceSettings
+	[KrangSettings("BmsLightingProcessorClient", typeof(LightingProcessorClientDevice))]
+	public sealed class LightingProcessorClientDeviceSettings : AbstractLightingProcessorDeviceSettings, INetworkProperties
 	{
-		private const string FACTORY_NAME = "BmsLightingProcessorClient";
-
 		private const string PORT_ELEMENT = "Port";
 		private const string ROOM_ID_ELEMENT = "RoomId";
 
-		/// <summary>
-		/// Gets the originator factory name.
-		/// </summary>
-		public override string FactoryName { get { return FACTORY_NAME; } }
+		private readonly NetworkProperties m_NetworkProperties;
 
-		/// <summary>
-		/// Gets the type of the originator for this settings instance.
-		/// </summary>
-		public override Type OriginatorType { get { return typeof(LightingProcessorClientDevice); } }
+		#region Properties
 
 		[OriginatorIdSettingsProperty(typeof(ISerialPort))]
 		public int? Port { get; set; }
@@ -35,6 +27,48 @@ namespace ICD.Connect.Lighting.Server
 		/// This will be removed once we figure out the scope of the room framework.
 		/// </summary>
 		public int RoomId { get; set; }
+
+		#endregion
+
+		#region Network
+
+		/// <summary>
+		/// Gets/sets the configurable username.
+		/// </summary>
+		public string Username { get { return m_NetworkProperties.Username; } set { m_NetworkProperties.Username = value; } }
+
+		/// <summary>
+		/// Gets/sets the configurable password.
+		/// </summary>
+		public string Password { get { return m_NetworkProperties.Password; } set { m_NetworkProperties.Password = value; } }
+
+		/// <summary>
+		/// Gets/sets the configurable network address.
+		/// </summary>
+		public string NetworkAddress
+		{
+			get { return m_NetworkProperties.NetworkAddress; }
+			set { m_NetworkProperties.NetworkAddress = value; }
+		}
+
+		/// <summary>
+		/// Gets/sets the configurable network port.
+		/// </summary>
+		public ushort NetworkPort
+		{
+			get { return m_NetworkProperties.NetworkPort; }
+			set { m_NetworkProperties.NetworkPort = value; }
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		public LightingProcessorClientDeviceSettings()
+		{
+			m_NetworkProperties = new NetworkProperties();
+		}
 
 		/// <summary>
 		/// Writes property elements to xml.
@@ -46,6 +80,8 @@ namespace ICD.Connect.Lighting.Server
 
 			writer.WriteElementString(PORT_ELEMENT, IcdXmlConvert.ToString(Port));
 			writer.WriteElementString(ROOM_ID_ELEMENT, IcdXmlConvert.ToString(RoomId));
+
+			m_NetworkProperties.WriteElements(writer);
 		}
 
 		/// <summary>
@@ -58,6 +94,8 @@ namespace ICD.Connect.Lighting.Server
 
 			Port = XmlUtils.TryReadChildElementContentAsInt(xml, PORT_ELEMENT);
 			RoomId = XmlUtils.TryReadChildElementContentAsInt(xml, ROOM_ID_ELEMENT) ?? 0;
+
+			m_NetworkProperties.ParseXml(xml);
 		}
 	}
 }
