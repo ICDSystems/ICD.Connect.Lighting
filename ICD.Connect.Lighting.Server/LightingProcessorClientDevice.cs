@@ -164,7 +164,6 @@ namespace ICD.Connect.Lighting.Server
 
 		/// <summary>
 		/// Sets the room id for looking up controls.
-		/// TODO - this will be replaced when we figure out the scope of the room framework.
 		/// </summary>
 		/// <param name="roomId"></param>
 		[PublicAPI]
@@ -184,20 +183,6 @@ namespace ICD.Connect.Lighting.Server
 		#endregion
 
 		#region Private Methods
-
-		/// <summary>
-		/// Logs to logging core.
-		/// </summary>
-		/// <param name="severity"></param>
-		/// <param name="message"></param>
-		/// <param name="args"></param>
-		private void Log(eSeverity severity, string message, params object[] args)
-		{
-			message = string.Format(message, args);
-			message = string.Format("{0} - {1}", GetType().Name, message);
-
-			Logger.AddEntry(severity, message);
-		}
 
 		/// <summary>
 		/// Gets the current online status of the device.
