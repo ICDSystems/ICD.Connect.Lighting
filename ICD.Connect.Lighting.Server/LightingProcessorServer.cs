@@ -14,9 +14,9 @@ using ICD.Connect.Lighting.Shades;
 using ICD.Connect.Lighting.Shades.Controls;
 using ICD.Connect.Misc.Occupancy;
 using ICD.Connect.Protocol.EventArguments;
+using ICD.Connect.Protocol.Network.Ports.Tcp;
 using ICD.Connect.Protocol.Network.RemoteProcedure;
 using ICD.Connect.Protocol.Network.Attributes.Rpc;
-using ICD.Connect.Protocol.Network.Tcp;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Lighting.Server
