@@ -959,11 +959,7 @@ namespace ICD.Connect.Lighting.Server
 
 		private void LogApplySettingsError(string message)
 		{
-			Logger.AddEntry(eSeverity.Error,
-							"Failed to apply settings for Lighting Processor Server {0}."
-							+ IcdEnvironment.NewLine
-							+ message,
-							string.Format("{0}: {1}", Id, Name));
+			Log(eSeverity.Error, "Failed to apply settings for Lighting Processor Server - {0}", message);
 		}
 
 		#endregion
