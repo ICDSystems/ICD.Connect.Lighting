@@ -78,8 +78,6 @@
     <Compile Include="Processors\AbstractLightingProcessorDeviceSettings.cs" />
     <Compile Include="Processors\ILightingProcessorDevice.cs" />
     <Compile Include="KrangPlugin.cs" />
-    <Compile Include="Processors\LightingProcessorDevice.cs" />
-    <Compile Include="Processors\LightingProcessorDeviceSettings.cs" />
     <Compile Include="Shades\AbstractShadeDevice.cs" />
     <Compile Include="Shades\AbstractShadeDeviceSettings.cs" />
     <Compile Include="Shades\eShadeType.cs" />
