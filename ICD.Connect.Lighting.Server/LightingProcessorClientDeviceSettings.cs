@@ -11,12 +11,12 @@ namespace ICD.Connect.Lighting.Server
 	/// Settings for the BmsLightingProcessorClientDevice.
 	/// </summary>
 	[KrangSettings("BmsLightingProcessorClient", typeof(LightingProcessorClientDevice))]
-	public sealed class LightingProcessorClientDeviceSettings : AbstractLightingProcessorDeviceSettings, INetworkSettings
+	public sealed class LightingProcessorClientDeviceSettings : AbstractLightingProcessorDeviceSettings, ISecureNetworkSettings
 	{
 		private const string PORT_ELEMENT = "Port";
 		private const string ROOM_ID_ELEMENT = "RoomId";
 
-		private readonly NetworkProperties m_NetworkProperties;
+		private readonly SecureNetworkProperties m_NetworkProperties;
 
 		#region Properties
 
@@ -27,11 +27,6 @@ namespace ICD.Connect.Lighting.Server
 		/// This will be removed once we figure out the scope of the room framework.
 		/// </summary>
 		public int RoomId { get; set; }
-
-		/// <summary>
-		/// Gets the configurable network properties.
-		/// </summary>
-		public INetworkProperties NetworkProperties { get { return m_NetworkProperties; } }
 
 		#endregion
 
@@ -80,7 +75,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		public LightingProcessorClientDeviceSettings()
 		{
-			m_NetworkProperties = new NetworkProperties();
+			m_NetworkProperties = new SecureNetworkProperties();
 		}
 
 		/// <summary>

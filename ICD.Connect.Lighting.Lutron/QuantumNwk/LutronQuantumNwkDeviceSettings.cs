@@ -18,7 +18,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 
 		private const string DEFAULT_USERNAME = "nwk";
 
-		private readonly NetworkProperties m_NetworkProperties;
+		private readonly SecureNetworkProperties m_NetworkProperties;
 		private readonly ComSpecProperties m_ComSpecProperties;
 
 		private string m_UserName;
@@ -175,7 +175,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// </summary>
 		public LutronQuantumNwkDeviceSettings()
 		{
-			m_NetworkProperties = new NetworkProperties
+			m_NetworkProperties = new SecureNetworkProperties
 			{
 				NetworkPort = 23
 			};
