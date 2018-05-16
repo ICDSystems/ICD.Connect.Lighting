@@ -10,7 +10,7 @@ using ICD.Connect.Settings.Attributes.SettingsProperties;
 namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 {
 	[KrangSettings("LutronQuantumNwk", typeof(LutronQuantumNwkDevice))]
-	public sealed class LutronQuantumNwkDeviceSettings : AbstractDeviceSettings, INetworkSettings, IComSpecSettings
+	public sealed class LutronQuantumNwkDeviceSettings : AbstractDeviceSettings, ISecureNetworkSettings, IComSpecSettings
 	{
 		private const string PORT_ELEMENT = "Port";
 		private const string USERNAME_ELEMENT = "Username";
@@ -41,16 +41,6 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			}
 			set { m_UserName = value; }
 		}
-
-		/// <summary>
-		/// Gets the configurable network properties.
-		/// </summary>
-		public INetworkProperties NetworkProperties { get { return m_NetworkProperties; } }
-
-		/// <summary>
-		/// Gets the configurable Com Spec properties.
-		/// </summary>
-		public IComSpecProperties ComSpecProperties { get { return m_ComSpecProperties; } }
 
 		#endregion
 

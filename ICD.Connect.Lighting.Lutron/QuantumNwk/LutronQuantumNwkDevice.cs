@@ -88,7 +88,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		private readonly SafeTimer m_ConnectionTimer;
 
 		private readonly ComSpecProperties m_ComSpecProperties;
-		private readonly NetworkProperties m_NetworkProperties;
+		private readonly SecureNetworkProperties m_NetworkProperties;
 
 		private ISerialPort m_Port;
 		private bool m_IsConnected;
@@ -149,7 +149,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		public LutronQuantumNwkDevice()
 		{
 			m_ComSpecProperties = new ComSpecProperties();
-			m_NetworkProperties = new NetworkProperties();
+			m_NetworkProperties = new SecureNetworkProperties();
 
 			m_Areas = new List<int>();
 			m_IdToArea = new Dictionary<int, AreaIntegration>();
@@ -792,8 +792,8 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			settings.Username = Username;
 			settings.Port = m_Port == null ? (int?)null : m_Port.Id;
 
-			settings.ComSpecProperties.Copy(m_ComSpecProperties);
-			settings.NetworkProperties.Copy(m_NetworkProperties);
+			settings.Copy(m_ComSpecProperties);
+			settings.Copy(m_NetworkProperties);
 		}
 
 		/// <summary>
@@ -820,8 +820,8 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			m_ComSpecProperties.Copy(settings.ComSpecProperties);
-			m_NetworkProperties.Copy(settings.NetworkProperties);
+			m_ComSpecProperties.Copy(settings);
+			m_NetworkProperties.Copy(settings);
 
 			Username = settings.Username;
 
