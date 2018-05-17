@@ -1,29 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Lighting.Shades
 {
-	[KrangSettings(FACTORY_NAME)]
+	[KrangSettings("ShadeGroup", typeof(ShadeGroup))]
 	public sealed class ShadeGroupSettings : AbstractShadeDeviceSettings, IShadeGroupSettings
 	{
-		private const string FACTORY_NAME = "ShadeGroup";
 		private const string SHADES_ELEMENT = "Shades";
 		private const string SHADE_ELEMENT = "Shade";
 
-		public IEnumerable<int?> ShadeIds { get; set; }  
-
-		/// <summary>
-		/// Gets the originator factory name.
-		/// </summary>
-		public override string FactoryName { get { return FACTORY_NAME; } }
-
-		/// <summary>
-		/// Gets the type of the originator for this settings instance.
-		/// </summary>
-		public override Type OriginatorType { get { return typeof(ShadeGroup); } }
+		public IEnumerable<int?> ShadeIds { get; set; }
 
 		/// <summary>
 		/// Writes property elements to xml.
@@ -44,7 +32,7 @@ namespace ICD.Connect.Lighting.Shades
 		{
 			base.ParseXml(xml);
 
-			ShadeIds =  XmlUtils.ReadListFromXml(xml, SHADES_ELEMENT, SHADE_ELEMENT, c => XmlUtils.TryReadElementContentAsInt(c));
+			ShadeIds = XmlUtils.ReadListFromXml(xml, SHADES_ELEMENT, SHADE_ELEMENT, c => XmlUtils.TryReadElementContentAsInt(c));
 		}
 	}
 }
