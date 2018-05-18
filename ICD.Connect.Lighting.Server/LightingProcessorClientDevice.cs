@@ -12,6 +12,7 @@ using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Mock.Controls;
 using ICD.Connect.Misc.Occupancy;
 using ICD.Connect.Protocol.Extensions;
+using ICD.Connect.Protocol.Network.Ports;
 using ICD.Connect.Protocol.Network.RemoteProcedure;
 using ICD.Connect.Protocol.Network.Attributes.Rpc;
 using ICD.Connect.Protocol.Network.Settings;
@@ -45,7 +46,7 @@ namespace ICD.Connect.Lighting.Server
 		private readonly SafeTimer m_ConnectionTimer;
 		private readonly ClientSerialRpcController m_RpcController;
 
-		private readonly NetworkProperties m_NetworkProperties;
+		private readonly SecureNetworkProperties m_NetworkProperties;
 
 		private ISerialPort m_Port;
 		private bool m_IsConnected;
@@ -87,7 +88,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		public LightingProcessorClientDevice()
 		{
-			m_NetworkProperties = new NetworkProperties();
+			m_NetworkProperties = new SecureNetworkProperties();
 
 			m_RpcController = new ClientSerialRpcController(this);
 
@@ -155,6 +156,8 @@ namespace ICD.Connect.Lighting.Server
 			if (port == m_Port)
 				return;
 
+			ConfigurePort(port);
+
 			Unsubscribe(m_Port);
 
 			m_Port = port;
@@ -165,6 +168,19 @@ namespace ICD.Connect.Lighting.Server
 			IsConnected = m_Port != null && m_Port.IsConnected;
 
 			UpdateCachedOnlineStatus();
+		}
+
+		/// <summary>
+		/// Configures the given port for communication with the device.
+		/// </summary>
+		/// <param name="port"></param>
+		private void ConfigurePort(ISerialPort port)
+		{
+			// Network (TCP, UDP, SSH)
+			if (port is ISecureNetworkPort)
+				(port as ISecureNetworkPort).ApplyDeviceConfiguration(m_NetworkProperties);
+			else if (port is INetworkPort)
+				(port as INetworkPort).ApplyDeviceConfiguration(m_NetworkProperties);
 		}
 
 		/// <summary>
