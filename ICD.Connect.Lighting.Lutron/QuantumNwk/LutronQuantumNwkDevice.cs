@@ -46,9 +46,6 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// </summary>
 		private const int COMMUNICATION_INTERVAL_MILLISECONDS = 250;
 
-		// How often to check the connection and reconnect if necessary.
-		private const long CONNECTION_CHECK_MILLISECONDS = 30 * 1000;
-
 		/// <summary>
 		/// Raised when the class initializes.
 		/// </summary>
@@ -166,6 +163,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			OnRoomOccupancyChanged = null;
 			OnRoomPresetChanged = null;
 			OnRoomLoadLevelChanged = null;
+			OnRoomControlsChanged = null;
 
 			base.DisposeFinal(disposing);
 

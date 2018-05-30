@@ -196,6 +196,9 @@ namespace ICD.Connect.Lighting.Server
 		{
 			OnConnectedStateChanged.Raise(this, new BoolEventArgs(args.Data));
 			UpdateCachedOnlineStatus();
+
+			if (args.Data)
+				m_RpcController.CallMethod(LightingProcessorServer.REGISTER_FEEDBACK_RPC, m_RoomId);
 		}
 
 		#endregion
