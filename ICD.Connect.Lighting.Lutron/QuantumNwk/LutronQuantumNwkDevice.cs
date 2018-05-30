@@ -13,7 +13,6 @@ using ICD.Common.Utils.Timers;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
-using ICD.Connect.Devices.EventArguments;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Lutron.QuantumNwk.EventArguments;
 using ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations;
@@ -447,7 +446,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="eventArgs"></param>
-		private void PortOnIsOnlineStateChanged(object sender, DeviceBaseOnlineStateApiEventArgs eventArgs)
+		private void PortOnIsOnlineStateChanged(object sender, BoolEventArgs eventArgs)
 		{
 			UpdateCachedOnlineStatus();
 		}
