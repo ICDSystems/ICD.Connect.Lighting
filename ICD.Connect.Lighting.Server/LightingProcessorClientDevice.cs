@@ -23,9 +23,6 @@ namespace ICD.Connect.Lighting.Server
 	/// </summary>
 	public sealed partial class LightingProcessorClientDevice : AbstractDevice<LightingProcessorClientDeviceSettings>
 	{
-		// How often to check the connection and reconnect if necessary.
-		private const long CONNECTION_CHECK_MILLISECONDS = 30 * 1000;
-
 		public const string CLEAR_CONTROLS_RPC = "ClearControls";
 		public const string SET_CACHED_ROOM_RPC = "SetCachedRoom";
 		public const string ADD_CACHED_CONTROL_RPC = "AddCachedControl";
@@ -123,20 +120,6 @@ namespace ICD.Connect.Lighting.Server
 		#endregion
 
 		#region Private Methods
-
-		/// <summary>
-		/// Logs to logging core.
-		/// </summary>
-		/// <param name="severity"></param>
-		/// <param name="message"></param>
-		/// <param name="args"></param>
-		private void Log(eSeverity severity, string message, params object[] args)
-		{
-			message = string.Format(message, args);
-			message = string.Format("{0} - {1}", GetType().Name, message);
-
-			Logger.AddEntry(severity, message);
-		}
 
 		/// <summary>
 		/// Gets the current online status of the device.

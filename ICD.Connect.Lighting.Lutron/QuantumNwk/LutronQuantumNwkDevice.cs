@@ -341,18 +341,6 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 				m_ParserCallbacks[key].Remove(callback);
 		}
 
-		/// <summary>
-		/// Logs the message.
-		/// </summary>
-		/// <param name="severity"></param>
-		/// <param name="message"></param>
-		/// <param name="args"></param>
-		private void Log(eSeverity severity, string message, params object[] args)
-		{
-			message = string.Format(message, args);
-			Logger.AddEntry(severity, AddLogPrefix(message));
-		}
-
 		#endregion
 
 		#region Private Methods
@@ -372,16 +360,6 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		private void Initialize()
 		{
 			Initialized = true;
-		}
-
-		/// <summary>
-		/// Returns the log message with a LutronQuantumNwkDevice prefix.
-		/// </summary>
-		/// <param name="log"></param>
-		/// <returns></returns>
-		private string AddLogPrefix(string log)
-		{
-			return string.Format("{0} - {1}", GetType().Name, log);
 		}
 
 		/// <summary>
