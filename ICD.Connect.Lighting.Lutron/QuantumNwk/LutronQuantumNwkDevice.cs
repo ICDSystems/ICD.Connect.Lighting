@@ -362,7 +362,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-			return m_ConnectionStateManager != null && m_ConnectionStateManager.IsConnected;
+			return m_ConnectionStateManager != null && m_ConnectionStateManager.IsOnline;
 		}
 
 		/// <summary>
