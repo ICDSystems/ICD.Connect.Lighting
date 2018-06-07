@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils.Collections;
@@ -9,11 +8,9 @@ using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Lighting.Server
 {
-	[KrangSettings(FACTORY_NAME)]
+	[KrangSettings("LightingProcessorServer", typeof(LightingProcessorServer))]
 	public sealed class LightingProcessorServerSettings : AbstractLightingProcessorDeviceSettings
 	{
-		private const string FACTORY_NAME = "LightingProcessorServer";
-
 		private const string LIGHTING_PROCESSOR_ID_ELEMENT = "LightingProcessorId";
 
 		private const string SHADES_ELEMENT = "Shades";
@@ -109,16 +106,6 @@ namespace ICD.Connect.Lighting.Server
 			ShadeGroupIds = new IcdHashSet<int>();
 			PresetIds = new IcdHashSet<int>();
 		}
-
-		/// <summary>
-		/// Gets the originator factory name.
-		/// </summary>
-		public override string FactoryName { get { return FACTORY_NAME; } }
-
-		/// <summary>
-		/// Gets the type of the originator for this settings instance.
-		/// </summary>
-		public override Type OriginatorType { get { return typeof(LightingProcessorServer); } }
 
 		/// <summary>
 		/// Updates the settings from xml.
@@ -284,11 +271,9 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="id"></param>
 		public int? FindRoomIdForPeripheral(int id)
 		{
-			foreach (var kvp in m_PeripheralsByRoomId.Where(kvp => kvp.Value.Contains(id)))
-			{
-				return kvp.Key;
-			}
-			return null;
+			return m_PeripheralsByRoomId.Where(kvp => kvp.Value.Contains(id))
+										.Select(kvp => kvp.Key)
+										.FirstOrDefault();
 		}
 
 		/// <summary>
