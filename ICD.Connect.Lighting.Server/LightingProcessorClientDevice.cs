@@ -268,6 +268,8 @@ namespace ICD.Connect.Lighting.Server
 		{
 			base.ApplySettingsFinal(settings, factory);
 
+			SetRoomId(settings.RoomId);
+
 			ISerialPort port = null;
 
 			if (settings.Port != null)
@@ -277,8 +279,6 @@ namespace ICD.Connect.Lighting.Server
 				Log(eSeverity.Error, "No Serial Port with id {0}", settings.Port);
 
 			m_ConnectionStateManager.SetPort(port);
-
-			SetRoomId(settings.RoomId);
 		}
 
 		#endregion
