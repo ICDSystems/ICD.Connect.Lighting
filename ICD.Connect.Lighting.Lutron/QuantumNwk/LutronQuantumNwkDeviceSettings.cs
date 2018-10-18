@@ -1,5 +1,4 @@
-﻿using System;
-using ICD.Common.Utils.Xml;
+﻿using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Settings.Attributes;
@@ -7,26 +6,14 @@ using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 {
-	[KrangSettings(FACTORY_NAME)]
+	[KrangSettings("LutronQuantumNwk", typeof(LutronQuantumNwkDevice))]
 	public sealed class LutronQuantumNwkDeviceSettings : AbstractDeviceSettings
 	{
-		private const string FACTORY_NAME = "LutronQuantumNwk";
-
 		private const string PORT_ELEMENT = "Port";
 		private const string USERNAME_ELEMENT = "Username";
 		private const string INTEGRATION_CONFIG_ELEMENT = "IntegrationConfig";
 
 		#region Properties
-
-		/// <summary>
-		/// Gets the originator factory name.
-		/// </summary>
-		public override string FactoryName { get { return FACTORY_NAME; } }
-
-		/// <summary>
-		/// Gets the type of the originator for this settings instance.
-		/// </summary>
-		public override Type OriginatorType { get { return typeof(LutronQuantumNwkDevice); } }
 
 		[PathSettingsProperty("Lutron", ".xml")]
 		public string IntegrationConfig { get; set; }

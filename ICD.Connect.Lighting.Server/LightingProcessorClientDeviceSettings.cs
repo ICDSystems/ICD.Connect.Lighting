@@ -1,5 +1,4 @@
-﻿using System;
-using ICD.Common.Utils.Xml;
+﻿using ICD.Common.Utils.Xml;
 using ICD.Connect.Lighting.Processors;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Settings.Attributes;
@@ -10,23 +9,11 @@ namespace ICD.Connect.Lighting.Server
 	/// <summary>
 	/// Settings for the BmsLightingProcessorClientDevice.
 	/// </summary>
-	[KrangSettings(FACTORY_NAME)]
+	[KrangSettings("BmsLightingProcessorClient", typeof(LightingProcessorClientDevice))]
 	public sealed class LightingProcessorClientDeviceSettings : AbstractLightingProcessorDeviceSettings
 	{
-		private const string FACTORY_NAME = "BmsLightingProcessorClient";
-
 		private const string PORT_ELEMENT = "Port";
 		private const string ROOM_ID_ELEMENT = "RoomId";
-
-		/// <summary>
-		/// Gets the originator factory name.
-		/// </summary>
-		public override string FactoryName { get { return FACTORY_NAME; } }
-
-		/// <summary>
-		/// Gets the type of the originator for this settings instance.
-		/// </summary>
-		public override Type OriginatorType { get { return typeof(LightingProcessorClientDevice); } }
 
 		[OriginatorIdSettingsProperty(typeof(ISerialPort))]
 		public int? Port { get; set; }

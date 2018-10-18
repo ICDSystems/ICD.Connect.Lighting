@@ -1,5 +1,4 @@
-﻿using System;
-using ICD.Common.Utils;
+﻿using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Misc.CrestronPro;
 using ICD.Connect.Misc.CrestronPro.Utils;
@@ -8,25 +7,13 @@ using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 {
-	[KrangSettings(FACTORY_NAME)]
+	[KrangSettings("CsmQmt50Dccn", typeof(CsmQmt50DccnAdapter))]
 	public sealed class CsmQmt50DccnAdapterSettings : AbstractShadeWithBasicSettingsAdapterSettings, ICsmQmt50DccnAdapterSettings, ICresnetDeviceSettings
 	{
-		private const string FACTORY_NAME = "CsmQmt50Dccn";
-
 		[CrestronByteSettingsProperty]
 		public byte? CresnetId { get; set; }
 		public int? ParentId { get; set; }
 		public int? BranchId { get; set; }
-
-		/// <summary>
-		/// Gets the originator factory name.
-		/// </summary>
-		public override string FactoryName { get { return FACTORY_NAME; } }
-
-		/// <summary>
-		/// Gets the type of the originator for this settings instance.
-		/// </summary>
-		public override Type OriginatorType { get { return (typeof(CsmQmt50DccnAdapter)); } }
 
 		/// <summary>
 		/// Writes property elements to xml.
