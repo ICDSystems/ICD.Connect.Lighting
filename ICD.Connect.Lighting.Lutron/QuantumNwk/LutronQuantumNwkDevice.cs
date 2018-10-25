@@ -713,9 +713,14 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 
 			if (settings.Port != null)
 			{
-				port = factory.GetPortById((int)settings.Port) as ISerialPort;
-				if (port == null)
-					IcdErrorLog.Error("No serial Port with id {0}", settings.Port);
+				try
+				{
+					port = factory.GetPortById((int)settings.Port) as ISerialPort;
+				}
+				catch (KeyNotFoundException)
+				{
+					Log(eSeverity.Error, "No serial Port with id {0}", settings.Port);
+				}
 			}
 
 			m_ConnectionStateManager.SetPort(port);
