@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [3.1.2] - 2018-10-30
+### Changed
+ - Fixed loading issue where devices would not fail gracefully when a port was nto available
+
 ## [3.1.1] - 2018-07-02
 ### Changed
  - Lazy load room Ids for convienence
