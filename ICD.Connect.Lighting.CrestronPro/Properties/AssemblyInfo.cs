@@ -1,8 +1,8 @@
 using System.Reflection;
 
-[assembly: AssemblyTitle("ICD.Connect.Lighting.CrestronPro_SimplSharp")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ICD.Connect.Lighting.CrestronPro_SimplSharp")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
-[assembly: AssemblyVersion("3.0.1.0")]
+[assembly: AssemblyTitle("ICD.Connect.Lighting.CrestronPro")]
+[assembly: AssemblyCompany("ICD Systems")]
+[assembly: AssemblyProduct("ICD.Connect.Lighting.CrestronPro")]
+[assembly: AssemblyCopyright("Copyright © ICD Systems 2018")]
+[assembly: AssemblyVersion("3.1.2.0")]
 

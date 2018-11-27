@@ -159,7 +159,23 @@ namespace ICD.Connect.Lighting.Mock
 		/// <returns></returns>
 		private MockLightingRoom GetRoom(int id)
 		{
-			return m_CacheSection.Execute(() => m_IdToRooms[id]);
+			m_CacheSection.Enter();
+			try
+			{
+				MockLightingRoom room;
+				m_IdToRooms.TryGetValue(id, out room);
+
+				if (room == null)
+				{
+					room = new MockLightingRoom(id);
+					m_IdToRooms.Add(id, room);
+				}
+				return room;
+			}
+			finally
+			{
+				m_CacheSection.Leave();
+			}
 		}
 
 		/// <summary>

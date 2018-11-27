@@ -13,10 +13,10 @@ using ICD.Common.Utils.Timers;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
-using ICD.Connect.Devices.EventArguments;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Lutron.QuantumNwk.EventArguments;
 using ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations;
+using ICD.Connect.Protocol;
 using ICD.Connect.Protocol.Extensions;
 using ICD.Connect.Protocol.Network.Ports;
 using ICD.Connect.Protocol.Network.Settings;
@@ -49,9 +49,6 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// How often we send a new data string to the lighting processor.
 		/// </summary>
 		private const int COMMUNICATION_INTERVAL_MILLISECONDS = 250;
-
-		// How often to check the connection and reconnect if necessary.
-		private const long CONNECTION_CHECK_MILLISECONDS = 30 * 1000;
 
 		/// <summary>
 		/// Raised when the class initializes.
@@ -87,13 +84,12 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		private readonly SafeCriticalSection m_CommandQueuesSection;
 
 		private readonly SafeTimer m_CommandTimer;
-		private readonly SafeTimer m_ConnectionTimer;
 
 		private readonly ComSpecProperties m_ComSpecProperties;
 		private readonly SecureNetworkProperties m_NetworkProperties;
 
-		private ISerialPort m_Port;
-		private bool m_IsConnected;
+		private readonly ConnectionStateManager m_ConnectionStateManager;
+
 		private bool m_Initialized;
 
 		// Used with settings.
@@ -131,16 +127,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		[PublicAPI]
 		public bool IsConnected
 		{
-			get { return m_IsConnected; }
-			private set
-			{
-				if (value == m_IsConnected)
-					return;
-
-				m_IsConnected = value;
-
-				OnConnectedStateChanged.Raise(this, new BoolEventArgs(m_IsConnected));
-			}
+			get { return m_ConnectionStateManager.IsConnected; }
 		}
 
 		#endregion
@@ -164,10 +151,14 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			m_CommandQueuesSection = new SafeCriticalSection();
 
 			m_CommandTimer = new SafeTimer(CommandTimerCallback, COMMUNICATION_INTERVAL_MILLISECONDS);
-			m_ConnectionTimer = new SafeTimer(ConnectionTimerCallback, 0, CONNECTION_CHECK_MILLISECONDS);
 
 			m_SerialBuffer = new LutronQuantumNwkSerialBuffer();
 			Subscribe(m_SerialBuffer);
+
+			m_ConnectionStateManager = new ConnectionStateManager(this) {ConfigurePort = ConfigurePort};
+			m_ConnectionStateManager.OnConnectedStateChanged += PortOnConnectionStatusChanged;
+			m_ConnectionStateManager.OnIsOnlineStateChanged += PortOnIsOnlineStateChanged;
+			m_ConnectionStateManager.OnSerialDataReceived += PortOnSerialDataReceived;
 		}
 
 		#region Methods
@@ -182,48 +173,18 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			OnRoomOccupancyChanged = null;
 			OnRoomPresetChanged = null;
 			OnRoomLoadLevelChanged = null;
+			OnRoomControlsChanged = null;
 
 			base.DisposeFinal(disposing);
 
-			m_ConnectionTimer.Dispose();
 			m_CommandTimer.Dispose();
 
 			ClearIntegrations();
 
-			Unsubscribe(m_Port);
-			Disconnect();
-		}
-
-		/// <summary>
-		/// Connect to the device.
-		/// </summary>
-		[PublicAPI]
-		public void Connect()
-		{
-			if (m_Port == null)
-			{
-				Log(eSeverity.Critical, "Unable to connect, port is null");
-				return;
-			}
-
-			m_Port.Connect();
-			IsConnected = m_Port.IsConnected;
-		}
-
-		/// <summary>
-		/// Disconnect from the device.
-		/// </summary>
-		[PublicAPI]
-		public void Disconnect()
-		{
-			if (m_Port == null)
-			{
-				Log(eSeverity.Critical, "Unable to disconnect, port is null");
-				return;
-			}
-
-			m_Port.Disconnect();
-			IsConnected = m_Port.IsConnected;
+			m_ConnectionStateManager.OnConnectedStateChanged -= PortOnConnectionStatusChanged;
+			m_ConnectionStateManager.OnIsOnlineStateChanged -= PortOnIsOnlineStateChanged;
+			m_ConnectionStateManager.OnSerialDataReceived -= PortOnSerialDataReceived;
+			m_ConnectionStateManager.Dispose();
 		}
 
 		/// <summary>
@@ -233,16 +194,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		[PublicAPI]
 		public void SetPort(ISerialPort port)
 		{
-			if (port == m_Port)
-				return;
-
-			ConfigurePort(port);
-
-			Unsubscribe(m_Port);
-			m_Port = port;
-			Subscribe(m_Port);
-
-			UpdateCachedOnlineStatus();
+			m_ConnectionStateManager.SetPort(port);
 		}
 
 		/// <summary>
@@ -382,12 +334,6 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		{
 			if (!IsConnected)
 			{
-				Log(eSeverity.Warning, "Device disconnected, attempting reconnect");
-				Connect();
-			}
-
-			if (!IsConnected)
-			{
 				Log(eSeverity.Critical, "Unable to communicate with device");
 
 				m_CommandQueuesSection.Enter();
@@ -405,7 +351,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 				return;
 			}
 
-			m_Port.Send(data);
+			m_ConnectionStateManager.Send(data);
 		}
 
 		/// <summary>
@@ -442,7 +388,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-			return m_Port != null && m_Port.IsOnline;
+			return m_ConnectionStateManager != null && m_ConnectionStateManager.IsOnline;
 		}
 
 		/// <summary>
@@ -477,46 +423,9 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 				SendData(data);
 		}
 
-		/// <summary>
-		/// Called periodically to maintain connection to the device.
-		/// </summary>
-		private void ConnectionTimerCallback()
-		{
-			if (m_Port != null && !IsConnected)
-				Connect();
-		}
-
 		#endregion
 
 		#region Port Callbacks
-
-		/// <summary>
-		/// Subscribes to the port events.
-		/// </summary>
-		/// <param name="port"></param>
-		private void Subscribe(ISerialPort port)
-		{
-			if (port == null)
-				return;
-
-			port.OnSerialDataReceived += PortOnSerialDataReceived;
-			port.OnConnectedStateChanged += PortOnConnectionStatusChanged;
-			port.OnIsOnlineStateChanged += PortOnIsOnlineStateChanged;
-		}
-
-		/// <summary>
-		/// Unsubscribe from the port events.
-		/// </summary>
-		/// <param name="port"></param>
-		private void Unsubscribe(ISerialPort port)
-		{
-			if (port == null)
-				return;
-
-			port.OnSerialDataReceived -= PortOnSerialDataReceived;
-			port.OnConnectedStateChanged -= PortOnConnectionStatusChanged;
-			port.OnIsOnlineStateChanged -= PortOnIsOnlineStateChanged;
-		}
 
 		/// <summary>
 		/// Called when serial data is recieved from the port.
@@ -535,9 +444,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// <param name="args"></param>
 		private void PortOnConnectionStatusChanged(object sender, BoolEventArgs args)
 		{
-			IsConnected = args.Data;
-
-			if (IsConnected)
+			if (args.Data)
 				Initialize();
 			else
 			{
@@ -545,6 +452,8 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 				m_ConnectionIsReady = false;
 				Initialized = false;
 			}
+
+			OnConnectedStateChanged.Raise(this, new BoolEventArgs(args.Data));
 		}
 
 		/// <summary>
@@ -552,7 +461,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="eventArgs"></param>
-		private void PortOnIsOnlineStateChanged(object sender, DeviceBaseOnlineStateApiEventArgs eventArgs)
+		private void PortOnIsOnlineStateChanged(object sender, BoolEventArgs eventArgs)
 		{
 			UpdateCachedOnlineStatus();
 		}
@@ -811,7 +720,8 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 
 			settings.IntegrationConfig = m_Config;
 			settings.Username = Username;
-			settings.Port = m_Port == null ? (int?)null : m_Port.Id;
+
+			settings.Port = m_ConnectionStateManager.PortNumber;
 
 			settings.Copy(m_ComSpecProperties);
 			settings.Copy(m_NetworkProperties);
@@ -826,10 +736,11 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 
 			m_Config = null;
 			Username = null;
-			SetPort(null);
 
 			m_ComSpecProperties.Clear();
 			m_NetworkProperties.Clear();
+
+			SetPort(null);
 		}
 
 		/// <summary>
@@ -850,12 +761,17 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 
 			if (settings.Port != null)
 			{
-				port = factory.GetPortById((int)settings.Port) as ISerialPort;
-				if (port == null)
-					IcdErrorLog.Error("No serial Port with id {0}", settings.Port);
+				try
+				{
+					port = factory.GetPortById((int)settings.Port) as ISerialPort;
+				}
+				catch (KeyNotFoundException)
+				{
+					Log(eSeverity.Error, "No serial Port with id {0}", settings.Port);
+				}
 			}
 
-			SetPort(port);
+			m_ConnectionStateManager.SetPort(port);
 
 			// Load the integrations
 			if (!string.IsNullOrEmpty(settings.IntegrationConfig))

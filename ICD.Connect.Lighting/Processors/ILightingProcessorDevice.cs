@@ -234,9 +234,6 @@ namespace ICD.Connect.Lighting.Processors
 			if (extends == null)
 				throw new ArgumentNullException("extends");
 
-			if (preset == null)
-				throw new ArgumentNullException("preset");
-
 			extends.SetPresetForRoom(preset.Room, preset.Id);
 		}
 

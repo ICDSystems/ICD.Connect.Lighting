@@ -4,13 +4,12 @@ using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
-using ICD.Common.Utils.Timers;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
-using ICD.Connect.Devices.EventArguments;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Mock.Controls;
 using ICD.Connect.Misc.Occupancy;
+using ICD.Connect.Protocol;
 using ICD.Connect.Protocol.Extensions;
 using ICD.Connect.Protocol.Network.Ports;
 using ICD.Connect.Protocol.Network.RemoteProcedure;
@@ -26,9 +25,6 @@ namespace ICD.Connect.Lighting.Server
 	/// </summary>
 	public sealed partial class LightingProcessorClientDevice : AbstractDevice<LightingProcessorClientDeviceSettings>
 	{
-		// How often to check the connection and reconnect if necessary.
-		private const long CONNECTION_CHECK_MILLISECONDS = 30 * 1000;
-
 		public const string CLEAR_CONTROLS_RPC = "ClearControls";
 		public const string SET_CACHED_ROOM_RPC = "SetCachedRoom";
 		public const string ADD_CACHED_CONTROL_RPC = "AddCachedControl";
@@ -43,13 +39,11 @@ namespace ICD.Connect.Lighting.Server
 
 		public event EventHandler<BoolEventArgs> OnConnectedStateChanged;
 
-		private readonly SafeTimer m_ConnectionTimer;
 		private readonly ClientSerialRpcController m_RpcController;
 
 		private readonly SecureNetworkProperties m_NetworkProperties;
 
-		private ISerialPort m_Port;
-		private bool m_IsConnected;
+		private readonly ConnectionStateManager m_ConnectionStateManager;
 
 		private int m_RoomId;
 		private MockLightingRoom m_Room;
@@ -60,27 +54,7 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public bool IsConnected
 		{
-			get { return m_IsConnected; }
-			set
-			{
-				if (value == m_IsConnected)
-					return;
-
-				m_IsConnected = value;
-
-				UpdateCachedOnlineStatus();
-
-				if (m_IsConnected)
-					Log(eSeverity.Informational, "Connected to server");
-				else
-					Log(eSeverity.Alert, "Lost connection to server");
-
-				ClearCache();
-				if (m_IsConnected)
-					m_RpcController.CallMethod(LightingProcessorServer.REGISTER_FEEDBACK_RPC, m_RoomId);
-
-				OnConnectedStateChanged.Raise(this, new BoolEventArgs(m_IsConnected));
-			}
+			get { return m_ConnectionStateManager.IsConnected; }
 		}
 
 		/// <summary>
@@ -92,7 +66,9 @@ namespace ICD.Connect.Lighting.Server
 
 			m_RpcController = new ClientSerialRpcController(this);
 
-			m_ConnectionTimer = new SafeTimer(ConnectionTimerCallback, 0, CONNECTION_CHECK_MILLISECONDS);
+			m_ConnectionStateManager = new ConnectionStateManager(this){ConfigurePort = ConfigurePort};
+			m_ConnectionStateManager.OnConnectedStateChanged += PortOnConnectedStateChanged;
+			m_ConnectionStateManager.OnIsOnlineStateChanged += PortOnIsOnlineStateChanged;
 		}
 
 		#region Methods
@@ -107,67 +83,14 @@ namespace ICD.Connect.Lighting.Server
 			OnRoomPresetChanged = null;
 			OnConnectedStateChanged = null;
 
-			m_ConnectionTimer.Dispose();
+			m_ConnectionStateManager.OnConnectedStateChanged -= PortOnConnectedStateChanged;
+			m_ConnectionStateManager.OnIsOnlineStateChanged -= PortOnIsOnlineStateChanged;
+			m_ConnectionStateManager.Dispose();
 
 			base.DisposeFinal(disposing);
 
-			SetPort(null);
 			m_RpcController.Dispose();
 			ClearCache();
-		}
-
-		/// <summary>
-		/// Connects to the lighting server.
-		/// </summary>
-		[PublicAPI]
-		public void Connect()
-		{
-			if (m_Port == null)
-			{
-				Log(eSeverity.Critical, "Unable to connect, port is null");
-				return;
-			}
-
-			m_Port.Connect();
-		}
-
-		/// <summary>
-		/// Disconnects from the lighting server.
-		/// </summary>
-		[PublicAPI]
-		public void Disconnect()
-		{
-			if (m_Port == null)
-			{
-				Log(eSeverity.Critical, "Unable to disconnect, port is null");
-				return;
-			}
-
-			m_Port.Disconnect();
-		}
-
-		/// <summary>
-		/// Sets the port for communication with the server.
-		/// </summary>
-		/// <param name="port"></param>
-		[PublicAPI]
-		public void SetPort(ISerialPort port)
-		{
-			if (port == m_Port)
-				return;
-
-			ConfigurePort(port);
-
-			Unsubscribe(m_Port);
-
-			m_Port = port;
-			m_RpcController.SetPort(m_Port);
-
-			Subscribe(m_Port);
-
-			IsConnected = m_Port != null && m_Port.IsConnected;
-
-			UpdateCachedOnlineStatus();
 		}
 
 		/// <summary>
@@ -181,6 +104,10 @@ namespace ICD.Connect.Lighting.Server
 				(port as ISecureNetworkPort).ApplyDeviceConfiguration(m_NetworkProperties);
 			else if (port is INetworkPort)
 				(port as INetworkPort).ApplyDeviceConfiguration(m_NetworkProperties);
+
+			m_RpcController.SetPort(port);
+
+			UpdateCachedOnlineStatus();
 		}
 
 		/// <summary>
@@ -211,16 +138,7 @@ namespace ICD.Connect.Lighting.Server
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-			return m_Port != null && m_Port.IsConnected;
-		}
-
-		/// <summary>
-		/// Called periodically to maintain connection to the server.
-		/// </summary>
-		private void ConnectionTimerCallback()
-		{
-			if (!IsConnected)
-				Connect();
+			return m_ConnectionStateManager != null && m_ConnectionStateManager.IsOnline;
 		}
 
 		#endregion
@@ -228,37 +146,11 @@ namespace ICD.Connect.Lighting.Server
 		#region Port Callbacks
 
 		/// <summary>
-		/// Subscribe to the port events.
-		/// </summary>
-		/// <param name="port"></param>
-		private void Subscribe(ISerialPort port)
-		{
-			if (port == null)
-				return;
-
-			port.OnIsOnlineStateChanged += PortOnIsOnlineStateChanged;
-			port.OnConnectedStateChanged += PortOnConnectedStateChanged;
-		}
-
-		/// <summary>
-		/// Unsubscribe from the port events.
-		/// </summary>
-		/// <param name="port"></param>
-		private void Unsubscribe(ISerialPort port)
-		{
-			if (port == null)
-				return;
-
-			port.OnIsOnlineStateChanged -= PortOnIsOnlineStateChanged;
-			port.OnConnectedStateChanged += PortOnConnectedStateChanged;
-		}
-
-		/// <summary>
 		/// Called when the port online status changes.
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="eventArgs"></param>
-		private void PortOnIsOnlineStateChanged(object sender, DeviceBaseOnlineStateApiEventArgs eventArgs)
+		private void PortOnIsOnlineStateChanged(object sender, BoolEventArgs eventArgs)
 		{
 			UpdateCachedOnlineStatus();
 		}
@@ -270,7 +162,11 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="args"></param>
 		private void PortOnConnectedStateChanged(object sender, BoolEventArgs args)
 		{
-			IsConnected = args.Data;
+			OnConnectedStateChanged.Raise(this, new BoolEventArgs(args.Data));
+			UpdateCachedOnlineStatus();
+
+			if (args.Data)
+				m_RpcController.CallMethod(LightingProcessorServer.REGISTER_FEEDBACK_RPC, m_RoomId);
 		}
 
 		#endregion
@@ -360,7 +256,7 @@ namespace ICD.Connect.Lighting.Server
 			base.CopySettingsFinal(settings);
 
 			settings.RoomId = m_RoomId;
-			settings.Port = m_Port == null ? (int?)null : m_Port.Id;
+			settings.Port = m_ConnectionStateManager.PortNumber;
 
 			settings.Copy(m_NetworkProperties);
 		}
@@ -372,7 +268,7 @@ namespace ICD.Connect.Lighting.Server
 		{
 			base.ClearSettingsFinal();
 
-			SetPort(null);
+			m_ConnectionStateManager.SetPort(null);
 			m_RoomId = 0;
 
 			m_NetworkProperties.Clear();
@@ -389,17 +285,23 @@ namespace ICD.Connect.Lighting.Server
 
 			m_NetworkProperties.Copy(settings);
 
+			SetRoomId(settings.RoomId);
+
 			ISerialPort port = null;
 
 			if (settings.Port != null)
-				port = factory.GetPortById((int)settings.Port) as ISerialPort;
+			{
+				try
+				{
+					port = factory.GetPortById((int)settings.Port) as ISerialPort;
+				}
+				catch (KeyNotFoundException)
+				{
+					Log(eSeverity.Error, "No Serial Port with id {0}", settings.Port);
+				}	
+			}
 
-			if (port == null)
-				Log(eSeverity.Error, "No Serial Port with id {0}", settings.Port);
-
-			SetPort(port);
-
-			SetRoomId(settings.RoomId);
+			m_ConnectionStateManager.SetPort(port);
 		}
 
 		#endregion
@@ -694,7 +596,7 @@ namespace ICD.Connect.Lighting.Server
 		{
 			base.BuildConsoleStatus(addRow);
 
-			addRow("IsConnected", m_IsConnected);
+			addRow("IsConnected", IsConnected);
 		}
 
 		#endregion

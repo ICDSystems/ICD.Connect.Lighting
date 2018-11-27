@@ -271,11 +271,9 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="id"></param>
 		public int? FindRoomIdForPeripheral(int id)
 		{
-			foreach (var kvp in m_PeripheralsByRoomId.Where(kvp => kvp.Value.Contains(id)))
-			{
-				return kvp.Key;
-			}
-			return null;
+			return m_PeripheralsByRoomId.Where(kvp => kvp.Value.Contains(id))
+										.Select(kvp => kvp.Key)
+										.FirstOrDefault();
 		}
 
 		/// <summary>

@@ -6,6 +6,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [3.1.2] - 2018-10-30
+### Changed
+ - Fixed loading issue where devices would not fail gracefully when a port was nto available
+
+## [3.1.1] - 2018-07-02
+### Changed
+ - Lazy load room Ids for convienence
+ - Set room id in apply settings first, to prevent the creation of a null room
+
+## [3.1.0] - 2018-06-04
+### Changed
+ - Using ConnectionStateManager to maintain serial device connection
+
 ## [3.0.1] - 2018-05-09
 ### Changed
  - Fixed potential issues with loading configs in UTF8-BOM encoding
