@@ -82,6 +82,14 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			set { m_NetworkProperties.NetworkPort = value; }
 		}
 
+		/// <summary>
+		/// Clears the configured values.
+		/// </summary>
+		void INetworkProperties.Clear()
+		{
+			m_NetworkProperties.Clear();
+		}
+
 		#endregion
 
 		#region Com Spec
@@ -156,6 +164,14 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		{
 			get { return m_ComSpecProperties.ComSpecReportCtsChanges; }
 			set { m_ComSpecProperties.ComSpecReportCtsChanges = value; }
+		}
+
+		/// <summary>
+		/// Clears the configured values.
+		/// </summary>
+		void IComSpecProperties.Clear()
+		{
+			m_ComSpecProperties.Clear();
 		}
 
 		#endregion
