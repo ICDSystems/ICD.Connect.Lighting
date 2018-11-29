@@ -142,10 +142,10 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// <summary>
 		/// Gets/sets the configurable hardware handshake type.
 		/// </summary>
-		public eComHardwareHandshakeType? ComSpecHardwareHandShake
+		public eComHardwareHandshakeType? ComSpecHardwareHandshake
 		{
-			get { return m_ComSpecProperties.ComSpecHardwareHandShake; }
-			set { m_ComSpecProperties.ComSpecHardwareHandShake = value; }
+			get { return m_ComSpecProperties.ComSpecHardwareHandshake; }
+			set { m_ComSpecProperties.ComSpecHardwareHandshake = value; }
 		}
 
 		/// <summary>
@@ -193,7 +193,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 				ComSpecParityType = eComParityType.None,
 				ComSpecNumberOfStopBits = eComStopBits.StopBits1,
 				ComSpecProtocolType = eComProtocolType.Rs232,
-				ComSpecHardwareHandShake = eComHardwareHandshakeType.None,
+				ComSpecHardwareHandshake = eComHardwareHandshakeType.None,
 				ComSpecSoftwareHandshake = eComSoftwareHandshakeType.None,
 				ComSpecReportCtsChanges = false
 			};
