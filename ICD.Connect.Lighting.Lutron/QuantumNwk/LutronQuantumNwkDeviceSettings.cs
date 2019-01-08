@@ -85,9 +85,9 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// <summary>
 		/// Clears the configured values.
 		/// </summary>
-		void INetworkProperties.Clear()
+		void INetworkProperties.ClearNetworkProperties()
 		{
-			m_NetworkProperties.Clear();
+			m_NetworkProperties.ClearNetworkProperties();
 		}
 
 		#endregion
@@ -169,9 +169,9 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// <summary>
 		/// Clears the configured values.
 		/// </summary>
-		void IComSpecProperties.Clear()
+		void IComSpecProperties.ClearComSpecProperties()
 		{
-			m_ComSpecProperties.Clear();
+			m_ComSpecProperties.ClearComSpecProperties();
 		}
 
 		#endregion

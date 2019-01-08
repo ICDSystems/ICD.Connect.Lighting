@@ -271,7 +271,7 @@ namespace ICD.Connect.Lighting.Server
 			m_ConnectionStateManager.SetPort(null);
 			m_RoomId = 0;
 
-			m_NetworkProperties.Clear();
+			m_NetworkProperties.ClearNetworkProperties();
 		}
 
 		/// <summary>

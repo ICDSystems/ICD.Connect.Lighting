@@ -737,8 +737,8 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			m_Config = null;
 			Username = null;
 
-			m_ComSpecProperties.Clear();
-			m_NetworkProperties.Clear();
+			m_ComSpecProperties.ClearComSpecProperties();
+			m_NetworkProperties.ClearNetworkProperties();
 
 			SetPort(null);
 		}
