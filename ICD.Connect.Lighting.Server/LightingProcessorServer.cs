@@ -14,10 +14,10 @@ using ICD.Connect.Lighting.Shades;
 using ICD.Connect.Lighting.Shades.Controls;
 using ICD.Connect.Misc.Occupancy;
 using ICD.Connect.Protocol.EventArguments;
+using ICD.Connect.Protocol.Network.Ports.Tcp;
 using ICD.Connect.Protocol.Network.RemoteProcedure;
 using ICD.Connect.Protocol.Network.Attributes.Rpc;
-using ICD.Connect.Protocol.Network.Tcp;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings;
 
 namespace ICD.Connect.Lighting.Server
 {
@@ -959,11 +959,7 @@ namespace ICD.Connect.Lighting.Server
 
 		private void LogApplySettingsError(string message)
 		{
-			Logger.AddEntry(eSeverity.Error,
-							"Failed to apply settings for Lighting Processor Server {0}."
-							+ IcdEnvironment.NewLine
-							+ message,
-							string.Format("{0}: {1}", Id, Name));
+			Log(eSeverity.Error, "Failed to apply settings for Lighting Processor Server - {0}", message);
 		}
 
 		#endregion

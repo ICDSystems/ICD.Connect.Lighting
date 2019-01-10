@@ -18,9 +18,13 @@ using ICD.Connect.Lighting.Lutron.QuantumNwk.EventArguments;
 using ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations;
 using ICD.Connect.Protocol;
 using ICD.Connect.Protocol.Extensions;
+using ICD.Connect.Protocol.Network.Ports;
+using ICD.Connect.Protocol.Network.Settings;
 using ICD.Connect.Protocol.Ports;
+using ICD.Connect.Protocol.Ports.ComPort;
 using ICD.Connect.Protocol.SerialBuffers;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Protocol.Settings;
+using ICD.Connect.Settings;
 
 namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 {
@@ -81,6 +85,9 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 
 		private readonly SafeTimer m_CommandTimer;
 
+		private readonly ComSpecProperties m_ComSpecProperties;
+		private readonly SecureNetworkProperties m_NetworkProperties;
+
 		private readonly ConnectionStateManager m_ConnectionStateManager;
 
 		private bool m_Initialized;
@@ -130,6 +137,9 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// </summary>
 		public LutronQuantumNwkDevice()
 		{
+			m_ComSpecProperties = new ComSpecProperties();
+			m_NetworkProperties = new SecureNetworkProperties();
+
 			m_Areas = new List<int>();
 			m_IdToArea = new Dictionary<int, AreaIntegration>();
 			m_RoomToAreas = new Dictionary<int, List<AreaIntegration>>();
@@ -145,7 +155,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			m_SerialBuffer = new LutronQuantumNwkSerialBuffer();
 			Subscribe(m_SerialBuffer);
 
-			m_ConnectionStateManager = new ConnectionStateManager(this);
+			m_ConnectionStateManager = new ConnectionStateManager(this) {ConfigurePort = ConfigurePort};
 			m_ConnectionStateManager.OnConnectedStateChanged += PortOnConnectionStatusChanged;
 			m_ConnectionStateManager.OnIsOnlineStateChanged += PortOnIsOnlineStateChanged;
 			m_ConnectionStateManager.OnSerialDataReceived += PortOnSerialDataReceived;
@@ -178,6 +188,33 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		}
 
 		/// <summary>
+		/// Sets the port for communicating with the device.
+		/// </summary>
+		/// <param name="port"></param>
+		[PublicAPI]
+		public void SetPort(ISerialPort port)
+		{
+			m_ConnectionStateManager.SetPort(port);
+		}
+
+		/// <summary>
+		/// Configures the given port for communication with the device.
+		/// </summary>
+		/// <param name="port"></param>
+		private void ConfigurePort(ISerialPort port)
+		{
+			// Com
+			if (port is IComPort)
+				(port as IComPort).ApplyDeviceConfiguration(m_ComSpecProperties);
+
+			// Network (TCP, UDP, SSH)
+			if (port is ISecureNetworkPort)
+				(port as ISecureNetworkPort).ApplyDeviceConfiguration(m_NetworkProperties);
+			else if (port is INetworkPort)
+				(port as INetworkPort).ApplyDeviceConfiguration(m_NetworkProperties);
+		}
+
+		/// <summary>
 		/// Parses the XML file at the given path for configuration data.
 		/// </summary>
 		/// <param name="path"></param>
@@ -196,7 +233,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			}
 			catch (Exception e)
 			{
-				IcdErrorLog.Error("Failed to load integration config {0} - {1}", fullPath, e.Message);
+				Log(eSeverity.Error, "Failed to load integration config {0} - {1}", fullPath, e.Message);
 				return;
 			}
 
@@ -683,7 +720,11 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 
 			settings.IntegrationConfig = m_Config;
 			settings.Username = Username;
+
 			settings.Port = m_ConnectionStateManager.PortNumber;
+
+			settings.Copy(m_ComSpecProperties);
+			settings.Copy(m_NetworkProperties);
 		}
 
 		/// <summary>
@@ -695,7 +736,11 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 
 			m_Config = null;
 			Username = null;
-			m_ConnectionStateManager.SetPort(null);
+
+			m_ComSpecProperties.ClearComSpecProperties();
+			m_NetworkProperties.ClearNetworkProperties();
+
+			SetPort(null);
 		}
 
 		/// <summary>
@@ -706,6 +751,9 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		protected override void ApplySettingsFinal(LutronQuantumNwkDeviceSettings settings, IDeviceFactory factory)
 		{
 			base.ApplySettingsFinal(settings, factory);
+
+			m_ComSpecProperties.Copy(settings);
+			m_NetworkProperties.Copy(settings);
 
 			Username = settings.Username;
 

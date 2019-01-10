@@ -11,10 +11,12 @@ using ICD.Connect.Lighting.Mock.Controls;
 using ICD.Connect.Misc.Occupancy;
 using ICD.Connect.Protocol;
 using ICD.Connect.Protocol.Extensions;
+using ICD.Connect.Protocol.Network.Ports;
 using ICD.Connect.Protocol.Network.RemoteProcedure;
 using ICD.Connect.Protocol.Network.Attributes.Rpc;
+using ICD.Connect.Protocol.Network.Settings;
 using ICD.Connect.Protocol.Ports;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings;
 
 namespace ICD.Connect.Lighting.Server
 {
@@ -38,6 +40,9 @@ namespace ICD.Connect.Lighting.Server
 		public event EventHandler<BoolEventArgs> OnConnectedStateChanged;
 
 		private readonly ClientSerialRpcController m_RpcController;
+
+		private readonly SecureNetworkProperties m_NetworkProperties;
+
 		private readonly ConnectionStateManager m_ConnectionStateManager;
 
 		private int m_RoomId;
@@ -57,6 +62,8 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		public LightingProcessorClientDevice()
 		{
+			m_NetworkProperties = new SecureNetworkProperties();
+
 			m_RpcController = new ClientSerialRpcController(this);
 
 			m_ConnectionStateManager = new ConnectionStateManager(this){ConfigurePort = ConfigurePort};
@@ -87,12 +94,17 @@ namespace ICD.Connect.Lighting.Server
 		}
 
 		/// <summary>
-		/// Sets the port for communication with the server.
+		/// Configures the given port for communication with the device.
 		/// </summary>
 		/// <param name="port"></param>
-		[PublicAPI]
-		public void ConfigurePort(ISerialPort port)
+		private void ConfigurePort(ISerialPort port)
 		{
+			// Network (TCP, UDP, SSH)
+			if (port is ISecureNetworkPort)
+				(port as ISecureNetworkPort).ApplyDeviceConfiguration(m_NetworkProperties);
+			else if (port is INetworkPort)
+				(port as INetworkPort).ApplyDeviceConfiguration(m_NetworkProperties);
+
 			m_RpcController.SetPort(port);
 
 			UpdateCachedOnlineStatus();
@@ -100,7 +112,6 @@ namespace ICD.Connect.Lighting.Server
 
 		/// <summary>
 		/// Sets the room id for looking up controls.
-		/// TODO - this will be replaced when we figure out the scope of the room framework.
 		/// </summary>
 		/// <param name="roomId"></param>
 		[PublicAPI]
@@ -246,6 +257,8 @@ namespace ICD.Connect.Lighting.Server
 
 			settings.RoomId = m_RoomId;
 			settings.Port = m_ConnectionStateManager.PortNumber;
+
+			settings.Copy(m_NetworkProperties);
 		}
 
 		/// <summary>
@@ -257,6 +270,8 @@ namespace ICD.Connect.Lighting.Server
 
 			m_ConnectionStateManager.SetPort(null);
 			m_RoomId = 0;
+
+			m_NetworkProperties.ClearNetworkProperties();
 		}
 
 		/// <summary>
@@ -267,6 +282,8 @@ namespace ICD.Connect.Lighting.Server
 		protected override void ApplySettingsFinal(LightingProcessorClientDeviceSettings settings, IDeviceFactory factory)
 		{
 			base.ApplySettingsFinal(settings, factory);
+
+			m_NetworkProperties.Copy(settings);
 
 			SetRoomId(settings.RoomId);
 
