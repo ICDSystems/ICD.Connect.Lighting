@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [3.1.3] - 2019-03-19
 ### Changed
  - Hide LightingProcessorServer settings properties that can't be rendered on the touch panel
 
