@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added port configuration features to lighting devices
 
+## [3.1.3] - 2019-03-19
+### Changed
+ - Hide LightingProcessorServer settings properties that can't be rendered on the touch panel
+
 ## [3.1.2] - 2018-10-30
 ### Changed
  - Fixed loading issue where devices would not fail gracefully when a port was nto available
