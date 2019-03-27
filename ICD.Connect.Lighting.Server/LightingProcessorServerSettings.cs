@@ -5,6 +5,7 @@ using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Lighting.Processors;
 using ICD.Connect.Settings.Attributes;
+using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Lighting.Server
 {
@@ -28,29 +29,35 @@ namespace ICD.Connect.Lighting.Server
 		private const string SERVER_PORT_ELEMENT = "ServerPort";
 		private const string SERVER_CLIENTS_ELEMENT = "ServerMaxClients";
 
-		public int? LightingProcessorId { get; set; }
-		public IcdHashSet<int> ShadeIds { get; private set; }
-		public IcdHashSet<int> ShadeGroupIds { get; private set; }
-		public IcdHashSet<int> LoadIds { get; private set; }
-		public IcdHashSet<int> PresetIds { get; set; }
+		private Dictionary<int, IcdHashSet<int>> m_PeripheralsByRoomId;
 
+		public int? LightingProcessorId { get; set; }
 		public ushort ServerPort { get; set; }
 		public int ServerMaxClients { get; set; }
 
+		[HiddenSettingsProperty]
+		public IcdHashSet<int> ShadeIds { get; private set; }
+
+		[HiddenSettingsProperty]
+		public IcdHashSet<int> ShadeGroupIds { get; private set; }
+
+		[HiddenSettingsProperty]
+		public IcdHashSet<int> LoadIds { get; private set; }
+
+		[HiddenSettingsProperty]
+		public IcdHashSet<int> PresetIds { get; set; }
+
+		[HiddenSettingsProperty]
 		public IEnumerable<int> RoomIds
 		{
 			get { return m_PeripheralsByRoomId.Keys; }
 			set
 			{
 				m_PeripheralsByRoomId.Clear();
-				foreach (var val in value)
-				{
+				foreach (int val in value)
 					m_PeripheralsByRoomId[val] = new IcdHashSet<int>();
-				}
 			}
 		}
-		
-		private Dictionary<int, IcdHashSet<int>> m_PeripheralsByRoomId;
 
 		public void AddLoad(int roomId, int id)
 		{
