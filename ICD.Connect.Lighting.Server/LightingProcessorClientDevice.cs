@@ -597,6 +597,7 @@ namespace ICD.Connect.Lighting.Server
 			base.BuildConsoleStatus(addRow);
 
 			addRow("IsConnected", IsConnected);
+			addRow("Room Id", m_RoomId);
 		}
 
 		#endregion
