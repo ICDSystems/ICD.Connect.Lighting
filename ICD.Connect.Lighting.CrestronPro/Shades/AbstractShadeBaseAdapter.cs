@@ -1,4 +1,5 @@
 ﻿using System;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
@@ -166,7 +167,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 		public bool GetIsInMotion()
 		{
 #if SIMPLSHARP
-			return Shade.IsRaising.BoolValue || Shade.IsLowering.BoolValue;
+			return Shade.IsRaising.GetBoolValueOrDefault() || Shade.IsLowering.GetBoolValueOrDefault();
 #else
 			throw new NotSupportedException();
 #endif
@@ -175,7 +176,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 		public float GetPosition()
 		{
 #if SIMPLSHARP
-			return MathUtils.MapRange(0, ushort.MaxValue, 0, 1, (float)Shade.PositionFeedback.UShortValue);
+			return MathUtils.MapRange(0, ushort.MaxValue, 0, 1, (float)Shade.PositionFeedback.GetUShortValueOrDefault());
 #else
 			throw new NotSupportedException();
 #endif
