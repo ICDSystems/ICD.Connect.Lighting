@@ -117,6 +117,10 @@
       <Project>{5B84EB3C-1C3A-4C4D-98C2-69F67CF51D5A}</Project>
       <Name>ICD.Connect.Settings_SimplSharp</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\ICD.Connect.Telemetry\ICD.Connect.Telemetry\ICD.Connect.Telemetry_SimplSharp.csproj">
+      <Project>{9512C0A5-F966-4AC6-9668-62C6F343B0CD}</Project>
+      <Name>ICD.Connect.Telemetry_SimplSharp</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ICD.Connect.Lighting\ICD.Connect.Lighting_SimplSharp.csproj">
       <Project>{A519C705-5801-44BF-97B1-02DEA016380A}</Project>
       <Name>ICD.Connect.Lighting_SimplSharp</Name>
