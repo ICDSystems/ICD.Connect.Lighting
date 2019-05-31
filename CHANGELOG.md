@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [3.1.5] - 2019-05-20
+### Changed
+ - LightingServer online state is based on the TCP server listen state
+
 ## [3.1.4] - 2019-05-16
 ### Changed
  - Ensuring sigs are not nullsigs before getting values
