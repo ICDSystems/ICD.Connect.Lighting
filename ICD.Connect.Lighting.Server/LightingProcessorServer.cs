@@ -119,7 +119,7 @@ namespace ICD.Connect.Lighting.Server
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-			return m_Server != null && m_Server.Active;
+			return m_Server != null && m_Server.Listening;
 		}
 
 		#region Private Methods
