@@ -1,4 +1,5 @@
 ﻿using System;
+using ICD.Connect.Misc.CrestronPro.Utils;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
@@ -73,29 +74,13 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 			Unsubscribe(Shade);
 
 			if (Shade != null)
-			{
-				if (Shade.Registered)
-					Shade.UnRegister();
-
-				try
-				{
-					Shade.Dispose();
-				}
-				catch { }
-			}
+				GenericBaseUtils.TearDown(Shade);
 
 			Shade = shade;
 
-			if (Shade != null && !Shade.Registered)
-			{
-				if (Name != null)
-				{
-					Shade.Description = Name;
-				}
-				eDeviceRegistrationUnRegistrationResponse result = Shade.Register();
-				if (result != eDeviceRegistrationUnRegistrationResponse.Success)
-					Logger.AddEntry(eSeverity.Error, "Unable to register {0} - {1}", Shade.GetType().Name, result);
-			}
+			eDeviceRegistrationUnRegistrationResponse result;
+			if (Shade != null && !GenericBaseUtils.SetUp(Shade, this, out result))
+				Log(eSeverity.Error, "Unable to register {0} - {1}", Shade.GetType().Name, result);
 
 			Subscribe(Shade);
 			UpdateCachedOnlineStatus();

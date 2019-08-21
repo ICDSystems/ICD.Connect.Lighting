@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+ - Using new GenericBaseUtils to standardize crestron device setup and teardown
+
 ## [4.0.0] - 2019-01-10
 ### Added
  - Added port configuration features to lighting devices
