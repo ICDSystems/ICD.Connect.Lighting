@@ -49,7 +49,7 @@ namespace ICD.Connect.Lighting.Server
 		#region Private Members
 		private readonly ServerSerialRpcController m_RpcController;
 
-		private AsyncTcpServer m_Server;
+		private IcdTcpServer m_Server;
 		private ILightingProcessorDevice m_Processor;
 
 		private readonly Dictionary<uint, int> m_ClientRoomMap;
@@ -100,7 +100,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="server"></param>
 		[PublicAPI]
-		public void SetServer(AsyncTcpServer server)
+		public void SetServer(IcdTcpServer server)
 		{
 			if (server == m_Server)
 				return;
@@ -323,7 +323,7 @@ namespace ICD.Connect.Lighting.Server
 		/// Subscribe to server events.
 		/// </summary>
 		/// <param name="server"></param>
-		private void Subscribe(AsyncTcpServer server)
+		private void Subscribe(IcdTcpServer server)
 		{
 			if (server == null)
 				return;
@@ -335,7 +335,7 @@ namespace ICD.Connect.Lighting.Server
 		/// Unsubscribe from server events.
 		/// </summary>
 		/// <param name="server"></param>
-		private void Unsubscribe(AsyncTcpServer server)
+		private void Unsubscribe(IcdTcpServer server)
 		{
 			if (server == null)
 				return;
@@ -874,7 +874,7 @@ namespace ICD.Connect.Lighting.Server
 				m_ShadeOriginatorsByRoom[roomId.Value].Add(shadeOriginator);
 			}
 
-			var tcpServer = new AsyncTcpServer
+			var tcpServer = new IcdTcpServer
 			{
 				Port = settings.ServerPort,
 				MaxNumberOfClients = settings.ServerMaxClients
