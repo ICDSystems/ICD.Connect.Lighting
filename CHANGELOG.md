@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
  - Using new GenericBaseUtils to standardize crestron device setup and teardown
+ - Using CresnetSettingsUtils to standardize cresnet settings serialization
 
 ## [4.0.0] - 2019-01-10
 ### Added
