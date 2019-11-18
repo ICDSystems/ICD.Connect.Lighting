@@ -9,7 +9,6 @@ using ICD.Connect.Devices;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Mock.Controls;
 using ICD.Connect.Misc.Occupancy;
-using ICD.Connect.Protocol;
 using ICD.Connect.Protocol.Extensions;
 using ICD.Connect.Protocol.Network.Ports;
 using ICD.Connect.Protocol.Network.RemoteProcedure;
@@ -40,10 +39,7 @@ namespace ICD.Connect.Lighting.Server
 		public event EventHandler<BoolEventArgs> OnConnectedStateChanged;
 
 		private readonly ClientSerialRpcController m_RpcController;
-
 		private readonly SecureNetworkProperties m_NetworkProperties;
-
-		private readonly ConnectionStateManager m_ConnectionStateManager;
 
 		private int m_RoomId;
 		private MockLightingRoom m_Room;
@@ -54,7 +50,7 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public bool IsConnected
 		{
-			get { return m_ConnectionStateManager.IsConnected; }
+			get { return m_RpcController.IsConnected; }
 		}
 
 		/// <summary>
@@ -66,9 +62,7 @@ namespace ICD.Connect.Lighting.Server
 
 			m_RpcController = new ClientSerialRpcController(this);
 
-			m_ConnectionStateManager = new ConnectionStateManager(this){ConfigurePort = ConfigurePort};
-			m_ConnectionStateManager.OnConnectedStateChanged += PortOnConnectedStateChanged;
-			m_ConnectionStateManager.OnIsOnlineStateChanged += PortOnIsOnlineStateChanged;
+			Subscribe(m_RpcController);
 		}
 
 		#region Methods
@@ -83,12 +77,9 @@ namespace ICD.Connect.Lighting.Server
 			OnRoomPresetChanged = null;
 			OnConnectedStateChanged = null;
 
-			m_ConnectionStateManager.OnConnectedStateChanged -= PortOnConnectedStateChanged;
-			m_ConnectionStateManager.OnIsOnlineStateChanged -= PortOnIsOnlineStateChanged;
-			m_ConnectionStateManager.Dispose();
-
 			base.DisposeFinal(disposing);
 
+			Unsubscribe(m_RpcController);
 			m_RpcController.Dispose();
 			ClearCache();
 		}
@@ -138,29 +129,37 @@ namespace ICD.Connect.Lighting.Server
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-			return m_ConnectionStateManager != null && m_ConnectionStateManager.IsOnline;
+			return m_RpcController != null && m_RpcController.IsOnline;
 		}
 
 		#endregion
 
-		#region Port Callbacks
+		#region Rpc Controller Callbacks
 
-		/// <summary>
-		/// Called when the port online status changes.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="eventArgs"></param>
-		private void PortOnIsOnlineStateChanged(object sender, BoolEventArgs eventArgs)
+		private void Subscribe(ClientSerialRpcController rpcController)
+		{
+			if (m_RpcController == null)
+				return;
+
+			rpcController.OnConnectedStateChanged += RpcControllerOnConnectedStateChanged;
+			rpcController.OnIsOnlineStateChanged += RpcControllerOnIsOnlineStateChanged;
+		}
+
+		private void Unsubscribe(ClientSerialRpcController rpcController)
+		{
+			if (m_RpcController == null)
+				return;
+
+			rpcController.OnConnectedStateChanged -= RpcControllerOnConnectedStateChanged;
+			rpcController.OnIsOnlineStateChanged -= RpcControllerOnIsOnlineStateChanged;
+		}
+
+		private void RpcControllerOnIsOnlineStateChanged(object sender, BoolEventArgs args)
 		{
 			UpdateCachedOnlineStatus();
 		}
 
-		/// <summary>
-		/// Called when the port connection state changes.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="args"></param>
-		private void PortOnConnectedStateChanged(object sender, BoolEventArgs args)
+		private void RpcControllerOnConnectedStateChanged(object sender, BoolEventArgs args)
 		{
 			OnConnectedStateChanged.Raise(this, new BoolEventArgs(args.Data));
 			UpdateCachedOnlineStatus();
@@ -256,7 +255,7 @@ namespace ICD.Connect.Lighting.Server
 			base.CopySettingsFinal(settings);
 
 			settings.RoomId = m_RoomId;
-			settings.Port = m_ConnectionStateManager.PortNumber;
+			settings.Port = m_RpcController.PortNumber;
 
 			settings.Copy(m_NetworkProperties);
 		}
@@ -268,7 +267,7 @@ namespace ICD.Connect.Lighting.Server
 		{
 			base.ClearSettingsFinal();
 
-			m_ConnectionStateManager.SetPort(null);
+			m_RpcController.SetPort(null);
 			m_RoomId = 0;
 
 			m_NetworkProperties.ClearNetworkProperties();
@@ -301,7 +300,7 @@ namespace ICD.Connect.Lighting.Server
 				}	
 			}
 
-			m_ConnectionStateManager.SetPort(port);
+			m_RpcController.SetPort(port);
 		}
 
 		#endregion
