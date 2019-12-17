@@ -28,6 +28,8 @@ namespace ICD.Connect.Lighting.Shades.RelayShadeDevice
 
 		public override void Open()
 		{
+			ResetCloseRelay();
+
 			if (m_OpenRelay == null)
 				return;
 
@@ -38,6 +40,8 @@ namespace ICD.Connect.Lighting.Shades.RelayShadeDevice
 
 		public override void Close()
 		{
+			ResetOpenRelay();
+
 			if (m_CloseRelay == null)
 				return;
 
@@ -49,17 +53,17 @@ namespace ICD.Connect.Lighting.Shades.RelayShadeDevice
 
 		public RelayShadeDevice()
 		{
-			m_ResetOpenRelayTimer = SafeTimer.Stopped(ResetOpenRelayTimerCallback);
-			m_ResetCloseRelayTimer = SafeTimer.Stopped(ResetCloseRelayTimerCallback);
+			m_ResetOpenRelayTimer = SafeTimer.Stopped(ResetOpenRelay);
+			m_ResetCloseRelayTimer = SafeTimer.Stopped(ResetCloseRelay);
 		}
 
-		private void ResetOpenRelayTimerCallback()
+		private void ResetOpenRelay()
 		{
 			if (m_OpenRelay != null)
 				m_OpenRelay.Open();
 		}
 
-		private void ResetCloseRelayTimerCallback()
+		private void ResetCloseRelay()
 		{
 			if (m_CloseRelay != null)
 				m_CloseRelay.Open();
