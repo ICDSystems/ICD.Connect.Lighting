@@ -1,9 +1,10 @@
 ﻿using System;
 using ICD.Common.Utils.EventArguments;
+using ICD.Connect.Lighting.Processors;
 
 namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 {
-	public interface ILutronNwkDevice
+	public interface ILutronNwkDevice: ILightingProcessorDevice
 	{
 
 		/// <summary>

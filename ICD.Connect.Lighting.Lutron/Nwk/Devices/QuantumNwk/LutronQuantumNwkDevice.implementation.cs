@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Lighting.Lutron.Nwk.EventArguments;
-using ICD.Connect.Lighting.Processors;
 
-namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
+namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.QuantumNwk
 {
-	public abstract partial class AbstractLutronNwkDevice<T> : ILightingProcessorDevice
+	public sealed partial class LutronQuantumNwkDevice
 	{
 		#region ILightingProcessorDevice Implementation
 
@@ -16,7 +14,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		IEnumerable<LightingProcessorControl> ILightingProcessorDevice.GetLoadsForRoom(int room)
+		public override IEnumerable<LightingProcessorControl> GetLoadsForRoom(int room)
 		{
 			return GetAreaIntegrationsForRoom(room)
 				.SelectMany(a => a.GetZoneIntegrations())
@@ -28,7 +26,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		IEnumerable<LightingProcessorControl> ILightingProcessorDevice.GetShadesForRoom(int room)
+		public override IEnumerable<LightingProcessorControl> GetShadesForRoom(int room)
 		{
 			return GetAreaIntegrationsForRoom(room)
 				.SelectMany(a => a.GetShadeIntegrations())
@@ -40,7 +38,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		IEnumerable<LightingProcessorControl> ILightingProcessorDevice.GetShadeGroupsForRoom(int room)
+		public override IEnumerable<LightingProcessorControl> GetShadeGroupsForRoom(int room)
 		{
 			return GetAreaIntegrationsForRoom(room)
 				.SelectMany(a => a.GetShadeGroupIntegrations())
@@ -52,7 +50,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		IEnumerable<LightingProcessorControl> ILightingProcessorDevice.GetPresetsForRoom(int room)
+		public override IEnumerable<LightingProcessorControl> GetPresetsForRoom(int room)
 		{
 			return GetAreaIntegrationsForRoom(room)
 				.SelectMany(a => a.GetSceneIntegrations())
@@ -65,7 +63,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		Misc.Occupancy.eOccupancyState ILightingProcessorDevice.GetOccupancyForRoom(int room)
+		public override Misc.Occupancy.eOccupancyState GetOccupancyForRoom(int room)
 		{
 			eOccupancyState state = GetAreaIntegrationsForRoom(room).Select(a => a.OccupancyState)
 			                                                        .Unanimous(eOccupancyState.Unknown);
@@ -77,7 +75,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="preset"></param>
-		void ILightingProcessorDevice.SetPresetForRoom(int room, int? preset)
+		public override void SetPresetForRoom(int room, int? preset)
 		{
 			GetAreaIntegrationsForRoom(room).ForEach(a => a.SetScene(preset));
 		}
@@ -87,7 +85,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// Returns 0 if multuple areas for the given room, and the areas return different results.
 		/// </summary>
 		/// <param name="room"></param>
-		int? ILightingProcessorDevice.GetPresetForRoom(int room)
+		public override int? GetPresetForRoom(int room)
 		{
 			return GetAreaIntegrationsForRoom(room).Select(a => a.Scene)
 			                                       .Unanimous(0);
@@ -99,7 +97,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// <param name="room"></param>
 		/// <param name="load"></param>
 		/// <param name="percentage"></param>
-		void ILightingProcessorDevice.SetLoadLevel(int room, int load, float percentage)
+		public override void SetLoadLevel(int room, int load, float percentage)
 		{
 			GetAreaIntegrationsForRoom(room).Where(a => a.ContainsZoneIntegration(load))
 			                                .Select(a => a.GetZoneIntegration(load))
@@ -111,7 +109,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="load"></param>
-		float ILightingProcessorDevice.GetLoadLevel(int room, int load)
+		public override float GetLoadLevel(int room, int load)
 		{
 			return GetAreaIntegrationsForRoom(room).First(a => a.ContainsZoneIntegration(load))
 			                                       .GetZoneIntegration(load)
@@ -123,7 +121,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="load"></param>
-		public void StartRaisingLoadLevel(int room, int load)
+		public override void StartRaisingLoadLevel(int room, int load)
 		{
 			GetAreaIntegrationsForRoom(room).First(a => a.ContainsZoneIntegration(load))
 			                                .GetZoneIntegration(load)
@@ -135,7 +133,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="load"></param>
-		public void StartLoweringLoadLevel(int room, int load)
+		public override void StartLoweringLoadLevel(int room, int load)
 		{
 			GetAreaIntegrationsForRoom(room).First(a => a.ContainsZoneIntegration(load))
 			                                .GetZoneIntegration(load)
@@ -147,7 +145,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="load"></param>
-		public void StopRampingLoadLevel(int room, int load)
+		public override void StopRampingLoadLevel(int room, int load)
 		{
 			GetAreaIntegrationsForRoom(room).First(a => a.ContainsZoneIntegration(load))
 			                                .GetZoneIntegration(load)
@@ -159,7 +157,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="shade"></param>
-		void ILightingProcessorDevice.StartRaisingShade(int room, int shade)
+		public override void StartRaisingShade(int room, int shade)
 		{
 			GetAreaIntegrationsForRoom(room)
 				.Where(a => a.ContainsShadeIntegration(shade))
@@ -172,7 +170,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="shade"></param>
-		void ILightingProcessorDevice.StartLoweringShade(int room, int shade)
+		public override void StartLoweringShade(int room, int shade)
 		{
 			GetAreaIntegrationsForRoom(room)
 				.Where(a => a.ContainsShadeIntegration(shade))
@@ -185,7 +183,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="shade"></param>
-		void ILightingProcessorDevice.StopMovingShade(int room, int shade)
+		public override void StopMovingShade(int room, int shade)
 		{
 			GetAreaIntegrationsForRoom(room)
 				.Where(a => a.ContainsShadeIntegration(shade))
@@ -198,7 +196,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="shadeGroup"></param>
-		void ILightingProcessorDevice.StartRaisingShadeGroup(int room, int shadeGroup)
+		public override void StartRaisingShadeGroup(int room, int shadeGroup)
 		{
 			GetAreaIntegrationsForRoom(room)
 				.Where(a => a.ContainsShadeGroupIntegration(shadeGroup))
@@ -211,7 +209,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="shadeGroup"></param>
-		void ILightingProcessorDevice.StartLoweringShadeGroup(int room, int shadeGroup)
+		public override void StartLoweringShadeGroup(int room, int shadeGroup)
 		{
 			GetAreaIntegrationsForRoom(room)
 				.Where(a => a.ContainsShadeGroupIntegration(shadeGroup))
@@ -224,34 +222,12 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="shadeGroup"></param>
-		void ILightingProcessorDevice.StopMovingShadeGroup(int room, int shadeGroup)
+		public override void StopMovingShadeGroup(int room, int shadeGroup)
 		{
 			GetAreaIntegrationsForRoom(room)
 				.Where(a => a.ContainsShadeGroupIntegration(shadeGroup))
 				.Select(a => a.GetShadeGroupIntegration(shadeGroup))
 				.ForEach(s => s.StopMoving());
-		}
-
-		/// <summary>
-		/// Converts a Lutron occupancy state to a lighting processor device occupancy state.
-		/// </summary>
-		/// <param name="occupancy"></param>
-		/// <returns></returns>
-		private static Misc.Occupancy.eOccupancyState GetOccupancyState(eOccupancyState occupancy)
-		{
-			switch (occupancy)
-			{
-				case eOccupancyState.Unknown:
-					return Misc.Occupancy.eOccupancyState.Unknown;
-				case eOccupancyState.Inactive:
-					return Misc.Occupancy.eOccupancyState.Unknown;
-				case eOccupancyState.Occupied:
-					return Misc.Occupancy.eOccupancyState.Occupied;
-				case eOccupancyState.Unoccupied:
-					return Misc.Occupancy.eOccupancyState.Unoccupied;
-				default:
-					throw new ArgumentOutOfRangeException("occupancy", "Unexpected eOccupancyState " + occupancy);
-			}
 		}
 
 		#endregion

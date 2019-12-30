@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
@@ -10,12 +9,9 @@ using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.IO;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Timers;
-using ICD.Common.Utils.Xml;
-using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Lutron.Nwk.EventArguments;
-using ICD.Connect.Lighting.Lutron.Nwk.Integrations;
 using ICD.Connect.Protocol;
 using ICD.Connect.Protocol.Extensions;
 using ICD.Connect.Protocol.Network.Ports;
@@ -46,7 +42,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 	/// Due to this we prioritise EXECUTE commands and hold QUERY commands until all
 	/// EXECUTE commands have been processed.
 	/// </summary>
-	public abstract partial class AbstractLutronNwkDevice<T> : AbstractDevice<T>, ILutronNwkDevice where T : ILutronNwkDeviceSettings, new()
+	public abstract class AbstractLutronNwkDevice<T> : AbstractDevice<T>, ILutronNwkDevice where T : ILutronNwkDeviceSettings, new()
 	{
 		
 		/// <summary>
@@ -69,6 +65,19 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		public event EventHandler<RoomLoadLevelEventArgs> OnRoomLoadLevelChanged;
 		public event EventHandler<IntEventArgs> OnRoomControlsChanged;
 
+		/// <summary>
+		/// Gets the available rooms.
+		/// </summary>
+		/// <returns></returns>
+		public abstract IEnumerable<int> GetRooms();
+
+		/// <summary>
+		/// Returns true if the given room is available.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <returns></returns>
+		public abstract bool ContainsRoom(int room);
+
 		private readonly ISerialBuffer m_SerialBuffer;
 
 		/// <summary>
@@ -76,10 +85,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		private bool m_ConnectionIsReady;
 
-		// Maintain integration order
-		private readonly List<int> m_Areas;
-		private readonly Dictionary<int, AreaIntegration> m_IdToArea;
-		private readonly Dictionary<int, List<AreaIntegration>> m_RoomToAreas; 
+
 
 		private readonly Dictionary<string, IcdHashSet<LutronNwkDevice.ParserCallback>> m_ParserCallbacks;
 
@@ -139,14 +145,10 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public AbstractLutronNwkDevice()
+		protected AbstractLutronNwkDevice()
 		{
 			m_ComSpecProperties = new ComSpecProperties();
 			m_NetworkProperties = new SecureNetworkProperties();
-
-			m_Areas = new List<int>();
-			m_IdToArea = new Dictionary<int, AreaIntegration>();
-			m_RoomToAreas = new Dictionary<int, List<AreaIntegration>>();
 
 			m_ParserCallbacks = new Dictionary<string, IcdHashSet<LutronNwkDevice.ParserCallback>>();
 
@@ -244,56 +246,137 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 			ParseXml(xml);
 		}
 
-		/// <summary>
-		/// Gets the available rooms.
-		/// </summary>
-		/// <returns></returns>
-		public IEnumerable<int> GetRooms()
-		{
-			return m_Areas.ToArray();
-		}
+		#endregion
+
+		#region ILightingProcessorDevice Implementation
 
 		/// <summary>
-		/// Returns true if the given room is available.
+		/// Gets the available light loads for the room.
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		public bool ContainsRoom(int room)
-		{
-			return m_IdToArea.ContainsKey(room);
-		}
+		public abstract IEnumerable<LightingProcessorControl> GetLoadsForRoom(int room);
 
 		/// <summary>
-		/// Gets the area integration with the given integration id.
-		/// </summary>
-		/// <param name="integrationId"></param>
-		/// <returns></returns>
-		[PublicAPI]
-		public AreaIntegration GetAreaIntegration(int integrationId)
-		{
-			return m_IdToArea[integrationId];
-		}
-
-		/// <summary>
-		/// Gets the area integrations.
-		/// </summary>
-		/// <returns></returns>
-		[PublicAPI]
-		public IEnumerable<AreaIntegration> GetAreaIntegrations()
-		{
-			return m_Areas.Select(i => m_IdToArea[i]).ToArray();
-		}
-
-		/// <summary>
-		/// Gets the area integrations for the given room.
+		/// Gets the available individual shades for the room.
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		[PublicAPI]
-		public IEnumerable<AreaIntegration> GetAreaIntegrationsForRoom(int room)
-		{
-			return m_RoomToAreas.GetDefault(room, new List<AreaIntegration>()).ToArray();
-		}
+		public abstract IEnumerable<LightingProcessorControl> GetShadesForRoom(int room);
+
+		/// <summary>
+		/// Gets the available shade groups for the room.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <returns></returns>
+		public abstract IEnumerable<LightingProcessorControl> GetShadeGroupsForRoom(int room);
+
+		/// <summary>
+		/// Gets the available presets for the room.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <returns></returns>
+		public abstract IEnumerable<LightingProcessorControl> GetPresetsForRoom(int room);
+
+		/// <summary>
+		/// Gets the current occupancy state for the given room.
+		/// Returns unknown if the room has multiple areas that have different occupancies.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <returns></returns>
+		public abstract Misc.Occupancy.eOccupancyState GetOccupancyForRoom(int room);
+
+		/// <summary>
+		/// Sets the preset for the given room.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="preset"></param>
+		public abstract void SetPresetForRoom(int room, int? preset);
+
+		/// <summary>
+		/// Gets the current preset for the given room.
+		/// Returns 0 if multuple areas for the given room, and the areas return different results.
+		/// </summary>
+		/// <param name="room"></param>
+		public abstract int? GetPresetForRoom(int room);
+
+		/// <summary>
+		/// Sets the lighting level for the given load.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="load"></param>
+		/// <param name="percentage"></param>
+		public abstract void SetLoadLevel(int room, int load, float percentage);
+
+		/// <summary>
+		/// Gets the current lighting level for the given load.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="load"></param>
+		public abstract float GetLoadLevel(int room, int load);
+
+		/// <summary>
+		/// Starts raising the lighting level for the given load.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="load"></param>
+		public abstract void StartRaisingLoadLevel(int room, int load);
+
+		/// <summary>
+		/// Starts lowering the lighting level for the given load.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="load"></param>
+		public abstract void StartLoweringLoadLevel(int room, int load);
+
+		/// <summary>
+		/// Stops raising/lowering the lighting level for the given load.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="load"></param>
+		public abstract void StopRampingLoadLevel(int room, int load);
+
+		/// <summary>
+		/// Starts raising the shade.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="shade"></param>
+		public abstract void StartRaisingShade(int room, int shade);
+
+		/// <summary>
+		/// Starts lowering the shade.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="shade"></param>
+		public abstract void StartLoweringShade(int room, int shade);
+
+		/// <summary>
+		/// Stops moving the shade.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="shade"></param>
+		public abstract void StopMovingShade(int room, int shade);
+
+		/// <summary>
+		/// Starts raising the shade group.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="shadeGroup"></param>
+		public abstract void StartRaisingShadeGroup(int room, int shadeGroup);
+
+		/// <summary>
+		/// Starts lowering the shade group.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="shadeGroup"></param>
+		public abstract void StartLoweringShadeGroup(int room, int shadeGroup);
+
+		/// <summary>
+		/// Stops moving the shade group.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <param name="shadeGroup"></param>
+		public abstract void StopMovingShadeGroup(int room, int shadeGroup);
 
 		#endregion
 
@@ -380,6 +463,30 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		{
 			if (m_ParserCallbacks.ContainsKey(key))
 				m_ParserCallbacks[key].Remove(callback);
+		}
+
+		#endregion
+
+		#region Protected Event Raisers
+
+		protected void RaiseRoomControlsChangedEvent(int roomId)
+		{
+			OnRoomControlsChanged.Raise(this, new IntEventArgs(roomId));
+		}
+
+		protected void RaiseRoomPresetChangedEvent(int roomId, int? preset)
+		{
+			OnRoomPresetChanged.Raise(this, new RoomPresetChangeEventArgs(roomId, preset));
+		}
+
+		protected void RaiseRoomOccupancyChangedEvent(int roomId, eOccupancyState occupancyState)
+		{
+			OnRoomOccupancyChanged.Raise(this, new RoomOccupancyEventArgs(roomId, GetOccupancyState(occupancyState)));
+		}
+
+		protected void RaiseRoomLoadLevelChangedEvent(int roomId, int loadId, float percentage)
+		{
+			OnRoomLoadLevelChanged.Raise(this, new RoomLoadLevelEventArgs(roomId, loadId, percentage));
 		}
 
 		#endregion
@@ -598,66 +705,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 
 		#endregion
 
-		#region Integration Callbacks
 
-		/// <summary>
-		/// Subscribe to the area and child integration events.
-		/// </summary>
-		/// <param name="area"></param>
-		private void Subscribe(AreaIntegration area)
-		{
-			area.OnOccupancyStateChanged += AreaOnOccupancyStateChanged;
-			area.OnSceneChange += AreaOnSceneChange;
-			area.OnZoneOutputLevelChanged += AreaOnZoneOutputLevelChanged;
-		}
-
-		/// <summary>
-		/// Unsubscribe from the area and child integration callbacks.
-		/// </summary>
-		/// <param name="area"></param>
-		private void Unsubscribe(AreaIntegration area)
-		{
-			area.OnOccupancyStateChanged -= AreaOnOccupancyStateChanged;
-			area.OnSceneChange -= AreaOnSceneChange;
-			area.OnZoneOutputLevelChanged += AreaOnZoneOutputLevelChanged;
-		}
-
-		/// <summary>
-		/// Called when an area occupancy state changes.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="preset"></param>
-		private void AreaOnSceneChange(AreaIntegration sender, int? preset)
-		{
-			if (sender != null)
-				OnRoomPresetChanged.Raise(this, new RoomPresetChangeEventArgs(sender.Room, preset));
-		}
-
-		/// <summary>
-		/// Called when an area occupancy state changes.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="args"></param>
-		private void AreaOnOccupancyStateChanged(object sender, OccupancyStateEventArgs args)
-		{
-			AreaIntegration area = sender as AreaIntegration;
-			if (area != null)
-				OnRoomOccupancyChanged.Raise(this, new RoomOccupancyEventArgs(area.Room, GetOccupancyState(args.Data)));
-		}
-
-		/// <summary>
-		/// Called when an area zone changes output level.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="args"></param>
-		private void AreaOnZoneOutputLevelChanged(object sender, ZoneOutputLevelEventArgs args)
-		{
-			AreaIntegration area = sender as AreaIntegration;
-			if (area != null)
-				OnRoomLoadLevelChanged.Raise(this, new RoomLoadLevelEventArgs(area.Room, args.IntegrationId, args.Percentage));
-		}
-
-		#endregion
 
 		#region Parse Xml
 
@@ -665,50 +713,12 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// Parses the xml document for areas, zones, devices, etc.
 		/// </summary>
 		/// <param name="xml"></param>
-		private void ParseXml(string xml)
-		{
-			ClearIntegrations();
-
-			IEnumerable<AreaIntegration> items = XmlUtils.GetChildElementsAsString(xml)
-			                                             .Select(x => AreaIntegration.FromXml(x, this));
-
-			foreach (AreaIntegration area in items)
-			{
-				if (m_IdToArea.ContainsKey(area.IntegrationId))
-				{
-					IcdErrorLog.Warn("{0} already contains area {1}, skipping", GetType().Name, area.IntegrationId);
-					continue;
-				}
-
-				Subscribe(area);
-
-				m_Areas.Add(area.IntegrationId);
-				m_IdToArea[area.IntegrationId] = area;
-
-				if (!m_RoomToAreas.ContainsKey(area.Room))
-					m_RoomToAreas[area.Room] = new List<AreaIntegration>();
-				m_RoomToAreas[area.Room].Add(area);
-
-				OnRoomControlsChanged.Raise(this, new IntEventArgs(area.Room));
-			}
-		}
+		protected abstract void ParseXml(string xml);
 
 		/// <summary>
 		/// Removes all of the existing integrations from the device.
 		/// </summary>
-		private void ClearIntegrations()
-		{
-			foreach (int id in m_IdToArea.Keys)
-			{
-				AreaIntegration area = m_IdToArea[id];
-				Unsubscribe(area);
-				area.Dispose();
-			}
-
-			m_Areas.Clear();
-			m_IdToArea.Clear();
-			m_RoomToAreas.Clear();
-		}
+		protected abstract void ClearIntegrations();
 
 		#endregion
 
@@ -784,25 +794,26 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 
 		#endregion
 
-		#region Console
-
 		/// <summary>
-		/// Gets the child console nodes.
+		/// Converts a Lutron occupancy state to a lighting processor device occupancy state.
 		/// </summary>
+		/// <param name="occupancy"></param>
 		/// <returns></returns>
-		public override IEnumerable<IConsoleNodeBase> GetConsoleNodes()
+		protected static Misc.Occupancy.eOccupancyState GetOccupancyState(eOccupancyState occupancy)
 		{
-			foreach (IConsoleNodeBase node in GetBaseConsoleNodes())
-				yield return node;
-
-			yield return ConsoleNodeGroup.IndexNodeMap("Areas", GetAreaIntegrations());
+			switch (occupancy)
+			{
+				case eOccupancyState.Unknown:
+					return Misc.Occupancy.eOccupancyState.Unknown;
+				case eOccupancyState.Inactive:
+					return Misc.Occupancy.eOccupancyState.Unknown;
+				case eOccupancyState.Occupied:
+					return Misc.Occupancy.eOccupancyState.Occupied;
+				case eOccupancyState.Unoccupied:
+					return Misc.Occupancy.eOccupancyState.Unoccupied;
+				default:
+					throw new ArgumentOutOfRangeException("occupancy", "Unexpected eOccupancyState " + occupancy);
+			}
 		}
-
-		private IEnumerable<IConsoleNodeBase> GetBaseConsoleNodes()
-		{
-			return base.GetConsoleNodes();
-		} 
-
-		#endregion
 	}
 }
