@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Protocol.SerialBuffers;
 
-namespace ICD.Connect.Lighting.Lutron.QuantumNwk
+namespace ICD.Connect.Lighting.Lutron.Nwk
 {
 	/// <summary>
 	/// The LutronQuantumNwkSerialBuffer splits incoming data on a number of strings.

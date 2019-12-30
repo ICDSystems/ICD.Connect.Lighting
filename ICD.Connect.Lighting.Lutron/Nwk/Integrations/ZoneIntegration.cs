@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using ICD.Common.Utils.EventArguments;
 using ICD.Common.Properties;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
 
-namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
+namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 {
 	public sealed class ZoneIntegration : AbstractIntegration
 	{
@@ -58,7 +59,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 		/// <param name="integrationId"></param>
 		/// <param name="name"></param>
 		/// <param name="parent"></param>
-		private ZoneIntegration(int integrationId, string name, LutronQuantumNwkDevice parent)
+		private ZoneIntegration(int integrationId, string name, ILutronNwkDevice parent)
 			: base(integrationId, name, parent)
 		{
 		}
@@ -69,7 +70,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 		/// <param name="xml"></param>
 		/// <param name="parent"></param>
 		/// <returns></returns>
-		public static ZoneIntegration FromXml(string xml, LutronQuantumNwkDevice parent)
+		public static ZoneIntegration FromXml(string xml, ILutronNwkDevice parent)
 		{
 			int integrationId = GetIntegrationIdFromXml(xml);
 			string name = GetNameFromXml(xml);

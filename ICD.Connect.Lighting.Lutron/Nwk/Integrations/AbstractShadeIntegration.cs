@@ -1,6 +1,7 @@
 ﻿using ICD.Common.Properties;
+using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
 
-namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
+namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 {
 	/// <summary>
 	/// Base class for shade integrations.
@@ -17,7 +18,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 		/// <param name="integrationId"></param>
 		/// <param name="name"></param>
 		/// <param name="parent"></param>
-		protected AbstractShadeIntegration(int integrationId, string name, LutronQuantumNwkDevice parent)
+		protected AbstractShadeIntegration(int integrationId, string name, ILutronNwkDevice parent)
 			: base(integrationId, name, parent)
 		{
 		}

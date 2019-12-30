@@ -1,6 +1,6 @@
 using System;
 
-namespace ICD.Connect.Lighting.Lutron.QuantumNwk.EventArguments
+namespace ICD.Connect.Lighting.Lutron.Nwk.EventArguments
 {
 	public sealed class ZoneOutputLevelEventArgs : EventArgs
 	{

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ICD.Common.Utils.EventArguments;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.IO;
 using ICD.Common.Utils.Services.Logging;
@@ -14,8 +14,8 @@ using ICD.Common.Utils.Xml;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Lighting.EventArguments;
-using ICD.Connect.Lighting.Lutron.QuantumNwk.EventArguments;
-using ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations;
+using ICD.Connect.Lighting.Lutron.Nwk.EventArguments;
+using ICD.Connect.Lighting.Lutron.Nwk.Integrations;
 using ICD.Connect.Protocol;
 using ICD.Connect.Protocol.Extensions;
 using ICD.Connect.Protocol.Network.Ports;
@@ -26,8 +26,18 @@ using ICD.Connect.Protocol.SerialBuffers;
 using ICD.Connect.Protocol.Settings;
 using ICD.Connect.Settings;
 
-namespace ICD.Connect.Lighting.Lutron.QuantumNwk
+namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 {
+
+	public static class LutronNwkDevice
+	{
+		/// <summary>
+		/// Callback for parser events.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="data"></param>
+		public delegate void ParserCallback(ILutronNwkDevice sender, string data);
+	}
 	/// <summary>
 	/// The LutronQuantumNwkDevice provides an interface for controlling a QuantumNwk
 	/// lighting processor over a serial connection.
@@ -36,15 +46,9 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 	/// Due to this we prioritise EXECUTE commands and hold QUERY commands until all
 	/// EXECUTE commands have been processed.
 	/// </summary>
-	public sealed partial class LutronQuantumNwkDevice : AbstractDevice<LutronQuantumNwkDeviceSettings>
+	public abstract partial class AbstractLutronNwkDevice<T> : AbstractDevice<T>, ILutronNwkDevice where T : ILutronNwkDeviceSettings, new()
 	{
-		/// <summary>
-		/// Callback for parser events.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="data"></param>
-		public delegate void ParserCallback(LutronQuantumNwkDevice sender, string data);
-
+		
 		/// <summary>
 		/// How often we send a new data string to the lighting processor.
 		/// </summary>
@@ -77,7 +81,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		private readonly Dictionary<int, AreaIntegration> m_IdToArea;
 		private readonly Dictionary<int, List<AreaIntegration>> m_RoomToAreas; 
 
-		private readonly Dictionary<string, IcdHashSet<ParserCallback>> m_ParserCallbacks;
+		private readonly Dictionary<string, IcdHashSet<LutronNwkDevice.ParserCallback>> m_ParserCallbacks;
 
 		private readonly Queue<string> m_QueryQueue;
 		private readonly Queue<string> m_ExecuteQueue;
@@ -135,7 +139,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public LutronQuantumNwkDevice()
+		public AbstractLutronNwkDevice()
 		{
 			m_ComSpecProperties = new ComSpecProperties();
 			m_NetworkProperties = new SecureNetworkProperties();
@@ -144,7 +148,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			m_IdToArea = new Dictionary<int, AreaIntegration>();
 			m_RoomToAreas = new Dictionary<int, List<AreaIntegration>>();
 
-			m_ParserCallbacks = new Dictionary<string, IcdHashSet<ParserCallback>>();
+			m_ParserCallbacks = new Dictionary<string, IcdHashSet<LutronNwkDevice.ParserCallback>>();
 
 			m_QueryQueue = new Queue<string>();
 			m_ExecuteQueue = new Queue<string>();
@@ -299,7 +303,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// Enqueue the data string to be sent to the device.
 		/// </summary>
 		/// <param name="data"></param>
-		internal void EnqueueData(string data)
+		public void EnqueueData(string data)
 		{
 			m_CommandQueuesSection.Enter();
 
@@ -359,10 +363,10 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="callback"></param>
-		internal void RegisterIntegrationCallback(string key, ParserCallback callback)
+		public void RegisterIntegrationCallback(string key, LutronNwkDevice.ParserCallback callback)
 		{
 			if (!m_ParserCallbacks.ContainsKey(key))
-				m_ParserCallbacks[key] = new IcdHashSet<ParserCallback>();
+				m_ParserCallbacks[key] = new IcdHashSet<LutronNwkDevice.ParserCallback>();
 
 			m_ParserCallbacks[key].Add(callback);
 		}
@@ -372,7 +376,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="callback"></param>
-		internal void UnregisterIntegrationCallback(string key, ParserCallback callback)
+		public void UnregisterIntegrationCallback(string key, LutronNwkDevice.ParserCallback callback)
 		{
 			if (m_ParserCallbacks.ContainsKey(key))
 				m_ParserCallbacks[key].Remove(callback);
@@ -579,7 +583,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 			if (!m_ParserCallbacks.ContainsKey(key))
 				return;
 
-			foreach (ParserCallback callback in m_ParserCallbacks[key])
+			foreach (LutronNwkDevice.ParserCallback callback in m_ParserCallbacks[key])
 			{
 				try
 				{
@@ -714,7 +718,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// Override to apply properties to the settings instance.
 		/// </summary>
 		/// <param name="settings"></param>
-		protected override void CopySettingsFinal(LutronQuantumNwkDeviceSettings settings)
+		protected override void CopySettingsFinal(T settings)
 		{
 			base.CopySettingsFinal(settings);
 
@@ -748,7 +752,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// </summary>
 		/// <param name="settings"></param>
 		/// <param name="factory"></param>
-		protected override void ApplySettingsFinal(LutronQuantumNwkDeviceSettings settings, IDeviceFactory factory)
+		protected override void ApplySettingsFinal(T settings, IDeviceFactory factory)
 		{
 			base.ApplySettingsFinal(settings, factory);
 

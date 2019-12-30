@@ -1,4 +1,6 @@
-﻿namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
+﻿using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
+
+namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 {
 	public sealed class SceneIntegration : AbstractIntegration
 	{
@@ -20,7 +22,7 @@
 		/// <param name="integrationId"></param>
 		/// <param name="name"></param>
 		/// <param name="parent"></param>
-		private SceneIntegration(int integrationId, string name, LutronQuantumNwkDevice parent)
+		private SceneIntegration(int integrationId, string name, ILutronNwkDevice parent)
 			: base(integrationId, name, parent)
 		{
 		}
@@ -31,7 +33,7 @@
 		/// <param name="xml"></param>
 		/// <param name="parent"></param>
 		/// <returns></returns>
-		public static SceneIntegration FromXml(string xml, LutronQuantumNwkDevice parent)
+		public static SceneIntegration FromXml(string xml, ILutronNwkDevice parent)
 		{
 			int integrationId = GetIntegrationIdFromXml(xml);
 			string name = GetNameFromXml(xml);

@@ -4,13 +4,11 @@ using ICD.Connect.Protocol.Network.Settings;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
 using ICD.Connect.Protocol.Settings;
-using ICD.Connect.Settings.Attributes;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
 
-namespace ICD.Connect.Lighting.Lutron.QuantumNwk
+namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 {
-	[KrangSettings("LutronQuantumNwk", typeof(LutronQuantumNwkDevice))]
-	public sealed class LutronQuantumNwkDeviceSettings : AbstractDeviceSettings, ISecureNetworkSettings, IComSpecSettings
+	public abstract class AbstractLutronNwkDeviceSettings : AbstractDeviceSettings, ILutronNwkDeviceSettings
 	{
 		private const string PORT_ELEMENT = "Port";
 		private const string USERNAME_ELEMENT = "Username";
@@ -179,7 +177,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public LutronQuantumNwkDeviceSettings()
+		public AbstractLutronNwkDeviceSettings()
 		{
 			m_NetworkProperties = new SecureNetworkProperties
 			{

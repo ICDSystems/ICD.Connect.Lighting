@@ -71,21 +71,25 @@
   <ItemGroup>
     <None Include="ObfuscationSettings.cs" />
     <Compile Include="KrangPlugin.cs" />
+    <Compile Include="Nwk\Devices\AbstractLutronNwkDevice\AbstractLutronNwkDevice.cs" />
+    <Compile Include="Nwk\Devices\AbstractLutronNwkDevice\AbstractLutronNwkDevice.implementation.cs" />
+    <Compile Include="Nwk\Devices\AbstractLutronNwkDevice\AbstractLutronNwkDeviceSettings.cs" />
+    <Compile Include="Nwk\Devices\AbstractLutronNwkDevice\ILutronNwkDevice.cs" />
+    <Compile Include="Nwk\Devices\AbstractLutronNwkDevice\ILutronNwkDeviceSettings.cs" />
+    <Compile Include="Nwk\Devices\QuantumNwk\LutronQuantiumNwkDevice.cs" />
+    <Compile Include="Nwk\Devices\QuantumNwk\LutronQuantumNwkDeviceSettings.cs" />
+    <Compile Include="Nwk\EventArguments\OccupancyStateEventArgs.cs" />
+    <Compile Include="Nwk\EventArguments\ZoneOutputLevelEventArgs.cs" />
+    <Compile Include="Nwk\Integrations\AbstractIntegration.cs" />
+    <Compile Include="Nwk\Integrations\AbstractShadeIntegration.cs" />
+    <Compile Include="Nwk\Integrations\AreaIntegration.cs" />
+    <Compile Include="Nwk\Integrations\SceneIntegration.cs" />
+    <Compile Include="Nwk\Integrations\ShadeGroupIntegration.cs" />
+    <Compile Include="Nwk\Integrations\ShadeIntegration.cs" />
+    <Compile Include="Nwk\Integrations\ZoneIntegration.cs" />
+    <Compile Include="Nwk\LutronQuantumNwkSerialBuffer.cs" />
+    <Compile Include="Nwk\LutronUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QuantumNwk\EventArguments\OccupancyStateEventArgs.cs" />
-    <Compile Include="QuantumNwk\Integrations\AbstractShadeIntegration.cs" />
-    <Compile Include="QuantumNwk\EventArguments\ZoneOutputLevelEventArgs.cs" />
-    <Compile Include="QuantumNwk\Integrations\SceneIntegration.cs" />
-    <Compile Include="QuantumNwk\LutronQuantumNwkDevice.implementation.cs" />
-    <Compile Include="QuantumNwk\LutronQuantumNwkSerialBuffer.cs" />
-    <Compile Include="QuantumNwk\LutronUtils.cs" />
-    <Compile Include="QuantumNwk\Integrations\AbstractIntegration.cs" />
-    <Compile Include="QuantumNwk\Integrations\AreaIntegration.cs" />
-    <Compile Include="QuantumNwk\Integrations\ShadeGroupIntegration.cs" />
-    <Compile Include="QuantumNwk\Integrations\ShadeIntegration.cs" />
-    <Compile Include="QuantumNwk\Integrations\ZoneIntegration.cs" />
-    <Compile Include="QuantumNwk\LutronQuantumNwkDevice.cs" />
-    <Compile Include="QuantumNwk\LutronQuantumNwkDeviceSettings.cs" />
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>
   <ItemGroup>

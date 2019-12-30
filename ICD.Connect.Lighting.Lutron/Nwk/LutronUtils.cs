@@ -2,7 +2,7 @@
 using System.Linq;
 using ICD.Common.Utils;
 
-namespace ICD.Connect.Lighting.Lutron.QuantumNwk
+namespace ICD.Connect.Lighting.Lutron.Nwk
 {
 	public static class LutronUtils
 	{

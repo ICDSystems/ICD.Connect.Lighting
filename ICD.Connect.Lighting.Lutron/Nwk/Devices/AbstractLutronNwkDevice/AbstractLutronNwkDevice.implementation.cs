@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils.Extensions;
-using ICD.Connect.Lighting.Lutron.QuantumNwk.EventArguments;
+using ICD.Connect.Lighting.Lutron.Nwk.EventArguments;
 using ICD.Connect.Lighting.Processors;
 
-namespace ICD.Connect.Lighting.Lutron.QuantumNwk
+namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 {
-	public sealed partial class LutronQuantumNwkDevice : ILightingProcessorDevice
+	public abstract partial class AbstractLutronNwkDevice<T> : ILightingProcessorDevice
 	{
 		#region ILightingProcessorDevice Implementation
 

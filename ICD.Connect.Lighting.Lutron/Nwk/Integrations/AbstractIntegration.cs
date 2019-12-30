@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
-using ICD.Common.Properties;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
 using ICD.Connect.Lighting.Shades;
 
-namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
+namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 {
 	/// <summary>
 	/// Base class for all Lutron QuantumNwk integrations that communicate with the device.
@@ -17,7 +18,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 	{
 		private readonly int m_IntegrationId;
 		private readonly string m_Name;
-		private readonly LutronQuantumNwkDevice m_Parent;
+		private readonly ILutronNwkDevice m_Parent;
 
 		#region Properties
 
@@ -45,7 +46,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 		/// <param name="integrationId"></param>
 		/// <param name="name"></param>
 		/// <param name="parent"></param>
-		protected AbstractIntegration(int integrationId, string name, LutronQuantumNwkDevice parent)
+		protected AbstractIntegration(int integrationId, string name, ILutronNwkDevice parent)
 		{
 			m_IntegrationId = integrationId;
 			m_Name = name;
@@ -147,7 +148,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 		/// Subscribe to the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Subscribe(LutronQuantumNwkDevice parent)
+		private void Subscribe(ILutronNwkDevice parent)
 		{
 			parent.OnInitializedChanged += ParentOnInitializedChanged;
 			parent.RegisterIntegrationCallback(GetKey(), ParentOnOutput);
@@ -157,7 +158,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 		/// Unsubscribe from the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Unsubscribe(LutronQuantumNwkDevice parent)
+		private void Unsubscribe(ILutronNwkDevice parent)
 		{
 			parent.OnInitializedChanged -= ParentOnInitializedChanged;
 			parent.UnregisterIntegrationCallback(GetKey(), ParentOnOutput);
@@ -178,7 +179,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="data"></param>
-		private void ParentOnOutput(LutronQuantumNwkDevice sender, string data)
+		private void ParentOnOutput(ILutronNwkDevice sender, string data)
 		{
 			if (LutronUtils.GetMode(data) != LutronUtils.MODE_RESPONSE)
 				return;

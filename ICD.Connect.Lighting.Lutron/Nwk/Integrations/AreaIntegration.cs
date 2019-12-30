@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICD.Common.Utils.EventArguments;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
-using ICD.Connect.Lighting.Lutron.QuantumNwk.EventArguments;
+using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
+using ICD.Connect.Lighting.Lutron.Nwk.EventArguments;
 
-namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
+namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 {
 	public sealed class AreaIntegration : AbstractIntegration
 	{
@@ -115,7 +116,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 		/// <param name="integrationId"></param>
 		/// <param name="name"></param>
 		/// <param name="parent"></param>
-		private AreaIntegration(int room, int integrationId, string name, LutronQuantumNwkDevice parent)
+		private AreaIntegration(int room, int integrationId, string name, ILutronNwkDevice parent)
 			: base(integrationId, name, parent)
 		{
 			m_OccupancyState = eOccupancyState.Unknown;
@@ -139,7 +140,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 		/// <param name="xml"></param>
 		/// <param name="parent"></param>
 		/// <returns></returns>
-		public static AreaIntegration FromXml(string xml, LutronQuantumNwkDevice parent)
+		public static AreaIntegration FromXml(string xml, ILutronNwkDevice parent)
 		{
 			int room = XmlUtils.GetAttributeAsInt(xml, "room");
 			int integrationId = GetIntegrationIdFromXml(xml);
@@ -177,7 +178,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 		/// </summary>
 		/// <param name="zonesXml"></param>
 		/// <param name="parent"></param>
-		private void ParseZones(string zonesXml, LutronQuantumNwkDevice parent)
+		private void ParseZones(string zonesXml, ILutronNwkDevice parent)
 		{
 			ClearZones();
 
@@ -203,7 +204,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 		/// </summary>
 		/// <param name="shadeGroupsXml"></param>
 		/// <param name="parent"></param>
-		private void ParseShadeGroups(string shadeGroupsXml, LutronQuantumNwkDevice parent)
+		private void ParseShadeGroups(string shadeGroupsXml, ILutronNwkDevice parent)
 		{
 			ClearShadeGroups();
 
@@ -229,7 +230,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 		/// </summary>
 		/// <param name="shadesXml"></param>
 		/// <param name="parent"></param>
-		private void ParseShades(string shadesXml, LutronQuantumNwkDevice parent)
+		private void ParseShades(string shadesXml, ILutronNwkDevice parent)
 		{
 			ClearShades();
 
@@ -255,7 +256,7 @@ namespace ICD.Connect.Lighting.Lutron.QuantumNwk.Integrations
 		/// </summary>
 		/// <param name="scenesXml"></param>
 		/// <param name="parent"></param>
-		private void ParseScenes(string scenesXml, LutronQuantumNwkDevice parent)
+		private void ParseScenes(string scenesXml, ILutronNwkDevice parent)
 		{
 			ClearScenes();
 
