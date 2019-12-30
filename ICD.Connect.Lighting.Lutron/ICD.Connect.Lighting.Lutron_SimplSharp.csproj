@@ -72,11 +72,11 @@
     <None Include="ObfuscationSettings.cs" />
     <Compile Include="KrangPlugin.cs" />
     <Compile Include="Nwk\Devices\AbstractLutronNwkDevice\AbstractLutronNwkDevice.cs" />
-    <Compile Include="Nwk\Devices\AbstractLutronNwkDevice\AbstractLutronNwkDevice.implementation.cs" />
     <Compile Include="Nwk\Devices\AbstractLutronNwkDevice\AbstractLutronNwkDeviceSettings.cs" />
     <Compile Include="Nwk\Devices\AbstractLutronNwkDevice\ILutronNwkDevice.cs" />
     <Compile Include="Nwk\Devices\AbstractLutronNwkDevice\ILutronNwkDeviceSettings.cs" />
-    <Compile Include="Nwk\Devices\QuantumNwk\LutronQuantiumNwkDevice.cs" />
+    <Compile Include="Nwk\Devices\QuantumNwk\LutronQuantumNwkDevice.cs" />
+    <Compile Include="Nwk\Devices\QuantumNwk\LutronQuantumNwkDevice.implementation.cs" />
     <Compile Include="Nwk\Devices\QuantumNwk\LutronQuantumNwkDeviceSettings.cs" />
     <Compile Include="Nwk\EventArguments\OccupancyStateEventArgs.cs" />
     <Compile Include="Nwk\EventArguments\ZoneOutputLevelEventArgs.cs" />
