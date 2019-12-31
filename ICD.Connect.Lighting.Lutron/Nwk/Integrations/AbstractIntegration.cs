@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using ICD.Common.Properties;
-using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
-using ICD.Connect.Lighting.Shades;
 
 namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 {
@@ -38,6 +36,8 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 		/// </summary>
 		protected abstract string Command { get; }
 
+		protected ILutronNwkDevice Parent { get { return m_Parent; } }
+
 		#endregion
 
 		/// <summary>
@@ -65,34 +65,41 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 
 		#region Private Methods
 
+		
+
 		/// <summary>
-		/// Builds the execute data and sends it to the device.
+		/// Builds the execute data with component number and sends it to the device.
 		/// </summary>
+		/// <param name="component"></param>
 		/// <param name="action"></param>
 		/// <param name="parameters"></param>
-		protected void Execute(int action, params object[] parameters)
+		protected void ExecuteComponent(int component, int action, params object[] parameters)
 		{
-			SendData(LutronUtils.MODE_EXECUTE, action, parameters);
+			SendDataWithComponent(LutronUtils.MODE_EXECUTE, component, action, parameters);
 		}
 
 		/// <summary>
 		/// Builds the query data and sends it to the device.
 		/// </summary>
+		/// <param name="component"></param>
 		/// <param name="action"></param>
-		protected void Query(int action)
+		protected void QueryComponent(int component, int action)
 		{
-			SendData(LutronUtils.MODE_QUERY, action);
+			SendDataWithComponent(LutronUtils.MODE_QUERY, component, action);
 		}
+
+
 
 		/// <summary>
 		/// Builds the data for the current integration and sends it to the device.
 		/// </summary>
 		/// <param name="mode"></param>
+		/// <param name="component"></param>
 		/// <param name="action"></param>
 		/// <param name="parameters"></param>
-		private void SendData(char mode, int action, params object[] parameters)
+		private void SendDataWithComponent(char mode, int component, int action, params object[] parameters)
 		{
-			string data = LutronUtils.BuildData(mode, Command, IntegrationId, action, parameters);
+			string data = LutronUtils.BuildDataWithComponent(mode, Command, IntegrationId, component, action, parameters);
 			m_Parent.EnqueueData(data);
 		}
 
@@ -104,13 +111,6 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 		protected static int GetIntegrationIdFromXml(string xml)
 		{
 			return XmlUtils.GetAttributeAsInt(xml, "integrationId");
-		}
-
-		protected static eShadeType GetShadeTypeFromXml(string xml)
-		{
-			eShadeType shadeType;
-			bool parsed = EnumUtils.TryParseStrict(XmlUtils.GetAttributeAsString(xml, "shadeType"), true, out shadeType);
-			return parsed ? shadeType : eShadeType.None;
 		}
 
 		/// <summary>
@@ -179,25 +179,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="data"></param>
-		private void ParentOnOutput(ILutronNwkDevice sender, string data)
-		{
-			if (LutronUtils.GetMode(data) != LutronUtils.MODE_RESPONSE)
-				return;
-
-			int action = LutronUtils.GetIntegrationActionNumber(data);
-			string[] parameters = LutronUtils.GetIntegrationActionParameters(data);
-
-			ParentOnResponse(action, parameters);
-		}
-
-		/// <summary>
-		/// Called when we receive a response from the lighting processor for this integration.
-		/// </summary>
-		/// <param name="action">The action number for the response.</param>
-		/// <param name="parameters">The collection of string parameters.</param>
-		protected virtual void ParentOnResponse(int action, string[] parameters)
-		{
-		}
+		protected abstract void ParentOnOutput(ILutronNwkDevice sender, string data);
 
 		#endregion
 

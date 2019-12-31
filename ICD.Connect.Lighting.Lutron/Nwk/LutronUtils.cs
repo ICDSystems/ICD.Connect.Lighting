@@ -68,6 +68,28 @@ namespace ICD.Connect.Lighting.Lutron.Nwk
 		}
 
 		/// <summary>
+		/// Builds a data string for an integration command including a component number
+		/// </summary>
+		/// <param name="mode"></param>
+		/// <param name="command"></param>
+		/// <param name="integrationId"></param>
+		/// <param name="component"></param>
+		/// <param name="actionNumber"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		public static string BuildDataWithComponent(char mode, string command, int integrationId, int component,
+		                                            int actionNumber, params object[] parameters)
+		{
+			string[] paramsArray = parameters.Select<object, string>(ParameterToString)
+			                                 .ToArray();
+
+			string paramsString = string.Join(DELIMITER.ToString(), paramsArray);
+
+			return string.Format("{0}{1}{2}{3}{2}{4}{2}{5}{2}{6}{7}", mode, command, DELIMITER, integrationId, component, actionNumber,
+			                     paramsString, CRLF);
+		}
+
+		/// <summary>
 		/// Converts a parameter to a string representation.
 		/// </summary>
 		/// <param name="parameter"></param>
@@ -174,10 +196,11 @@ namespace ICD.Connect.Lighting.Lutron.Nwk
 
 		/// <summary>
 		/// Returns the integration action number from the data string.
+		/// This works for commands that don't have a component number
 		/// </summary>
 		/// <param name="data"></param>
 		/// <returns></returns>
-		public static int GetIntegrationActionNumber(string data)
+		public static int GetIntegrationActionNumberWithoutComponent(string data)
 		{
 			string[] split = SplitData(data);
 			string actionNumberString = split.Length > 2 ? split[2] : string.Empty;
@@ -187,6 +210,43 @@ namespace ICD.Connect.Lighting.Lutron.Nwk
 				return actionNumber;
 
 			string message = string.Format("Data \"{0}\" has no Action Number", data);
+			throw new FormatException(message);
+		}
+
+		/// <summary>
+		/// Returns the integration action number from the data string.
+		/// This works for commands that have a component number involved
+		/// </summary>
+		/// <param name="data"></param>
+		/// <returns></returns>
+		public static int GetIntegrationActionNumberWithComponent(string data)
+		{
+			string[] split = SplitData(data);
+			string actionNumberString = split.Length > 3 ? split[3] : string.Empty;
+
+			int actionNumber;
+			if (StringUtils.TryParse(actionNumberString, out actionNumber))
+				return actionNumber;
+
+			string message = string.Format("Data \"{0}\" has no Action Number", data);
+			throw new FormatException(message);
+		}
+
+		/// <summary>
+		/// Returns the integration component number
+		/// </summary>
+		/// <param name="data"></param>
+		/// <returns></returns>
+		public static int GetIntegrationComponentNumber(string data)
+		{
+			string[] split = SplitData(data);
+			string componentNumberString = split.Length > 2 ? split[2] : string.Empty;
+
+			int componentNumber;
+			if (StringUtils.TryParse(componentNumberString, out componentNumber))
+				return componentNumber;
+
+			string message = string.Format("Data \"{0}\" has no Component Number", data);
 			throw new FormatException(message);
 		}
 
@@ -204,16 +264,37 @@ namespace ICD.Connect.Lighting.Lutron.Nwk
 
 		/// <summary>
 		/// Returns the integration action parameters for the data string.
+		/// This works for commands without a compoent number
 		/// e.g. #AREA,2,1,70,4,2\x0D\x0A
 		/// becomes { "70", "4", "2" }
 		/// </summary>
 		/// <param name="data"></param>
 		/// <returns></returns>
-		public static string[] GetIntegrationActionParameters(string data)
+		public static string[] GetIntegrationActionParametersWithoutComponent(string data)
+		{
+			// Skip command, integration, and action
+			return GetIntegrationActionParameters(data, 3);
+		}
+
+		/// <summary>
+		/// Returns the integration action parameters for the data string.
+		/// This works for commands with a component number
+		/// e.g. #AREA,2,1,70,4,2\x0D\x0A
+		/// becomes { "70", "4", "2" }
+		/// </summary>
+		/// <param name="data"></param>
+		/// <returns></returns>
+		public static string[] GetIntegrationActionParametersWithComponent(string data)
+		{
+			// Skip command, integration, component, and action
+			return GetIntegrationActionParameters(data, 4);
+		}
+
+		private static string[] GetIntegrationActionParameters(string data, int skip)
 		{
 			data = TrimCrlf(data);
-			// Skip command, integration and action
-			return SplitData(data).Skip(3).ToArray();
+			// Skip specified number of items
+			return SplitData(data).Skip(skip).ToArray();
 		}
 
 		/// <summary>

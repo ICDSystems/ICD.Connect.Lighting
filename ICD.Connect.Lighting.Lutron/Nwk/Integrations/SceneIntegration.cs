@@ -2,7 +2,7 @@
 
 namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 {
-	public sealed class SceneIntegration : AbstractIntegration
+	public sealed class SceneIntegration : AbstractIntegrationWithoutComponent
 	{
 		/// <summary>
 		/// The string prefix for communication with the lighting processor, e.g. SHADES.

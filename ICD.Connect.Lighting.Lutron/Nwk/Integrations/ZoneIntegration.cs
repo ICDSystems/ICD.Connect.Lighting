@@ -9,7 +9,7 @@ using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
 
 namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 {
-	public sealed class ZoneIntegration : AbstractIntegration
+	public sealed class ZoneIntegration : AbstractIntegrationWithoutComponent
 	{
 		private const int ACTION_OUTPUT_LEVEL = 1;
 		private const int ACTION_START_RAISING = 2;

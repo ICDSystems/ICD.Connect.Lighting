@@ -13,7 +13,7 @@ using ICD.Connect.Lighting.Lutron.Nwk.EventArguments;
 
 namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 {
-	public sealed class AreaIntegration : AbstractIntegration
+	public sealed class AreaIntegration : AbstractIntegrationWithoutComponent
 	{
 		private const int ACTION_SCENE = 6;
 		private const int ACTION_OCCUPANCY_STATE = 8;

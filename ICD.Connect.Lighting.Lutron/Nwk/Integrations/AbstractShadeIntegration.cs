@@ -1,12 +1,15 @@
 ﻿using ICD.Common.Properties;
+using ICD.Common.Utils;
+using ICD.Common.Utils.Xml;
 using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
+using ICD.Connect.Lighting.Shades;
 
 namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 {
 	/// <summary>
 	/// Base class for shade integrations.
 	/// </summary>
-	public abstract class AbstractShadeIntegration : AbstractIntegration
+	public abstract class AbstractShadeIntegration : AbstractIntegrationWithoutComponent
 	{
 		private const int ACTION_RAISE = 2;
 		private const int ACTION_LOWER = 3;
@@ -53,5 +56,12 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 		}
 
 		#endregion
+
+		protected static eShadeType GetShadeTypeFromXml(string xml)
+		{
+			eShadeType shadeType;
+			bool parsed = EnumUtils.TryParseStrict(XmlUtils.GetAttributeAsString(xml, "shadeType"), true, out shadeType);
+			return parsed ? shadeType : eShadeType.None;
+		}
 	}
 }
