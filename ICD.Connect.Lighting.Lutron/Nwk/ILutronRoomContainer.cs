@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using ICD.Common.Properties;
+using ICD.Common.Utils.EventArguments;
 using ICD.Connect.Lighting.Lutron.Nwk.EventArguments;
 using ICD.Connect.Lighting.Lutron.Nwk.Integrations;
 
 namespace ICD.Connect.Lighting.Lutron.Nwk
 {
-	public interface ILutronRoomContainer
+	public interface ILutronRoomContainer : IDisposable
 	{
 		/// <summary>
 		/// Raised when the occupancy state for the area changes.
@@ -14,9 +15,19 @@ namespace ICD.Connect.Lighting.Lutron.Nwk
 		event EventHandler<OccupancyStateEventArgs> OnOccupancyStateChanged;
 
 		/// <summary>
+		/// Raised when the scene for the area changes.
+		/// </summary>
+		event EventHandler<GenericEventArgs<int?>> OnSceneChange;
+
+		/// <summary>
 		/// Raised when the output level for a zone changes.
 		/// </summary>
 		event EventHandler<ZoneOutputLevelEventArgs> OnZoneOutputLevelChanged;
+
+		/// <summary>
+		/// Room ID
+		/// </summary>
+		int Room { get; }
 
 		int? Scene { get; }
 

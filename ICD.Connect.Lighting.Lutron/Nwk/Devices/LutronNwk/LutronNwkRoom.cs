@@ -257,6 +257,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 		#region ILutronRoomContainer Implementation
 
 		public event EventHandler<OccupancyStateEventArgs> OnOccupancyStateChanged;
+		public event EventHandler<GenericEventArgs<int?>> OnSceneChange;
 		public event EventHandler<ZoneOutputLevelEventArgs> OnZoneOutputLevelChanged;
 
 		//todo: Implement
@@ -429,5 +430,15 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 
 		#endregion
 
+		/// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+		public void Dispose()
+		{
+			OnOccupancyStateChanged = null;
+			OnZoneOutputLevelChanged = null;
+
+
+
+			ClearChildren();
+		}
 	}
 }

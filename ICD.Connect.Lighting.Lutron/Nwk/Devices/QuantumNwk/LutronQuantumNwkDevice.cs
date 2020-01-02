@@ -2,6 +2,7 @@
 using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.API.Nodes;
@@ -126,67 +127,6 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.QuantumNwk
 		public override IEnumerable<ILutronRoomContainer> GetRoomContainersForRoom(int room)
 		{
 			return m_RoomToAreas.GetDefault(room, new List<AreaIntegration>()).ToArray();
-		}
-
-		#endregion
-
-		#region Integration Callbacks
-
-		/// <summary>
-		/// Subscribe to the area and child integration events.
-		/// </summary>
-		/// <param name="area"></param>
-		private void Subscribe(AreaIntegration area)
-		{
-			area.OnOccupancyStateChanged += AreaOnOccupancyStateChanged;
-			area.OnSceneChange += AreaOnSceneChange;
-			area.OnZoneOutputLevelChanged += AreaOnZoneOutputLevelChanged;
-		}
-
-		/// <summary>
-		/// Unsubscribe from the area and child integration callbacks.
-		/// </summary>
-		/// <param name="area"></param>
-		private void Unsubscribe(AreaIntegration area)
-		{
-			area.OnOccupancyStateChanged -= AreaOnOccupancyStateChanged;
-			area.OnSceneChange -= AreaOnSceneChange;
-			area.OnZoneOutputLevelChanged += AreaOnZoneOutputLevelChanged;
-		}
-
-		/// <summary>
-		/// Called when an area occupancy state changes.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="preset"></param>
-		private void AreaOnSceneChange(AreaIntegration sender, int? preset)
-		{
-			if (sender != null)
-				RaiseRoomPresetChangedEvent(sender.Room, preset);
-		}
-
-		/// <summary>
-		/// Called when an area occupancy state changes.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="args"></param>
-		private void AreaOnOccupancyStateChanged(object sender, OccupancyStateEventArgs args)
-		{
-			AreaIntegration area = sender as AreaIntegration;
-			if (area != null)
-				RaiseRoomOccupancyChangedEvent(area.Room, args.Data);
-		}
-
-		/// <summary>
-		/// Called when an area zone changes output level.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="args"></param>
-		private void AreaOnZoneOutputLevelChanged(object sender, ZoneOutputLevelEventArgs args)
-		{
-			AreaIntegration area = sender as AreaIntegration;
-			if (area != null)
-				RaiseRoomLoadLevelChangedEvent(area.Room, args.IntegrationId, args.Percentage);
 		}
 
 		#endregion

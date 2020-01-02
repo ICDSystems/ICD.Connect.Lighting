@@ -18,13 +18,11 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 		private const int ACTION_SCENE = 6;
 		private const int ACTION_OCCUPANCY_STATE = 8;
 
-		public delegate void SceneChangeCallback(AreaIntegration sender, int? preset);
-
 		/// <summary>
 		/// Raised when the scene for the area changes.
 		/// </summary>
 		[PublicAPI]
-		public event SceneChangeCallback OnSceneChange;
+		public event EventHandler<GenericEventArgs<int?>> OnSceneChange;
 
 		/// <summary>
 		/// Raised when the occupancy state for the area changes.
@@ -76,9 +74,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 
 				m_Scene = value;
 
-				SceneChangeCallback handler = OnSceneChange;
-				if (handler != null)
-					handler(this, m_Scene);
+				OnSceneChange.Raise(this, new GenericEventArgs<int?>(m_Scene));
 			}
 		}
 

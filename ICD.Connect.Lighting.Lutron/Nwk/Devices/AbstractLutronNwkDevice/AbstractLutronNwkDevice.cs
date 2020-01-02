@@ -347,21 +347,6 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 			OnRoomControlsChanged.Raise(this, new IntEventArgs(roomId));
 		}
 
-		protected void RaiseRoomPresetChangedEvent(int roomId, int? preset)
-		{
-			OnRoomPresetChanged.Raise(this, new RoomPresetChangeEventArgs(roomId, preset));
-		}
-
-		protected void RaiseRoomOccupancyChangedEvent(int roomId, eOccupancyState occupancyState)
-		{
-			OnRoomOccupancyChanged.Raise(this, new RoomOccupancyEventArgs(roomId, GetOccupancyState(occupancyState)));
-		}
-
-		protected void RaiseRoomLoadLevelChangedEvent(int roomId, int loadId, float percentage)
-		{
-			OnRoomLoadLevelChanged.Raise(this, new RoomLoadLevelEventArgs(roomId, loadId, percentage));
-		}
-
 		#endregion
 
 		#region Private Methods
@@ -407,6 +392,51 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 				SendData(data);
 		}
 
+		#endregion
+
+		#region ILutronRoomContainer Callbacks
+
+		protected virtual void Subscribe(ILutronRoomContainer room)
+		{
+			if (room == null)
+				return;
+
+			room.OnSceneChange += RoomOnSceneChange;
+			room.OnOccupancyStateChanged += RoomOnOccupancyStateChanged;
+			room.OnZoneOutputLevelChanged += RoomOnZoneOutputLevelChanged;
+		}
+
+		protected virtual void Unsubscribe(ILutronRoomContainer room)
+		{
+			if (room == null)
+				return;
+
+			room.OnSceneChange -= RoomOnSceneChange;
+			room.OnOccupancyStateChanged -= RoomOnOccupancyStateChanged;
+			room.OnZoneOutputLevelChanged -= RoomOnZoneOutputLevelChanged;
+		}
+
+		private void RoomOnSceneChange(object sender, GenericEventArgs<int?> args)
+		{
+			ILutronRoomContainer room = sender as ILutronRoomContainer;
+			if (room != null)
+				OnRoomPresetChanged.Raise(this, new RoomPresetChangeEventArgs(room.Room, args.Data));
+		}
+
+		private void RoomOnOccupancyStateChanged(object sender, OccupancyStateEventArgs args)
+		{
+			ILutronRoomContainer room = sender as ILutronRoomContainer;
+			if (room != null)
+				OnRoomOccupancyChanged.Raise(this, new RoomOccupancyEventArgs(room.Room, GetOccupancyState(args.Data)));
+		}
+
+		private void RoomOnZoneOutputLevelChanged(object sender, ZoneOutputLevelEventArgs args)
+		{
+			ILutronRoomContainer room = sender as ILutronRoomContainer;
+			if (room != null)
+				OnRoomLoadLevelChanged.Raise(this, new RoomLoadLevelEventArgs(room.Room, args.IntegrationId, args.Percentage));
+		}
+		
 		#endregion
 
 		#region Port Callbacks
