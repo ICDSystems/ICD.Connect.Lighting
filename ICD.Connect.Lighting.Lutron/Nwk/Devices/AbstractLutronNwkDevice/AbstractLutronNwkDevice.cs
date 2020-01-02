@@ -25,15 +25,13 @@ using ICD.Connect.Settings;
 namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 {
 
-	public static class LutronNwkDevice
-	{
 		/// <summary>
 		/// Callback for parser events.
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="data"></param>
 		public delegate void ParserCallback(ILutronNwkDevice sender, string data);
-	}
+	
 	/// <summary>
 	/// The LutronQuantumNwkDevice provides an interface for controlling a QuantumNwk
 	/// lighting processor over a serial connection.
@@ -42,7 +40,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 	/// Due to this we prioritise EXECUTE commands and hold QUERY commands until all
 	/// EXECUTE commands have been processed.
 	/// </summary>
-	public abstract class AbstractLutronNwkDevice<T> : AbstractDevice<T>, ILutronNwkDevice where T : ILutronNwkDeviceSettings, new()
+	public abstract partial class AbstractLutronNwkDevice<T> : AbstractDevice<T>, ILutronNwkDevice where T : ILutronNwkDeviceSettings, new()
 	{
 		
 		/// <summary>
@@ -87,7 +85,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 
 
 
-		private readonly Dictionary<string, IcdHashSet<LutronNwkDevice.ParserCallback>> m_ParserCallbacks;
+		private readonly Dictionary<string, IcdHashSet<ParserCallback>> m_ParserCallbacks;
 
 		private readonly Queue<string> m_QueryQueue;
 		private readonly Queue<string> m_ExecuteQueue;
@@ -150,7 +148,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 			m_ComSpecProperties = new ComSpecProperties();
 			m_NetworkProperties = new SecureNetworkProperties();
 
-			m_ParserCallbacks = new Dictionary<string, IcdHashSet<LutronNwkDevice.ParserCallback>>();
+			m_ParserCallbacks = new Dictionary<string, IcdHashSet<ParserCallback>>();
 
 			m_QueryQueue = new Queue<string>();
 			m_ExecuteQueue = new Queue<string>();
@@ -248,138 +246,6 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 
 		#endregion
 
-		#region ILightingProcessorDevice Implementation
-
-		/// <summary>
-		/// Gets the available light loads for the room.
-		/// </summary>
-		/// <param name="room"></param>
-		/// <returns></returns>
-		public abstract IEnumerable<LightingProcessorControl> GetLoadsForRoom(int room);
-
-		/// <summary>
-		/// Gets the available individual shades for the room.
-		/// </summary>
-		/// <param name="room"></param>
-		/// <returns></returns>
-		public abstract IEnumerable<LightingProcessorControl> GetShadesForRoom(int room);
-
-		/// <summary>
-		/// Gets the available shade groups for the room.
-		/// </summary>
-		/// <param name="room"></param>
-		/// <returns></returns>
-		public abstract IEnumerable<LightingProcessorControl> GetShadeGroupsForRoom(int room);
-
-		/// <summary>
-		/// Gets the available presets for the room.
-		/// </summary>
-		/// <param name="room"></param>
-		/// <returns></returns>
-		public abstract IEnumerable<LightingProcessorControl> GetPresetsForRoom(int room);
-
-		/// <summary>
-		/// Gets the current occupancy state for the given room.
-		/// Returns unknown if the room has multiple areas that have different occupancies.
-		/// </summary>
-		/// <param name="room"></param>
-		/// <returns></returns>
-		public abstract Misc.Occupancy.eOccupancyState GetOccupancyForRoom(int room);
-
-		/// <summary>
-		/// Sets the preset for the given room.
-		/// </summary>
-		/// <param name="room"></param>
-		/// <param name="preset"></param>
-		public abstract void SetPresetForRoom(int room, int? preset);
-
-		/// <summary>
-		/// Gets the current preset for the given room.
-		/// Returns 0 if multuple areas for the given room, and the areas return different results.
-		/// </summary>
-		/// <param name="room"></param>
-		public abstract int? GetPresetForRoom(int room);
-
-		/// <summary>
-		/// Sets the lighting level for the given load.
-		/// </summary>
-		/// <param name="room"></param>
-		/// <param name="load"></param>
-		/// <param name="percentage"></param>
-		public abstract void SetLoadLevel(int room, int load, float percentage);
-
-		/// <summary>
-		/// Gets the current lighting level for the given load.
-		/// </summary>
-		/// <param name="room"></param>
-		/// <param name="load"></param>
-		public abstract float GetLoadLevel(int room, int load);
-
-		/// <summary>
-		/// Starts raising the lighting level for the given load.
-		/// </summary>
-		/// <param name="room"></param>
-		/// <param name="load"></param>
-		public abstract void StartRaisingLoadLevel(int room, int load);
-
-		/// <summary>
-		/// Starts lowering the lighting level for the given load.
-		/// </summary>
-		/// <param name="room"></param>
-		/// <param name="load"></param>
-		public abstract void StartLoweringLoadLevel(int room, int load);
-
-		/// <summary>
-		/// Stops raising/lowering the lighting level for the given load.
-		/// </summary>
-		/// <param name="room"></param>
-		/// <param name="load"></param>
-		public abstract void StopRampingLoadLevel(int room, int load);
-
-		/// <summary>
-		/// Starts raising the shade.
-		/// </summary>
-		/// <param name="room"></param>
-		/// <param name="shade"></param>
-		public abstract void StartRaisingShade(int room, int shade);
-
-		/// <summary>
-		/// Starts lowering the shade.
-		/// </summary>
-		/// <param name="room"></param>
-		/// <param name="shade"></param>
-		public abstract void StartLoweringShade(int room, int shade);
-
-		/// <summary>
-		/// Stops moving the shade.
-		/// </summary>
-		/// <param name="room"></param>
-		/// <param name="shade"></param>
-		public abstract void StopMovingShade(int room, int shade);
-
-		/// <summary>
-		/// Starts raising the shade group.
-		/// </summary>
-		/// <param name="room"></param>
-		/// <param name="shadeGroup"></param>
-		public abstract void StartRaisingShadeGroup(int room, int shadeGroup);
-
-		/// <summary>
-		/// Starts lowering the shade group.
-		/// </summary>
-		/// <param name="room"></param>
-		/// <param name="shadeGroup"></param>
-		public abstract void StartLoweringShadeGroup(int room, int shadeGroup);
-
-		/// <summary>
-		/// Stops moving the shade group.
-		/// </summary>
-		/// <param name="room"></param>
-		/// <param name="shadeGroup"></param>
-		public abstract void StopMovingShadeGroup(int room, int shadeGroup);
-
-		#endregion
-
 		#region Internal Methods
 
 		/// <summary>
@@ -414,6 +280,13 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		}
 
 		/// <summary>
+		/// Gets the area integrations for the given room.
+		/// </summary>
+		/// <param name="room"></param>
+		/// <returns></returns>
+		public abstract IEnumerable<ILutronRoomContainer> GetRoomContainersForRoom(int room);
+
+		/// <summary>
 		/// Sends the data to the device.
 		/// </summary>
 		/// <param name="data"></param>
@@ -446,10 +319,10 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="callback"></param>
-		public void RegisterIntegrationCallback(string key, LutronNwkDevice.ParserCallback callback)
+		public void RegisterIntegrationCallback(string key, ParserCallback callback)
 		{
 			if (!m_ParserCallbacks.ContainsKey(key))
-				m_ParserCallbacks[key] = new IcdHashSet<LutronNwkDevice.ParserCallback>();
+				m_ParserCallbacks[key] = new IcdHashSet<ParserCallback>();
 
 			m_ParserCallbacks[key].Add(callback);
 		}
@@ -459,7 +332,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		/// <param name="key"></param>
 		/// <param name="callback"></param>
-		public void UnregisterIntegrationCallback(string key, LutronNwkDevice.ParserCallback callback)
+		public void UnregisterIntegrationCallback(string key, ParserCallback callback)
 		{
 			if (m_ParserCallbacks.ContainsKey(key))
 				m_ParserCallbacks[key].Remove(callback);
@@ -690,7 +563,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 			if (!m_ParserCallbacks.ContainsKey(key))
 				return;
 
-			foreach (LutronNwkDevice.ParserCallback callback in m_ParserCallbacks[key])
+			foreach (ParserCallback callback in m_ParserCallbacks[key])
 			{
 				try
 				{

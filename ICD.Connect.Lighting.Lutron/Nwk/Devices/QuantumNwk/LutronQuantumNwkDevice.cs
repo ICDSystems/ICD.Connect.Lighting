@@ -123,7 +123,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.QuantumNwk
 		/// <param name="room"></param>
 		/// <returns></returns>
 		[PublicAPI]
-		public IEnumerable<AreaIntegration> GetAreaIntegrationsForRoom(int room)
+		public override IEnumerable<ILutronRoomContainer> GetRoomContainersForRoom(int room)
 		{
 			return m_RoomToAreas.GetDefault(room, new List<AreaIntegration>()).ToArray();
 		}
