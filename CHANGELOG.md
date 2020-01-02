@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - LightingRoomInterfaceDevice, simple implementation of the ILightingRoomInterfaceDevice interface
  
 ### Changed
+ - LightingProcessorClientDevice now implements ILightingRoomInterfaceDevice instead of ILightingProcessorDevice
  - Massive refactor of LutronQuantumNwkDevice to abstract common elemnets with LutronNwkDevice
 
 ## [4.1.0] - 2019-10-07
