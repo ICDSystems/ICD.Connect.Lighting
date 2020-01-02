@@ -434,9 +434,8 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 		public void Dispose()
 		{
 			OnOccupancyStateChanged = null;
+			OnSceneChange = null;
 			OnZoneOutputLevelChanged = null;
-
-
 
 			ClearChildren();
 		}
