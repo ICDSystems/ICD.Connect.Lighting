@@ -259,7 +259,8 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 		public event EventHandler<OccupancyStateEventArgs> OnOccupancyStateChanged;
 		public event EventHandler<ZoneOutputLevelEventArgs> OnZoneOutputLevelChanged;
 
-		public int? Scene => throw new NotImplementedException();
+		//todo: Implement
+		public int? Scene { get { return null; } }
 
 		public eOccupancyState OccupancyState { get { return eOccupancyState.Unknown; } }
 
@@ -354,7 +355,11 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 		[PublicAPI]
 		public void SetScene(int? scene)
 		{
-			throw new NotImplementedException();
+			if (!scene.HasValue)
+				return;
+
+			// Scene id corresponds to the button number on the keypad
+			m_Keypad.ButtonPressRelease(scene.Value);
 		}
 
 		/// <summary>

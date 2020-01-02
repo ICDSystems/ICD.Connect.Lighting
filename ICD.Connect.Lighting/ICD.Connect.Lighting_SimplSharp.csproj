@@ -75,6 +75,7 @@
     <Compile Include="Environment\IPresetEnvironmentPeripheral.cs" />
     <Compile Include="Environment\IShadeEnvironmentPeripheral.cs" />
     <Compile Include="Environment\ShadeEnvironmentPeripheral.cs" />
+    <Compile Include="EventArguments\LoadLevelEventArgs.cs" />
     <Compile Include="Processors\AbstractLightingProcessorDevice.cs" />
     <Compile Include="Processors\AbstractLightingProcessorDeviceSettings.cs" />
     <Compile Include="Processors\ILightingProcessorDevice.cs" />
