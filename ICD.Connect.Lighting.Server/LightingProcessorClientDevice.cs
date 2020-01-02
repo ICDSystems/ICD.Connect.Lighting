@@ -31,11 +31,6 @@ namespace ICD.Connect.Lighting.Server
 		public const string SET_CACHED_ACTIVE_PRESET_RPC = "SetCachedPreset";
 		public const string SET_CACHED_LOAD_LEVEL_RPC = "SetCachedLoadLevel";
 
-		public event EventHandler<RoomOccupancyEventArgs> OnRoomOccupancyChanged;
-		public event EventHandler<RoomPresetChangeEventArgs> OnRoomPresetChanged;
-		public event EventHandler<RoomLoadLevelEventArgs> OnRoomLoadLevelChanged;
-		public event EventHandler<IntEventArgs> OnRoomControlsChanged;
-
 		public event EventHandler<BoolEventArgs> OnConnectedStateChanged;
 
 		private readonly ClientSerialRpcController m_RpcController;
@@ -72,9 +67,10 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		protected override void DisposeFinal(bool disposing)
 		{
-			OnRoomOccupancyChanged = null;
-			OnRoomLoadLevelChanged = null;
-			OnRoomPresetChanged = null;
+			OnOccupancyChanged = null;
+			OnLoadLevelChanged = null;
+			OnPresetChanged = null;
+			OnControlsChanged = null;
 			OnConnectedStateChanged = null;
 
 			base.DisposeFinal(disposing);
@@ -209,7 +205,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="args"></param>
 		private void RoomOnOccupancyChanged(object sender, RoomOccupancyEventArgs args)
 		{
-			OnRoomOccupancyChanged.Raise(this, new RoomOccupancyEventArgs(args.RoomId, args.OccupancyState));
+			if (m_RoomId == args.RoomId)
+				OnOccupancyChanged.Raise(this, new GenericEventArgs<eOccupancyState>(args.OccupancyState));
 		}
 
 		/// <summary>
@@ -219,7 +216,8 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="args"></param>
 		private void RoomOnLoadLevelChanged(object sender, RoomLoadLevelEventArgs args)
 		{
-			OnRoomLoadLevelChanged.Raise(this, new RoomLoadLevelEventArgs(args.RoomId, args.LoadId, args.Percentage));
+			if (m_RoomId == args.RoomId)
+				OnLoadLevelChanged.Raise(this, new LoadLevelEventArgs(args.LoadId, args.Percentage));
 		}
 
 		/// <summary>
@@ -229,17 +227,18 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="args"></param>
 		private void RoomOnActivePresetChanged(object sender, RoomPresetChangeEventArgs args)
 		{
-			OnRoomPresetChanged.Raise(this, new RoomPresetChangeEventArgs(args.RoomId, args.Preset));
+			if(m_RoomId == args.RoomId)
+				OnPresetChanged.Raise(this, new GenericEventArgs<int?>(args.Preset));
 		}
 
 		/// <summary>
 		/// Called when the room controls change.
 		/// </summary>
 		/// <param name="sender"></param>
-		/// <param name="eventArgs"></param>
-		private void RoomOnControlsChanged(object sender, EventArgs eventArgs)
+		/// <param name="args"></param>
+		private void RoomOnControlsChanged(object sender, EventArgs args)
 		{
-			OnRoomControlsChanged.Raise(this, new IntEventArgs(m_RoomId));
+			OnControlsChanged.Raise(this);
 		}
 
 		#endregion

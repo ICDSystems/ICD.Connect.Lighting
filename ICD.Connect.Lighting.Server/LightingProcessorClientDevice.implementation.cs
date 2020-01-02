@@ -1,38 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using ICD.Common.Utils.EventArguments;
+using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Processors;
+using ICD.Connect.Lighting.RoomInterface;
 using ICD.Connect.Misc.Occupancy;
 
 namespace ICD.Connect.Lighting.Server
 {
-	public sealed partial class LightingProcessorClientDevice : ILightingProcessorDevice
+	public sealed partial class LightingProcessorClientDevice : ILightingRoomInterfaceDevice
 	{
-		/// <summary>
-		/// Gets the available rooms.
-		/// </summary>
-		/// <returns></returns>
-		IEnumerable<int> ILightingProcessorDevice.GetRooms()
-		{
-			if (m_Room != null)
-				yield return m_Room.Id;
-		}
-
-		/// <summary>
-		/// Returns true if the given room is available.
-		/// </summary>
-		/// <param name="room"></param>
-		/// <returns></returns>
-		bool ILightingProcessorDevice.ContainsRoom(int room)
-		{
-			return m_Room != null;
-		}
+		public event EventHandler<GenericEventArgs<eOccupancyState>> OnOccupancyChanged;
+		public event EventHandler<GenericEventArgs<int?>> OnPresetChanged;
+		public event EventHandler<LoadLevelEventArgs> OnLoadLevelChanged;
+		public event EventHandler OnControlsChanged;
 
 		/// <summary>
 		/// Gets the available light loads for the room.
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		IEnumerable<LightingProcessorControl> ILightingProcessorDevice.GetLoadsForRoom(int room)
+		IEnumerable<LightingProcessorControl> ILightingRoomInterfaceDevice.GetLoads()
 		{
 			if (m_Room == null)
 				return Enumerable.Empty<LightingProcessorControl>();
@@ -44,7 +33,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		IEnumerable<LightingProcessorControl> ILightingProcessorDevice.GetShadesForRoom(int room)
+		IEnumerable<LightingProcessorControl> ILightingRoomInterfaceDevice.GetShades()
 		{
 			if (m_Room == null)
 				return Enumerable.Empty<LightingProcessorControl>();
@@ -56,7 +45,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		IEnumerable<LightingProcessorControl> ILightingProcessorDevice.GetShadeGroupsForRoom(int room)
+		IEnumerable<LightingProcessorControl> ILightingRoomInterfaceDevice.GetShadeGroups()
 		{
 			if (m_Room == null)
 				return Enumerable.Empty<LightingProcessorControl>();
@@ -68,7 +57,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		IEnumerable<LightingProcessorControl> ILightingProcessorDevice.GetPresetsForRoom(int room)
+		IEnumerable<LightingProcessorControl> ILightingRoomInterfaceDevice.GetPresets()
 		{
 			if (m_Room == null)
 				return Enumerable.Empty<LightingProcessorControl>();
@@ -80,7 +69,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		eOccupancyState ILightingProcessorDevice.GetOccupancyForRoom(int room)
+		eOccupancyState ILightingRoomInterfaceDevice.GetOccupancy()
 		{
 			if (m_Room == null)
 				return eOccupancyState.Unknown;
@@ -92,7 +81,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="preset"></param>
-		void ILightingProcessorDevice.SetPresetForRoom(int room, int? preset)
+		void ILightingRoomInterfaceDevice.SetPreset(int? preset)
 		{
 			if (m_Room == null)
 				return;
@@ -103,7 +92,7 @@ namespace ICD.Connect.Lighting.Server
 		/// Gets the current preset for the given room.
 		/// </summary>
 		/// <param name="room"></param>
-		int? ILightingProcessorDevice.GetPresetForRoom(int room)
+		int? ILightingRoomInterfaceDevice.GetPreset()
 		{
 			if (m_Room == null)
 				return null;
@@ -116,7 +105,7 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="room"></param>
 		/// <param name="load"></param>
 		/// <param name="percentage"></param>
-		void ILightingProcessorDevice.SetLoadLevel(int room, int load, float percentage)
+		void ILightingRoomInterfaceDevice.SetLoadLevel(int load, float percentage)
 		{
 			if (m_Room == null)
 				return;
@@ -128,7 +117,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="load"></param>
-		float ILightingProcessorDevice.GetLoadLevel(int room, int load)
+		float ILightingRoomInterfaceDevice.GetLoadLevel(int load)
 		{
 			if (m_Room == null)
 				return 0;
@@ -140,7 +129,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="load"></param>
-		void ILightingProcessorDevice.StartRaisingLoadLevel(int room, int load)
+		void ILightingRoomInterfaceDevice.StartRaisingLoadLevel(int load)
 		{
 			if (m_Room == null)
 				return;
@@ -152,7 +141,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="load"></param>
-		void ILightingProcessorDevice.StartLoweringLoadLevel(int room, int load)
+		void ILightingRoomInterfaceDevice.StartLoweringLoadLevel(int load)
 		{
 			if (m_Room == null)
 				return;
@@ -164,7 +153,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="load"></param>
-		void ILightingProcessorDevice.StopRampingLoadLevel(int room, int load)
+		void ILightingRoomInterfaceDevice.StopRampingLoadLevel(int load)
 		{
 			if (m_Room == null)
 				return;
@@ -176,7 +165,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="shade"></param>
-		void ILightingProcessorDevice.StartRaisingShade(int room, int shade)
+		void ILightingRoomInterfaceDevice.StartRaisingShade(int shade)
 		{
 			if (m_Room == null)
 				return;
@@ -188,7 +177,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="shade"></param>
-		void ILightingProcessorDevice.StartLoweringShade(int room, int shade)
+		void ILightingRoomInterfaceDevice.StartLoweringShade(int shade)
 		{
 			if (m_Room == null)
 				return;
@@ -200,7 +189,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="shade"></param>
-		void ILightingProcessorDevice.StopMovingShade(int room, int shade)
+		void ILightingRoomInterfaceDevice.StopMovingShade(int shade)
 		{
 			if (m_Room == null)
 				return;
@@ -212,7 +201,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="shadeGroup"></param>
-		void ILightingProcessorDevice.StartRaisingShadeGroup(int room, int shadeGroup)
+		void ILightingRoomInterfaceDevice.StartRaisingShadeGroup(int shadeGroup)
 		{
 			if (m_Room == null)
 				return;
@@ -224,7 +213,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="shadeGroup"></param>
-		void ILightingProcessorDevice.StartLoweringShadeGroup(int room, int shadeGroup)
+		void ILightingRoomInterfaceDevice.StartLoweringShadeGroup(int shadeGroup)
 		{
 			if (m_Room == null)
 				return;
@@ -236,7 +225,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="room"></param>
 		/// <param name="shadeGroup"></param>
-		void ILightingProcessorDevice.StopMovingShadeGroup(int room, int shadeGroup)
+		void ILightingRoomInterfaceDevice.StopMovingShadeGroup(int shadeGroup)
 		{
 			if (m_Room == null)
 				return;
