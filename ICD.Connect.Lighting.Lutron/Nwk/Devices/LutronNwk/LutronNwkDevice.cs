@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.Xml;
 using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
 
 namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
@@ -8,7 +11,12 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 	public sealed class LutronNwkDevice : AbstractLutronNwkDevice<LutronNwkDeviceSettings>
 	{
 
-		private Dictionary<int, LutronNwkRoom> m_Rooms;
+		private readonly Dictionary<int, LutronNwkRoom> m_Rooms;
+
+		public LutronNwkDevice()
+		{
+			m_Rooms = new Dictionary<int, LutronNwkRoom>();
+		}
 
 		#region Abstract Implementations
 		/// <summary>
@@ -48,7 +56,25 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 		/// <param name="xml"></param>
 		protected override void ParseXml(string xml)
 		{
-			throw new NotImplementedException();
+			ClearIntegrations();
+
+			IEnumerable<LutronNwkRoom> items = XmlUtils.GetChildElementsAsString(xml)
+			                                             .Select(x => LutronNwkRoom.FromXml(x, this));
+
+			foreach (LutronNwkRoom room in items)
+			{
+				if (m_Rooms.ContainsKey(room.Room))
+				{
+					IcdErrorLog.Warn("{0} already contains area {1}, skipping", GetType().Name, room.Room);
+					continue;
+				}
+
+				Subscribe(room);
+
+				m_Rooms.Add(room.Room, room);
+
+				RaiseRoomControlsChangedEvent(room.Room);
+			}
 		}
 
 		/// <summary>
@@ -56,11 +82,17 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 		/// </summary>
 		protected override void ClearIntegrations()
 		{
-			throw new NotImplementedException();
+			foreach (KeyValuePair<int, LutronNwkRoom> kvp in m_Rooms)
+			{
+				LutronNwkRoom room = kvp.Value;
+				Unsubscribe(room);
+				room.Dispose();
+			}
+
+			m_Rooms.Clear();
 		}
 
 		#endregion
-
 
 	}
 }
