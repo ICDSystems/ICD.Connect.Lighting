@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using ICD.Common.Properties;
+using ICD.Common.Utils.EventArguments;
+using ICD.Common.Utils.Extensions;
 using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
 
 namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
@@ -17,6 +20,27 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 
 		private const int BUTTON_TO_LED_OFFSET = 80;
 
+		public event EventHandler<GenericEventArgs<int?>> OnActiveSceneChanged;
+
+		private readonly Dictionary<int, SceneIntegration> m_SceneButtons;
+		private readonly Dictionary<int, bool> m_SceneButtonLedState;
+
+		private int? m_ActiveScene;
+
+		public int? ActiveScene
+		{
+			get { return m_ActiveScene; }
+			private set
+			{
+				if (m_ActiveScene == value)
+					return;
+
+				m_ActiveScene = value;
+
+				OnActiveSceneChanged.Raise(this, new GenericEventArgs<int?>(value));
+			}
+		}
+
 		/// <summary>
 		/// The string prefix for communication with the lighting processor, e.g. SHADES.
 		/// </summary>
@@ -28,23 +52,29 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 		/// <param name="integrationId"></param>
 		/// <param name="name"></param>
 		/// <param name="parent"></param>
-		public KeypadDeviceIntegration(int integrationId, string name, ILutronNwkDevice parent) :
+		/// <param name="sceneButtons"></param>
+		public KeypadDeviceIntegration(int integrationId, string name, ILutronNwkDevice parent, IEnumerable<SceneIntegration> sceneButtons) :
 			base(integrationId, name, parent)
 		{
+			m_SceneButtons = new Dictionary<int, SceneIntegration>();
+			m_SceneButtonLedState = new Dictionary<int, bool>();
+
+			SetScenes(sceneButtons);
 		}
 
-		/// <summary>
-		/// Instantiates a ZoneIntegration from xml.
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <param name="parent"></param>
-		/// <returns></returns>
-		public static KeypadDeviceIntegration FromXml(string xml, ILutronNwkDevice parent)
+		private void SetScenes(IEnumerable<SceneIntegration> sceneButtons)
 		{
-			int integrationId = GetIntegrationIdFromXml(xml);
-			string name = GetNameFromXml(xml);
+			m_SceneButtons.Clear();
 
-			return new KeypadDeviceIntegration(integrationId, name, parent);
+			m_SceneButtons.AddRange(sceneButtons, s => s.IntegrationId);
+
+			QueryActiveScene();
+		}
+
+		public void QueryActiveScene()
+		{
+			foreach (int scene in m_SceneButtons.Keys)
+				QueryLed(scene);
 		}
 
 		#region Public Methods
@@ -130,10 +160,37 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 				throw new FormatException(message);
 			}
 
-			//todo: Do Stuff Here
+			SetLedState(button, parameters[0] != "0");
+		}
+
+		private void SetLedState(int button, bool state)
+		{
+			m_SceneButtonLedState[button] = state;
+
+			if (state)
+			{
+				//If state is true, check to see if this is higher than the active scene - if so, set it as active
+				if (!ActiveScene.HasValue || ActiveScene.Value > button)
+					ActiveScene = button;
+			}
+			else
+			{
+				//If this is the active scene, recaculate the scene based on all button's feedback
+				if (ActiveScene.HasValue && ActiveScene.Value == button)
+					ActiveScene = CaculateActiveScene();
+			}
+		}
+
+		private int? CaculateActiveScene()
+		{
+			KeyValuePair<int, bool> scene;
+			if (m_SceneButtonLedState.TryFirst(kvp => kvp.Value, out scene))
+				return scene.Key;
+
+			return null;
+
 		}
 
 		#endregion
-
 	}
 }

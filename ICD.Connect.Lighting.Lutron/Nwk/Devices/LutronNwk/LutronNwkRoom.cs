@@ -15,6 +15,9 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 	internal sealed class LutronNwkRoom : ILutronRoomContainer
 	{
 		// Maintain integration order
+		public event EventHandler<OccupancyStateEventArgs> OnOccupancyStateChanged;
+		public event EventHandler<GenericEventArgs<int?>> OnSceneChange;
+		public event EventHandler<ZoneOutputLevelEventArgs> OnZoneOutputLevelChanged;
 		private readonly List<int> m_Zones;
 		private readonly List<int> m_ShadeGroups;
 		private readonly List<int> m_Shades;
@@ -27,14 +30,29 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 
 		private readonly int m_Room;
 		private readonly string m_Name;
-		private readonly KeypadDeviceIntegration m_Keypad;
+		private KeypadDeviceIntegration m_Keypad;
+
+		private int? m_Scene;
 
 
 		public int Room { get { return m_Room; } }
 		public string Name { get { return m_Name; } }
-		public KeypadDeviceIntegration Keypad { get { return m_Keypad; } }
 
-		public LutronNwkRoom(int room, string name, KeypadDeviceIntegration keypad)
+		public KeypadDeviceIntegration Keypad
+		{
+			get { return m_Keypad; }
+			private set
+			{
+				if (value == m_Keypad)
+					return;
+
+				Unsubscribe(m_Keypad);
+				m_Keypad = value;
+				Subscribe(value);
+			}
+		}
+
+		public LutronNwkRoom(int room, string name)
 		{
 			m_Zones = new List<int>();
 			m_ShadeGroups = new List<int>();
@@ -47,7 +65,6 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 
 			m_Room = room;
 			m_Name = name;
-			m_Keypad = keypad;
 		}
 
 		public static LutronNwkRoom FromXml(string xml, LutronNwkDevice parent)
@@ -57,8 +74,6 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 
 			int keypadId = XmlUtils.ReadChildElementContentAsInt(xml, "KeypadIntegrationId");
 			string keypadName = string.Format("{0} Keypad", name);
-
-			KeypadDeviceIntegration keypad = new KeypadDeviceIntegration(keypadId, keypadName, parent);
 
 			string zonesXml;
 			string shadeGroupsXml;
@@ -70,7 +85,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 			XmlUtils.TryGetChildElementAsString(xml, "Shades", out shadesXml);
 			XmlUtils.TryGetChildElementAsString(xml, "Scenes", out scenesXml);
 
-			LutronNwkRoom output = new LutronNwkRoom(roomId, name, keypad);
+			LutronNwkRoom output = new LutronNwkRoom(roomId, name);
 
 			if (!string.IsNullOrEmpty(zonesXml))
 				output.ParseZones(zonesXml, parent);
@@ -83,6 +98,10 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 
 			if (!string.IsNullOrEmpty(scenesXml))
 				output.ParseScenes(scenesXml, parent);
+
+			KeypadDeviceIntegration keypad = new KeypadDeviceIntegration(keypadId, keypadName, parent, output.GetSceneIntegrations());
+
+			output.Keypad = keypad;
 
 			return output;
 		}
@@ -197,6 +216,8 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 		/// </summary>
 		private void ClearChildren()
 		{
+			Keypad = null;
+
 			ClearZones();
 			ClearShades();
 			ClearShadeGroups();
@@ -256,12 +277,19 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 
 		#region ILutronRoomContainer Implementation
 
-		public event EventHandler<OccupancyStateEventArgs> OnOccupancyStateChanged;
-		public event EventHandler<GenericEventArgs<int?>> OnSceneChange;
-		public event EventHandler<ZoneOutputLevelEventArgs> OnZoneOutputLevelChanged;
+		public int? Scene
+		{
+			get { return m_Scene; }
+			private set
+			{
+				if (value == m_Scene)
+					return;
 
-		//todo: Implement
-		public int? Scene { get { return null; } }
+				m_Scene = value;
+
+				OnSceneChange.Raise(this, new GenericEventArgs<int?>(value));
+			}
+		}
 
 		public eOccupancyState OccupancyState { get { return eOccupancyState.Unknown; } }
 
@@ -360,7 +388,9 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 				return;
 
 			// Scene id corresponds to the button number on the keypad
-			m_Keypad.ButtonPressRelease(scene.Value);
+			KeypadDeviceIntegration keypad = Keypad;
+			if (keypad != null)
+				keypad.ButtonPressRelease(scene.Value);
 		}
 
 		/// <summary>
@@ -421,11 +451,42 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 		private void ZoneOnOutputLevelChanged(object sender, FloatEventArgs args)
 		{
 			// When the zone level changes the scene becomes null, but the device doesn't give feedback for this
-			// todo: Query Active Scene Button?
+			var keypad = Keypad;
+			if (keypad != null)
+				keypad.QueryActiveScene();
 
 			ZoneIntegration zone = sender as ZoneIntegration;
 			if (zone != null)
 				OnZoneOutputLevelChanged.Raise(this, new ZoneOutputLevelEventArgs(zone.IntegrationId, args.Data));
+		}
+
+		#endregion
+
+		#region Keypad Callbacks
+
+		private void Subscribe(KeypadDeviceIntegration keypad)
+		{
+			if (keypad == null)
+				return;
+
+			keypad.OnActiveSceneChanged += KeypadOnActiveSceneChanged;
+
+			Scene = keypad.ActiveScene;
+		}
+
+		private void Unsubscribe(KeypadDeviceIntegration keypad)
+		{
+			if (keypad == null)
+				return;
+
+			keypad.OnActiveSceneChanged -= KeypadOnActiveSceneChanged;
+
+			Scene = null;
+		}
+
+		private void KeypadOnActiveSceneChanged(object sender, GenericEventArgs<int?> args)
+		{
+			Scene = args.Data;
 		}
 
 		#endregion
