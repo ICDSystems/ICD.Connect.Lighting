@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+ - Support for LutronNwkDevice, for non-Quantum Lutron systems
+ - ILightingRoomInterfaceDevice, device for a single room to interface with a ILightingProcessorDevice
+ - LightingRoomInterfaceDevice, simple implementation of the ILightingRoomInterfaceDevice interface
+ 
+### Changed
+ - Massive refactor of LutronQuantumNwkDevice to abstract common elemnets with LutronNwkDevice
 
 ## [4.1.0] - 2019-10-07
 ### Changed
