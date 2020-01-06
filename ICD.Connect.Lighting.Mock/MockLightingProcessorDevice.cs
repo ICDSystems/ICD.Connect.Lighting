@@ -163,14 +163,11 @@ namespace ICD.Connect.Lighting.Mock
 			try
 			{
 				MockLightingRoom room;
-				m_IdToRooms.TryGetValue(id, out room);
+				if (m_IdToRooms.TryGetValue(id, out room))
+					return room;
 
-				if (room == null)
-				{
-					room = new MockLightingRoom(id);
-					m_IdToRooms.Add(id, room);
-				}
-				return room;
+				AddRoom(id);
+				return m_IdToRooms[id];
 			}
 			finally
 			{
