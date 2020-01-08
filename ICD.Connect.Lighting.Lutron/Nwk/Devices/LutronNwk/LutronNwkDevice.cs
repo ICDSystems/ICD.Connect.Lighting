@@ -12,10 +12,12 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 	{
 
 		private readonly Dictionary<int, LutronNwkRoom> m_Rooms;
+		private readonly SafeCriticalSection m_RoomsSection;
 
 		public LutronNwkDevice()
 		{
 			m_Rooms = new Dictionary<int, LutronNwkRoom>();
+			m_RoomsSection = new SafeCriticalSection();
 		}
 
 		#region Abstract Implementations
@@ -25,7 +27,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 		/// <returns></returns>
 		public override IEnumerable<int> GetRooms()
 		{
-			return m_Rooms.Keys.ToArray(m_Rooms.Count);
+			return m_RoomsSection.Execute(() => m_Rooms.Keys.ToArray(m_Rooms.Count));
 		}
 
 		/// <summary>
@@ -35,7 +37,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 		/// <returns></returns>
 		public override bool ContainsRoom(int room)
 		{
-			return m_Rooms.ContainsKey(room);
+			return m_RoomsSection.Execute(() => m_Rooms.ContainsKey(room));
 		}
 
 		/// <summary>
@@ -45,9 +47,17 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 		/// <returns></returns>
 		public override IEnumerable<ILutronRoomContainer> GetRoomContainersForRoom(int room)
 		{
-			LutronNwkRoom roomContainer;
-			if (m_Rooms.TryGetValue(room, out roomContainer))
-				yield return roomContainer;
+			m_RoomsSection.Enter();
+			try
+			{
+				LutronNwkRoom roomContainer;
+				if (m_Rooms.TryGetValue(room, out roomContainer))
+					yield return roomContainer;
+			}
+			finally
+			{
+				m_RoomsSection.Leave();
+			}
 		}
 
 		/// <summary>
@@ -71,7 +81,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 
 				Subscribe(room);
 
-				m_Rooms.Add(room.Room, room);
+				m_RoomsSection.Execute(() => m_Rooms.Add(room.Room, room));
 
 				RaiseRoomControlsChangedEvent(room.Room);
 			}
@@ -82,14 +92,22 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 		/// </summary>
 		protected override void ClearIntegrations()
 		{
-			foreach (KeyValuePair<int, LutronNwkRoom> kvp in m_Rooms)
+			m_RoomsSection.Enter();
+			try
 			{
-				LutronNwkRoom room = kvp.Value;
-				Unsubscribe(room);
-				room.Dispose();
-			}
+				foreach (KeyValuePair<int, LutronNwkRoom> kvp in m_Rooms)
+				{
+					LutronNwkRoom room = kvp.Value;
+					Unsubscribe(room);
+					room.Dispose();
+				}
 
-			m_Rooms.Clear();
+				m_Rooms.Clear();
+			}
+			finally
+			{
+				m_RoomsSection.Leave();
+			}
 		}
 
 		#endregion
