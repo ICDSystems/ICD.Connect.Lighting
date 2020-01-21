@@ -23,7 +23,6 @@ using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.EthernetCommunication;
 using ICD.Connect.Misc.CrestronPro;
 using ICD.Connect.Misc.CrestronPro.Extensions;
-using ICD.Connect.Protocol.Sigs;
 #endif
 
 namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
@@ -31,6 +30,8 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 	public sealed partial class EiscLightingAdapterDevice : AbstractDevice<EiscLightingAdapterDeviceSettings>
 	{
 		private const string ROOM_ELEMNET = "Room";
+
+		private const uint IS_ALIVE_JOIN = 4001;
 
 		#region Events
 
@@ -260,7 +261,10 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 			Subscribe(m_Eisc);
 
 			if (m_Eisc != null)
+			{
 				m_Eisc.Register();
+				SetIsAlive(true);
+			}
 		}
 
 		private void Subscribe(EthernetIntersystemCommunications eisc)
@@ -315,6 +319,17 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 			if (m_Eisc != null)
 				m_Eisc.StringInput[join].StringValue = value;
 #endif
+		}
+
+
+		/// <summary>
+		/// Sets the Is Alive join to the specified value.
+		/// This is used to tell the D3 Program that the EISC is up, and to begin accepting new level commands
+		/// </summary>
+		/// <param name="isAlive"></param>
+		private void SetIsAlive(bool isAlive)
+		{
+			SendDigitalJoin(IS_ALIVE_JOIN, isAlive);
 		}
 
 
