@@ -5,8 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
 ### Added
  - Relay Shade Device - provides shade control with open/close relays
+ - Added EiscLightingAdapterDevice to interface with D3 lighting programs from Krang
 
 ## [3.1.6] - 2019-11-18
 ### Changed
