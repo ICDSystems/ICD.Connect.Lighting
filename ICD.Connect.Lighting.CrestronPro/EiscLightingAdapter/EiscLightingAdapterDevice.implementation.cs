@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Services.Logging;
-using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Processors;
 using ICD.Connect.Misc.Occupancy;
 using ICD.Common.Utils.Extensions;
@@ -12,32 +10,6 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 {
 	public sealed partial class EiscLightingAdapterDevice : ILightingProcessorDevice
 	{
-		// ReSharper disable DelegateSubtraction
-		event EventHandler<RoomOccupancyEventArgs> ILightingProcessorDevice.OnRoomOccupancyChanged
-		{
-			add { OnRoomOccupancyChanged += value; }
-			remove { OnRoomOccupancyChanged -= value; }
-		}
-
-		event EventHandler<RoomPresetChangeEventArgs> ILightingProcessorDevice.OnRoomPresetChanged
-		{
-			add { OnRoomPresetChanged += value; }
-			remove { OnRoomPresetChanged -= value; }
-		}
-
-		event EventHandler<RoomLoadLevelEventArgs> ILightingProcessorDevice.OnRoomLoadLevelChanged
-		{
-			add { OnRoomLoadLevelChanged += value; } 
-			remove { OnRoomLoadLevelChanged -= value; }
-		}
-
-		event EventHandler<IntEventArgs> ILightingProcessorDevice.OnRoomControlsChanged
-		{
-			add { OnRoomControlsChanged += value; }
-			remove { OnRoomControlsChanged -= value; }
-		}
-		// ReSharper restore DelegateSubtraction
-
 		/// <summary>
 		/// Gets the available rooms.
 		/// </summary>

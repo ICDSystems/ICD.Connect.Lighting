@@ -56,8 +56,8 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 		{
 			base.ParseXml(xml);
 
-			Ipid = XmlUtils.ReadChildElementContentAsByte(xml, IPID_ELEMENT);
-			Address = XmlUtils.ReadChildElementContentAsString(xml, ADDRESS_ELEMENT);
+			Ipid = XmlUtils.TryReadChildElementContentAsByte(xml, IPID_ELEMENT);
+			Address = XmlUtils.TryReadChildElementContentAsString(xml, ADDRESS_ELEMENT);
 			Config = XmlUtils.TryReadChildElementContentAsString(xml, CONFIG_ELEMENT);
 		}
 	}

@@ -1,5 +1,4 @@
-﻿using ICD.Common.Properties;
-using ICD.Connect.API.Nodes;
+﻿using ICD.Connect.API.Nodes;
 
 namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter.Components
 {
@@ -9,6 +8,5 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter.Components
 		string Name { get; }
 
 		LightingProcessorControl ToLightingProcessorControl();
-
 	}
 }
