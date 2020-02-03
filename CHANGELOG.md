@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added port configuration features to lighting devices
 
+## [3.2.0] - 2020-02-03
+### Added
+ - Relay Shade Device - provides shade control with open/close relays
+ - Added EiscLightingAdapterDevice to interface with D3 lighting programs from Krang
+
 ## [3.1.6] - 2019-11-18
 ### Changed
  - Removed ConnectionStateManager from Lighting Client since it's included in RPC Client
