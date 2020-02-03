@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [3.2.0] - 2020-02-03
 ### Added
  - Relay Shade Device - provides shade control with open/close relays
  - Added EiscLightingAdapterDevice to interface with D3 lighting programs from Krang
