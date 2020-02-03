@@ -6,12 +6,24 @@ namespace ICD.Connect.Lighting.Shades.RelayShadeDevice
 {
 	public sealed class RelayShadeDevice : AbstractShadeDevice<RelayShadeDeviceSettings>
 	{
+		private const long DEFAULT_RELAY_CLOSE_TIME = 250;
+
 		private IRelayPort m_OpenRelay;
 		private IRelayPort m_CloseRelay;
-		private long m_RelayCloseTime;
+		private long? m_RelayCloseTime;
 
 		private readonly SafeTimer m_ResetOpenRelayTimer;
 		private readonly SafeTimer m_ResetCloseRelayTimer;
+
+		private long RelayCloseTime
+		{
+			get
+			{
+				if (m_RelayCloseTime.HasValue)
+					return m_RelayCloseTime.Value;
+				return DEFAULT_RELAY_CLOSE_TIME;
+			}
+		}
 
 		#region IShadeDevice
 		/// <summary>
@@ -34,7 +46,7 @@ namespace ICD.Connect.Lighting.Shades.RelayShadeDevice
 				return;
 
 			m_OpenRelay.Close();
-			m_ResetOpenRelayTimer.Reset(m_RelayCloseTime);
+			m_ResetOpenRelayTimer.Reset(RelayCloseTime);
 
 		}
 
@@ -46,7 +58,7 @@ namespace ICD.Connect.Lighting.Shades.RelayShadeDevice
 				return;
 
 			m_CloseRelay.Close();
-			m_ResetCloseRelayTimer.Reset(m_RelayCloseTime);
+			m_ResetCloseRelayTimer.Reset(RelayCloseTime);
 		}
 
 		#endregion
@@ -80,8 +92,11 @@ namespace ICD.Connect.Lighting.Shades.RelayShadeDevice
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			m_OpenRelay = factory.GetOriginatorById<IRelayPort>(settings.OpenRelay);
-			m_CloseRelay = factory.GetOriginatorById<IRelayPort>(settings.CloseRelay);
+			if (settings.OpenRelay.HasValue)
+				m_OpenRelay = factory.GetOriginatorById<IRelayPort>(settings.OpenRelay.Value);
+			if (settings.CloseRelay.HasValue)
+				m_CloseRelay = factory.GetOriginatorById<IRelayPort>(settings.CloseRelay.Value);
+			
 			m_RelayCloseTime = settings.RelayCloseTime;
 		}
 
@@ -92,8 +107,8 @@ namespace ICD.Connect.Lighting.Shades.RelayShadeDevice
 		protected override void CopySettingsFinal(RelayShadeDeviceSettings settings)
 		{
 			base.CopySettingsFinal(settings);
-			settings.OpenRelay = m_OpenRelay != null ? m_OpenRelay.Id : 0;
-			settings.CloseRelay = m_CloseRelay != null ? m_CloseRelay.Id : 0;
+			settings.OpenRelay = m_OpenRelay != null ? m_OpenRelay.Id : (int?)null;
+			settings.CloseRelay = m_CloseRelay != null ? m_CloseRelay.Id : (int?)null;
 			settings.RelayCloseTime = m_RelayCloseTime;
 		}
 
@@ -106,7 +121,7 @@ namespace ICD.Connect.Lighting.Shades.RelayShadeDevice
 
 			m_OpenRelay = null;
 			m_CloseRelay = null;
-			m_RelayCloseTime = 0;
+			m_RelayCloseTime = null;
 		}
 
 		#endregion

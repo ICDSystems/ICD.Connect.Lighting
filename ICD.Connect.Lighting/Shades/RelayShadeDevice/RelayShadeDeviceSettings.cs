@@ -10,9 +10,9 @@ namespace ICD.Connect.Lighting.Shades.RelayShadeDevice
 		private const string CLOSE_RELAY_ELEMENT = "CloseRelay";
 		private const string RELAY_CLOSE_TIME_ELEMENT = "RelayCloseTime";
 
-		public int OpenRelay { get; set; }
-		public int CloseRelay { get; set; }
-		public long RelayCloseTime { get; set; }
+		public int? OpenRelay { get; set; }
+		public int? CloseRelay { get; set; }
+		public long? RelayCloseTime { get; set; }
 
 		/// <summary>
 		/// Updates the settings from xml.
@@ -22,9 +22,9 @@ namespace ICD.Connect.Lighting.Shades.RelayShadeDevice
 		{
 			base.ParseXml(xml);
 
-			OpenRelay = XmlUtils.ReadChildElementContentAsInt(xml, OPEN_RELAY_ELEMENT);
-			CloseRelay = XmlUtils.ReadChildElementContentAsInt(xml, CLOSE_RELAY_ELEMENT);
-			RelayCloseTime = XmlUtils.ReadChildElementContentAsLong(xml, RELAY_CLOSE_TIME_ELEMENT);
+			OpenRelay = XmlUtils.TryReadChildElementContentAsInt(xml, OPEN_RELAY_ELEMENT);
+			CloseRelay = XmlUtils.TryReadChildElementContentAsInt(xml, CLOSE_RELAY_ELEMENT);
+			RelayCloseTime = XmlUtils.TryReadChildElementContentAsLong(xml, RELAY_CLOSE_TIME_ELEMENT);
 		}
 
 		/// <summary>
