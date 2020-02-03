@@ -86,6 +86,8 @@
     <Compile Include="Shades\AbstractShadeDevice.cs" />
     <Compile Include="Shades\AbstractShadeDeviceSettings.cs" />
     <Compile Include="Shades\eShadeType.cs" />
+    <Compile Include="Shades\RelayShadeDevice\RelayShadeDevice.cs" />
+    <Compile Include="Shades\RelayShadeDevice\RelayShadeDeviceSettings.cs" />
     <Compile Include="Shades\ShadeGroupSettings.cs" />
     <Compile Include="Shades\IShadeGroup.cs" />
     <Compile Include="Shades\Controls\IShadeInMotionFeedbackControl.cs" />
@@ -132,6 +134,10 @@
     <ProjectReference Include="..\..\ICD.Connect.Misc\ICD.Connect.Misc\ICD.Connect.Misc_SimplSharp.csproj">
       <Project>{3BAE6352-77B5-499A-9DA5-2AB198F53183}</Project>
       <Name>ICD.Connect.Misc_SimplSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ICD.Connect.Protocol\ICD.Connect.Protocol\ICD.Connect.Protocol_SimplSharp.csproj">
+      <Project>{2E4E01B8-D4EA-4FB1-9FCE-0A0DC8D83C8A}</Project>
+      <Name>ICD.Connect.Protocol_SimplSharp</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ICD.Connect.Settings\ICD.Connect.Settings\ICD.Connect.Settings_SimplSharp.csproj">
       <Project>{5B84EB3C-1C3A-4C4D-98C2-69F67CF51D5A}</Project>
