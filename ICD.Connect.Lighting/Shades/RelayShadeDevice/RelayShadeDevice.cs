@@ -1,6 +1,6 @@
 ﻿using ICD.Common.Utils.Timers;
 using ICD.Connect.Protocol.Ports.RelayPort;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings;
 
 namespace ICD.Connect.Lighting.Shades.RelayShadeDevice
 {

@@ -16,7 +16,7 @@ using ICD.Connect.Misc.Occupancy;
 using ICD.Connect.Panels;
 using ICD.Connect.Panels.EventArguments;
 using ICD.Connect.Protocol.Sigs;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
