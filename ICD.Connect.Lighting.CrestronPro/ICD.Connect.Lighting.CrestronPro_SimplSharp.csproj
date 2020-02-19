@@ -89,6 +89,7 @@
     <Compile Include="EiscLightingAdapter\Components\IEiscLightingComponent.cs" />
     <Compile Include="EiscLightingAdapter\Components\LoadRoomComponent.cs" />
     <Compile Include="EiscLightingAdapter\Components\PresetRoomComponent.cs" />
+    <Compile Include="EiscLightingAdapter\Components\ShadeRoomComponent.cs" />
     <Compile Include="EiscLightingAdapter\EiscLightingAdapterDevice.cs" />
     <Compile Include="EiscLightingAdapter\EiscLightingAdapterDeviceSettings.cs" />
     <Compile Include="EiscLightingAdapter\EiscLightingAdapterDevice.implementation.cs" />

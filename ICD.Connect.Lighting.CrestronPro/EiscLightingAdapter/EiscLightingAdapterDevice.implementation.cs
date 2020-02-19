@@ -224,7 +224,14 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 		/// <param name="shadeId"></param>
 		void ILightingProcessorDevice.StartRaisingShade(int roomId, int shadeId)
 		{
-			throw new NotImplementedException();
+			EiscLightingRoom room = null;
+			if (m_RoomsSection.Execute(() => m_Rooms.TryGetValue(roomId, out room)))
+			{
+				room.OpenShade(shadeId);
+				return;
+			}
+
+			Log(eSeverity.Error, "No room with id {0}", roomId);
 		}
 
 		/// <summary>
@@ -234,7 +241,14 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 		/// <param name="shadeId"></param>
 		void ILightingProcessorDevice.StartLoweringShade(int roomId, int shadeId)
 		{
-			throw new NotImplementedException();
+			EiscLightingRoom room = null;
+			if (m_RoomsSection.Execute(() => m_Rooms.TryGetValue(roomId, out room)))
+			{
+				room.CloseShade(shadeId);
+				return;
+			}
+
+			Log(eSeverity.Error, "No room with id {0}", roomId);
 		}
 
 		/// <summary>
@@ -244,7 +258,14 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 		/// <param name="shadeId"></param>
 		void ILightingProcessorDevice.StopMovingShade(int roomId, int shadeId)
 		{
-			throw new NotImplementedException();
+			EiscLightingRoom room = null;
+			if (m_RoomsSection.Execute(() => m_Rooms.TryGetValue(roomId, out room)))
+			{
+				room.StopShade(shadeId);
+				return;
+			}
+
+			Log(eSeverity.Error, "No room with id {0}", roomId);
 		}
 
 		/// <summary>
