@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils.EventArguments;
 using ICD.Connect.Lighting.EventArguments;
-using ICD.Connect.Lighting.Processors;
 using ICD.Connect.Lighting.RoomInterface;
 using ICD.Connect.Misc.Occupancy;
 
@@ -19,7 +18,6 @@ namespace ICD.Connect.Lighting.Server
 		/// <summary>
 		/// Gets the available light loads for the room.
 		/// </summary>
-		/// <param name="room"></param>
 		/// <returns></returns>
 		IEnumerable<LightingProcessorControl> ILightingRoomInterfaceDevice.GetLoads()
 		{
@@ -31,7 +29,6 @@ namespace ICD.Connect.Lighting.Server
 		/// <summary>
 		/// Gets the available individual shades for the room.
 		/// </summary>
-		/// <param name="room"></param>
 		/// <returns></returns>
 		IEnumerable<LightingProcessorControl> ILightingRoomInterfaceDevice.GetShades()
 		{
@@ -43,7 +40,6 @@ namespace ICD.Connect.Lighting.Server
 		/// <summary>
 		/// Gets the available shade groups for the room.
 		/// </summary>
-		/// <param name="room"></param>
 		/// <returns></returns>
 		IEnumerable<LightingProcessorControl> ILightingRoomInterfaceDevice.GetShadeGroups()
 		{
@@ -55,7 +51,6 @@ namespace ICD.Connect.Lighting.Server
 		/// <summary>
 		/// Gets the available presets for the room.
 		/// </summary>
-		/// <param name="room"></param>
 		/// <returns></returns>
 		IEnumerable<LightingProcessorControl> ILightingRoomInterfaceDevice.GetPresets()
 		{
@@ -67,7 +62,6 @@ namespace ICD.Connect.Lighting.Server
 		/// <summary>
 		/// Gets the current occupancy state for the given room.
 		/// </summary>
-		/// <param name="room"></param>
 		/// <returns></returns>
 		eOccupancyState ILightingRoomInterfaceDevice.GetOccupancy()
 		{
@@ -79,7 +73,6 @@ namespace ICD.Connect.Lighting.Server
 		/// <summary>
 		/// Sets the preset for the given room.
 		/// </summary>
-		/// <param name="room"></param>
 		/// <param name="preset"></param>
 		void ILightingRoomInterfaceDevice.SetPreset(int? preset)
 		{
@@ -91,7 +84,6 @@ namespace ICD.Connect.Lighting.Server
 		/// <summary>
 		/// Gets the current preset for the given room.
 		/// </summary>
-		/// <param name="room"></param>
 		int? ILightingRoomInterfaceDevice.GetPreset()
 		{
 			if (m_Room == null)
@@ -102,7 +94,6 @@ namespace ICD.Connect.Lighting.Server
 		/// <summary>
 		/// Sets the lighting level for the given load.
 		/// </summary>
-		/// <param name="room"></param>
 		/// <param name="load"></param>
 		/// <param name="percentage"></param>
 		void ILightingRoomInterfaceDevice.SetLoadLevel(int load, float percentage)
@@ -115,7 +106,6 @@ namespace ICD.Connect.Lighting.Server
 		/// <summary>
 		/// Gets the current lighting level for the given load.
 		/// </summary>
-		/// <param name="room"></param>
 		/// <param name="load"></param>
 		float ILightingRoomInterfaceDevice.GetLoadLevel(int load)
 		{
@@ -127,7 +117,6 @@ namespace ICD.Connect.Lighting.Server
 		/// <summary>
 		/// Starts raising the lighting level for the given load.
 		/// </summary>
-		/// <param name="room"></param>
 		/// <param name="load"></param>
 		void ILightingRoomInterfaceDevice.StartRaisingLoadLevel(int load)
 		{
@@ -139,7 +128,6 @@ namespace ICD.Connect.Lighting.Server
 		/// <summary>
 		/// Starts lowering the lighting level for the given load.
 		/// </summary>
-		/// <param name="room"></param>
 		/// <param name="load"></param>
 		void ILightingRoomInterfaceDevice.StartLoweringLoadLevel(int load)
 		{
@@ -151,7 +139,6 @@ namespace ICD.Connect.Lighting.Server
 		/// <summary>
 		/// Stops raising/lowering the lighting level for the given load.
 		/// </summary>
-		/// <param name="room"></param>
 		/// <param name="load"></param>
 		void ILightingRoomInterfaceDevice.StopRampingLoadLevel(int load)
 		{
@@ -163,7 +150,6 @@ namespace ICD.Connect.Lighting.Server
 		/// <summary>
 		/// Starts raising the shade.
 		/// </summary>
-		/// <param name="room"></param>
 		/// <param name="shade"></param>
 		void ILightingRoomInterfaceDevice.StartRaisingShade(int shade)
 		{
@@ -175,7 +161,6 @@ namespace ICD.Connect.Lighting.Server
 		/// <summary>
 		/// Starts lowering the shade.
 		/// </summary>
-		/// <param name="room"></param>
 		/// <param name="shade"></param>
 		void ILightingRoomInterfaceDevice.StartLoweringShade(int shade)
 		{
@@ -187,7 +172,6 @@ namespace ICD.Connect.Lighting.Server
 		/// <summary>
 		/// Stops moving the shade.
 		/// </summary>
-		/// <param name="room"></param>
 		/// <param name="shade"></param>
 		void ILightingRoomInterfaceDevice.StopMovingShade(int shade)
 		{
@@ -199,7 +183,6 @@ namespace ICD.Connect.Lighting.Server
 		/// <summary>
 		/// Starts raising the shade group.
 		/// </summary>
-		/// <param name="room"></param>
 		/// <param name="shadeGroup"></param>
 		void ILightingRoomInterfaceDevice.StartRaisingShadeGroup(int shadeGroup)
 		{
@@ -211,7 +194,6 @@ namespace ICD.Connect.Lighting.Server
 		/// <summary>
 		/// Starts lowering the shade group.
 		/// </summary>
-		/// <param name="room"></param>
 		/// <param name="shadeGroup"></param>
 		void ILightingRoomInterfaceDevice.StartLoweringShadeGroup(int shadeGroup)
 		{
@@ -223,7 +205,6 @@ namespace ICD.Connect.Lighting.Server
 		/// <summary>
 		/// Stops moving the shade group.
 		/// </summary>
-		/// <param name="room"></param>
 		/// <param name="shadeGroup"></param>
 		void ILightingRoomInterfaceDevice.StopMovingShadeGroup(int shadeGroup)
 		{
