@@ -21,6 +21,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 		private const string NAME_ELEMENT = "Name";
 		private const string PRESETS_ELEMENT = "Presets";
 		private const string LOADS_ELEMENT = "Loads";
+		private const string SHADES_ELEMENT = "Shades";
 		
 		#region events
 
@@ -45,6 +46,9 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 
 		private readonly Dictionary<int, LoadRoomComponent> m_Loads;
 		private readonly SafeCriticalSection m_LoadsSection;
+
+		private readonly Dictionary<int, ShadeRoomComponent> m_Shades;
+		private readonly SafeCriticalSection m_ShadesSection;
 
 		#endregion
 
@@ -90,6 +94,9 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 
 			m_Loads = new Dictionary<int, LoadRoomComponent>();
 			m_LoadsSection = new SafeCriticalSection();
+
+			m_Shades = new Dictionary<int, ShadeRoomComponent>();
+			m_ShadesSection = new SafeCriticalSection();
 		}
 
 		public static EiscLightingRoom FromXml(string xml, EiscLightingAdapterDevice parent)
@@ -99,9 +106,11 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 
 			string presetsXml;
 			string loadsXml;
+			string shadesXml;
 
 			XmlUtils.TryGetChildElementAsString(xml, PRESETS_ELEMENT, out presetsXml);
 			XmlUtils.TryGetChildElementAsString(xml, LOADS_ELEMENT, out loadsXml);
+			XmlUtils.TryGetChildElementAsString(xml, SHADES_ELEMENT, out shadesXml);
 
 			EiscLightingRoom room = new EiscLightingRoom(parent)
 			{
@@ -111,13 +120,9 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 
 			room.ParsePresets(presetsXml);
 			room.ParseLoads(loadsXml);
+			room.ParseShades(shadesXml);
 
 			return room;
-		}
-
-		public IEnumerable<LightingProcessorControl> GetShades()
-		{
-			return Enumerable.Empty<LightingProcessorControl>();
 		}
 
 		public void Dispose()
@@ -407,6 +412,82 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 		}
 
 		#endregion
+		#endregion
+
+		#region Shades
+
+		private void ParseShades(string xml)
+		{
+			IEnumerable<ShadeRoomComponent> items = XmlUtils.GetChildElementsAsString(xml)
+															 .Select(x => ShadeRoomComponent.FromXml(x, this));
+			m_ShadesSection.Enter();
+			try
+			{
+				ClearShades();
+
+				m_Shades.AddRange(items, i => i.Id);
+
+			}
+			finally
+			{
+				m_ShadesSection.Leave();
+			}
+		}
+
+		private void ClearShades()
+		{
+			m_ShadesSection.Enter();
+
+			try
+			{
+				foreach (var shade in m_Shades.Values)
+				{
+					shade.Dispose();
+				}
+				m_Shades.Clear();
+			}
+			finally
+			{
+				m_ShadesSection.Leave();
+			}
+		}
+
+		public IEnumerable<LightingProcessorControl> GetShades()
+		{
+			return m_ShadesSection.Execute(() => m_Shades.Values.Select(s => s.ToLightingProcessorControl()).ToArray(m_Shades.Count));
+		}
+
+		public void OpenShade(int shadeId)
+		{
+			ShadeRoomComponent shade = null;
+
+			if (!m_ShadesSection.Execute(() => m_Shades.TryGetValue(shadeId, out shade)))
+				throw new ArgumentOutOfRangeException(String.Format("No shade {0} for room {1}", shadeId, Id));
+
+			shade.OpenShade();
+		}
+
+		public void CloseShade(int shadeId)
+		{
+			ShadeRoomComponent shade = null;
+
+			if (!m_ShadesSection.Execute(() => m_Shades.TryGetValue(shadeId, out shade)))
+				throw new ArgumentOutOfRangeException(String.Format("No shade {0} for room {1}", shadeId, Id));
+
+			shade.CloseShade();
+		}
+
+		public void StopShade(int shadeId)
+		{
+			ShadeRoomComponent shade = null;
+
+			if (!m_ShadesSection.Execute(() => m_Shades.TryGetValue(shadeId, out shade)))
+				throw new ArgumentOutOfRangeException(String.Format("No shade {0} for room {1}", shadeId, Id));
+
+			shade.StopShade();
+		}
+		
+
 		#endregion
 
 		#region Console
