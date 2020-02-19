@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added port configuration features to lighting devices
 
+## [3.3.0] - 2020-02-19
+### Added
+ - Added Shade controls to be configurable on the EiscLightingAdapterDevice, with EISC joins for open, close, and stop
+
 ## [3.2.0] - 2020-02-03
 ### Added
  - Relay Shade Device - provides shade control with open/close relays
