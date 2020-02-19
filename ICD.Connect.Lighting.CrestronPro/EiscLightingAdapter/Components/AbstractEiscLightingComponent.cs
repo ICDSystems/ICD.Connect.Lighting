@@ -26,7 +26,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter.Components
 			Name = name;
 		}
 
-		public LightingProcessorControl ToLightingProcessorControl()
+		public virtual LightingProcessorControl ToLightingProcessorControl()
 		{
 			return new LightingProcessorControl(ControlType,Id, Room.Id, Name);
 		}
