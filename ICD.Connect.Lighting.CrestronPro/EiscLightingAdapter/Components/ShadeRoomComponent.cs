@@ -11,7 +11,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter.Components
 
 		private const string OPEN_DIGITAL_JOIN_ELEMENT = "OpenDigitalJoin";
 		private const string CLOSE_DIGITAL_JOIN_ELEMENT = "CloseDigitalJoin";
-		private const string STOP_DIGITAL_JOIN_ELEMENT = "StopDitialJoin";
+		private const string STOP_DIGITAL_JOIN_ELEMENT = "StopDigitalJoin";
 		private const string SHADE_TYPE_ELEMENT = "ShadeType";
 		private const string PULSE_TIME_ELEMENT = "PulseTime";
 
