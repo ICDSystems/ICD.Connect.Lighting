@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Support for LutronNwkDevice, for non-Quantum Lutron systems
  - ILightingRoomInterfaceDevice, device for a single room to interface with a ILightingProcessorDevice
  - LightingRoomInterfaceDevice, simple implementation of the ILightingRoomInterfaceDevice interface
+ - ILightingRoomInterfaceDevice extensions
  
 ### Changed
  - LightingProcessorClientDevice now implements ILightingRoomInterfaceDevice instead of ILightingProcessorDevice
