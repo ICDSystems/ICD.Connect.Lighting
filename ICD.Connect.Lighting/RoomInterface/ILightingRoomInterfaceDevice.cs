@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Connect.Devices;
@@ -143,7 +142,6 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// <summary>
 		/// Starts lowering the shade.
 		/// </summary>
-		/// <param name="room"></param>
 		/// <param name="shade"></param>
 		[PublicAPI]
 		void StartLoweringShade(int shade);
@@ -179,6 +177,193 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// <param name="shadeGroup"></param>
 		[PublicAPI]
 		void StopMovingShadeGroup(int shadeGroup);
+
+		#endregion
+	}
+
+	/// <summary>
+	/// Extension methods for the ILightingProcessorDevice.
+	/// </summary>
+	public static class LightingRoomInterfaceDeviceExtensions
+	{
+		/// <summary>
+		/// Sets the preset for the given room.
+		/// </summary>
+		/// <param name="extends"></param>
+		/// <param name="preset"></param>
+		public static void SetPresetForRoom(this ILightingRoomInterfaceDevice extends,
+											LightingProcessorControl preset)
+		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			extends.SetPreset(preset.Id);
+		}
+
+		#region Load
+
+		/// <summary>
+		/// Sets the lighting level for the given load.
+		/// </summary>
+		/// <param name="extends"></param>
+		/// <param name="load"></param>
+		/// <param name="percentage"></param>
+		public static void SetLoadLevel(this ILightingRoomInterfaceDevice extends,
+										LightingProcessorControl load, float percentage)
+		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			extends.SetLoadLevel(load.Id, percentage);
+		}
+
+		/// <summary>
+		/// Gets the current lighting level for the given load.
+		/// </summary>
+		/// <param name="extends"></param>
+		/// <param name="load"></param>
+		public static float GetLoadLevel(this ILightingRoomInterfaceDevice extends,
+										 LightingProcessorControl load)
+		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			return extends.GetLoadLevel(load.Id);
+		}
+
+		/// <summary>
+		/// Starts raising the lighting level for the given load.
+		/// </summary>
+		/// <param name="extends"></param>
+		/// <param name="load"></param>
+		public static void StartRaisingLoadLevel(this ILightingRoomInterfaceDevice extends,
+												 LightingProcessorControl load)
+		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			extends.StartRaisingLoadLevel(load.Id);
+		}
+
+		/// <summary>
+		/// Starts lowering the lighting level for the given load.
+		/// </summary>
+		/// <param name="extends"></param>
+		/// <param name="load"></param>
+		public static void StartLoweringLoadLevel(this ILightingRoomInterfaceDevice extends,
+												  LightingProcessorControl load)
+		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			extends.StartLoweringLoadLevel(load.Id);
+		}
+
+		/// <summary>
+		/// Stops raising/lowering the lighting level for the given load.
+		/// </summary>
+		/// <param name="extends"></param>
+		/// <param name="load"></param>
+		public static void StopRampingLoadLevel(this ILightingRoomInterfaceDevice extends,
+												LightingProcessorControl load)
+		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			extends.StopRampingLoadLevel(load.Id);
+		}
+
+		#endregion
+
+		#region Shade
+
+		/// <summary>
+		/// Starts raising the shade.
+		/// </summary>
+		/// <param name="extends"></param>
+		/// <param name="shade"></param>
+		public static void StartRaisingShade(this ILightingRoomInterfaceDevice extends,
+											 LightingProcessorControl shade)
+		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			extends.StartRaisingShade(shade.Id);
+		}
+
+		/// <summary>
+		/// Starts lowering the shade.
+		/// </summary>
+		/// <param name="extends"></param>
+		/// <param name="shade"></param>
+		public static void StartLoweringShade(this ILightingRoomInterfaceDevice extends,
+											  LightingProcessorControl shade)
+		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			extends.StartLoweringShade(shade.Id);
+		}
+
+		/// <summary>
+		/// Stops moving the shade.
+		/// </summary>
+		/// <param name="extends"></param>
+		/// <param name="shade"></param>
+		public static void StopMovingShade(this ILightingRoomInterfaceDevice extends,
+										   LightingProcessorControl shade)
+		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			extends.StopMovingShade(shade.Id);
+		}
+
+		#endregion
+
+		#region Shade Group
+
+		/// <summary>
+		/// Starts raising the shade group.
+		/// </summary>
+		/// <param name="extends"></param>
+		/// <param name="shadeGroup"></param>
+		public static void StartRaisingShadeGroup(this ILightingRoomInterfaceDevice extends,
+												  LightingProcessorControl shadeGroup)
+		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			extends.StartRaisingShadeGroup(shadeGroup.Id);
+		}
+
+		/// <summary>
+		/// Starts lowering the shade group.
+		/// </summary>
+		/// <param name="extends"></param>
+		/// <param name="shadeGroup"></param>
+		public static void StartLoweringShadeGroup(this ILightingRoomInterfaceDevice extends,
+												   LightingProcessorControl shadeGroup)
+		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			extends.StartLoweringShadeGroup(shadeGroup.Id);
+		}
+
+		/// <summary>
+		/// Stops moving the shade group.
+		/// </summary>
+		/// <param name="extends"></param>
+		/// <param name="shadeGroup"></param>
+		public static void StopMovingShadeGroup(this ILightingRoomInterfaceDevice extends,
+												LightingProcessorControl shadeGroup)
+		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			extends.StopMovingShadeGroup(shadeGroup.Id);
+		}
 
 		#endregion
 	}
