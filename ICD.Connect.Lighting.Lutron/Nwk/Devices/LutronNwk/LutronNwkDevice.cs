@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
 
@@ -73,18 +73,31 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 
 			foreach (LutronNwkRoom room in items)
 			{
+				if (!AddRoom(room))
+					Log(eSeverity.Warning, "Already contains area {0}, skipping", room.Room);
+			}
+		}
+
+		private bool AddRoom(LutronNwkRoom room)
+		{
+			m_RoomsSection.Enter();
+
+			try
+			{
 				if (m_Rooms.ContainsKey(room.Room))
-				{
-					IcdErrorLog.Warn("{0} already contains area {1}, skipping", GetType().Name, room.Room);
-					continue;
-				}
+					return false;
+
+				m_Rooms.Add(room.Room, room);
 
 				Subscribe(room);
-
-				m_RoomsSection.Execute(() => m_Rooms.Add(room.Room, room));
-
-				RaiseRoomControlsChangedEvent(room.Room);
 			}
+			finally
+			{
+				m_RoomsSection.Leave();
+			}
+
+			RaiseRoomControlsChangedEvent(room.Room);
+			return true;
 		}
 
 		/// <summary>
