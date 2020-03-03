@@ -138,13 +138,13 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 
 		#region EISC Methods
 
-		internal SigInfo RegisterSigChangeCallback(uint number, Protocol.Sigs.eSigType type,
+		internal SigInfo RegisterSigChangeCallback(uint number, eSigType type,
 									  Action<SigCallbackManager, SigInfoEventArgs> callback)
 		{
 			return m_Parent.RegisterSigChangeCallback(number, type, callback);
 		}
 
-		internal void UnregisterSigChangeCallback(uint number, Protocol.Sigs.eSigType type,
+		internal void UnregisterSigChangeCallback(uint number, eSigType type,
 												   Action<SigCallbackManager, SigInfoEventArgs> callback)
 		{
 			m_Parent.UnregisterSigChangeCallback(number, type, callback);

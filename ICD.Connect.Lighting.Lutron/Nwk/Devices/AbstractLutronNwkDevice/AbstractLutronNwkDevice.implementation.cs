@@ -6,7 +6,8 @@ using ICD.Connect.Lighting.Processors;
 
 namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 {
-	public abstract partial class AbstractLutronNwkDevice<T> : ILightingProcessorDevice where T : ILutronNwkDeviceSettings, new()
+	public abstract partial class AbstractLutronNwkDevice<T>
+		where T : ILutronNwkDeviceSettings, new()
 	{
 		#region ILightingProcessorDevice Implementation
 
