@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
-using ICD.Connect.Lighting.Lutron.Nwk.Integrations;
 using ICD.Connect.Lighting.Processors;
 
 namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice

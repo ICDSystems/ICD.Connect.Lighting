@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
+﻿using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
 
 namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 {

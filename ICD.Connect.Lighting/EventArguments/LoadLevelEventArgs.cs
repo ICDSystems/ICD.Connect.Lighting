@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ICD.Connect.Lighting.EventArguments
 {
-	public class LoadLevelEventArgs : EventArgs
+	public sealed class LoadLevelEventArgs : EventArgs
 	{
 		private readonly int m_LoadId;
 		private readonly float m_Percentage;
