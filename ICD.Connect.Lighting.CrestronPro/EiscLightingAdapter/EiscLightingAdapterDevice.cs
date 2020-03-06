@@ -160,14 +160,15 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 		protected override void DisposeFinal(bool disposing)
 		{
 			base.DisposeFinal(disposing);
-			if (disposing)
-			{
-				ClearRooms();
-				OnRoomOccupancyChanged = null;
-				OnRoomPresetChanged = null;
-				OnRoomLoadLevelChanged = null;
-				OnRoomControlsChanged = null;
-			}
+			if (!disposing)
+				return;
+
+			SetEisc(null);
+			ClearRooms();
+			OnRoomOccupancyChanged = null;
+			OnRoomPresetChanged = null;
+			OnRoomLoadLevelChanged = null;
+			OnRoomControlsChanged = null;
 		}
 
 		#endregion
