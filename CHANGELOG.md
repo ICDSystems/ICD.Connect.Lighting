@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added port configuration features to lighting devices
 
+## [3.3.1] - 2020-03-06
+### Changed
+ - EiscLightingAdapterDevice - Unregister EISC when disposing device
+
 ## [3.3.0] - 2020-02-19
 ### Added
  - Added Shade controls to be configurable on the EiscLightingAdapterDevice, with EISC joins for open, close, and stop
