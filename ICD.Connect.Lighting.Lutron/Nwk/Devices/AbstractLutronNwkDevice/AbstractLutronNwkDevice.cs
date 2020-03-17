@@ -9,6 +9,8 @@ using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.IO;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Timers;
+using ICD.Connect.API.Commands;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Lutron.Nwk.EventArguments;
@@ -718,5 +720,30 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 					throw new ArgumentOutOfRangeException("occupancy", "Unexpected eOccupancyState " + occupancy);
 			}
 		}
+
+		#region Console
+		
+		/// <summary>
+		/// Gets the child console nodes.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleNodeBase> GetConsoleNodes()
+		{
+			foreach (IConsoleNodeBase node in GetBaseConsoleNodes())
+				yield return node;
+
+			if (m_ConnectionStateManager != null)
+				yield return m_ConnectionStateManager.Port;
+		}
+
+		/// <summary>
+		/// Workaround for "unverifiable code" warning.
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerable<IConsoleNodeBase> GetBaseConsoleNodes()
+		{
+			return base.GetConsoleNodes();
+		}
+		#endregion
 	}
 }
