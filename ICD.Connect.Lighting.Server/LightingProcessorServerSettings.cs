@@ -24,6 +24,9 @@ namespace ICD.Connect.Lighting.Server
 		private const string PRESETS_ELEMENT = "Presets";
 		private const string PRESET_ELEMENT = "Preset";
 
+		private const string OCCUPANCY_SENSORS_ELEMENT = "OccupancySensors";
+		private const string OCCUPANCY_SENSOR_ELEMENT = "OccupancySensor";
+
 		private const string ROOM_ID_ELEMENT = "RoomId";
 
 		private const string SERVER_PORT_ELEMENT = "ServerPort";
@@ -46,6 +49,9 @@ namespace ICD.Connect.Lighting.Server
 
 		[HiddenSettingsProperty]
 		public IcdHashSet<int> PresetIds { get; set; }
+
+		[HiddenSettingsProperty]
+		public IcdHashSet<int> OccupancySensorIds { get; set; }
 
 		[HiddenSettingsProperty]
 		public IEnumerable<int> RoomIds
@@ -105,6 +111,18 @@ namespace ICD.Connect.Lighting.Server
 			PresetIds.Add(id);
 		}
 
+		public void AddOccupancySensor(int roomId, int id)
+		{
+			if (OccupancySensorIds == null)
+			{
+				OccupancySensorIds = new IcdHashSet<int>();
+			}
+
+			OccupancySensorIds.Add(id);
+
+			AddPeripheralToPeripheralsByRoomIdCollection(roomId, id);
+		}
+
 		public void ClearIdCollections()
 		{
 			m_PeripheralsByRoomId = new Dictionary<int, IcdHashSet<int>>();
@@ -112,6 +130,7 @@ namespace ICD.Connect.Lighting.Server
 			ShadeIds = new IcdHashSet<int>();
 			ShadeGroupIds = new IcdHashSet<int>();
 			PresetIds = new IcdHashSet<int>();
+			OccupancySensorIds = new IcdHashSet<int>();
 		}
 
 		/// <summary>
@@ -122,7 +141,7 @@ namespace ICD.Connect.Lighting.Server
 		{
 			base.ParseXml(xml);
 
-			LightingProcessorId = XmlUtils.ReadChildElementContentAsInt(xml, LIGHTING_PROCESSOR_ID_ELEMENT);
+			LightingProcessorId = XmlUtils.TryReadChildElementContentAsInt(xml, LIGHTING_PROCESSOR_ID_ELEMENT);
 
 			ShadeIds = XmlUtils.ReadListFromXml(xml, SHADES_ELEMENT, SHADE_ELEMENT, 
 												content => ParseChildPeripheral(content))
@@ -139,6 +158,11 @@ namespace ICD.Connect.Lighting.Server
 			PresetIds = XmlUtils.ReadListFromXml(xml, PRESETS_ELEMENT, PRESET_ELEMENT,
 												 content => ParseChildPreset(content))
 								.ToIcdHashSet();
+
+			OccupancySensorIds = XmlUtils.ReadListFromXml(xml, OCCUPANCY_SENSORS_ELEMENT, OCCUPANCY_SENSOR_ELEMENT,
+												content => ParseChildPeripheral(content)).
+												ToIcdHashSet();
+
 
 			ServerPort = XmlUtils.ReadChildElementContentAsUShort(xml, SERVER_PORT_ELEMENT);
 			ServerMaxClients = XmlUtils.ReadChildElementContentAsInt(xml, SERVER_CLIENTS_ELEMENT);
@@ -164,6 +188,8 @@ namespace ICD.Connect.Lighting.Server
 			WriteShadeAndShadeGroups(writer);
 
 			WritePresets(writer);
+
+			WriteOccupancySensors(writer);
 		}
 
 		/// <summary>
@@ -235,6 +261,21 @@ namespace ICD.Connect.Lighting.Server
 					writer.WriteAttributeString(ROOM_ID_ELEMENT, roomId.Value.ToString());
 				}
 				writer.WriteValue(load);
+				writer.WriteEndElement();
+			}
+			writer.WriteEndElement();
+		}
+
+		private void WriteOccupancySensors(IcdXmlTextWriter writer)
+		{
+			writer.WriteStartElement(OCCUPANCY_SENSORS_ELEMENT);
+			foreach (int sensor in OccupancySensorIds)
+			{
+				writer.WriteStartElement(OCCUPANCY_SENSOR_ELEMENT);
+				int? roomId = FindRoomIdForPeripheral(sensor);
+				if (roomId != null)
+					writer.WriteAttributeString(ROOM_ID_ELEMENT, roomId.Value.ToString());
+				writer.WriteValue(sensor);
 				writer.WriteEndElement();
 			}
 			writer.WriteEndElement();
