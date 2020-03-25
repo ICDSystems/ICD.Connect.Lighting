@@ -44,7 +44,7 @@ namespace ICD.Connect.Lighting.Processors
 		/// Gets the available rooms.
 		/// </summary>
 		/// <returns></returns>
-		[PublicAPI]
+		[NotNull, PublicAPI]
 		IEnumerable<int> GetRooms();
 
 		/// <summary>
@@ -60,7 +60,7 @@ namespace ICD.Connect.Lighting.Processors
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		[PublicAPI]
+		[NotNull, PublicAPI]
 		IEnumerable<LightingProcessorControl> GetLoadsForRoom(int room);
 
 		/// <summary>
@@ -68,7 +68,7 @@ namespace ICD.Connect.Lighting.Processors
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		[PublicAPI]
+		[NotNull, PublicAPI]
 		IEnumerable<LightingProcessorControl> GetShadesForRoom(int room);
 
 		/// <summary>
@@ -76,7 +76,7 @@ namespace ICD.Connect.Lighting.Processors
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		[PublicAPI]
+		[NotNull, PublicAPI]
 		IEnumerable<LightingProcessorControl> GetShadeGroupsForRoom(int room);
 
 		/// <summary>
@@ -84,7 +84,7 @@ namespace ICD.Connect.Lighting.Processors
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		[PublicAPI]
+		[NotNull, PublicAPI]
 		IEnumerable<LightingProcessorControl> GetPresetsForRoom(int room);
 
 		#endregion
