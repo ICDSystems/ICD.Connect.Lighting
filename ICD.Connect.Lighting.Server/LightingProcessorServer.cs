@@ -159,9 +159,6 @@ namespace ICD.Connect.Lighting.Server
 		{
 			m_RpcController.CallMethod(client, LightingProcessorClientDevice.CLEAR_CONTROLS_RPC);
 
-			if (m_Processor == null)
-				return;
-
 			int room;
 			if (!TryGetRoomForClient(client, out room))
 				return;
@@ -169,28 +166,33 @@ namespace ICD.Connect.Lighting.Server
 			m_RpcController.CallMethod(client, LightingProcessorClientDevice.SET_CACHED_ROOM_RPC, room);
 
 			// Send the loads
-			foreach (LightingProcessorControl load in m_Processor.GetLoadsForRoom(room))
-			{
-				SendControlToClient(client, load);
+			if (m_Processor != null)
+				foreach (LightingProcessorControl load in m_Processor.GetLoadsForRoom(room))
+				{
+					SendControlToClient(client, load);
 
-				float percentage = m_Processor.GetLoadLevel(load);
-				if (Math.Abs(percentage) > 0.0001f)
-					m_RpcController.CallMethod(client, LightingProcessorClientDevice.SET_CACHED_LOAD_LEVEL_RPC, load.Id, percentage);
-			}
+					float percentage = m_Processor.GetLoadLevel(load);
+					if (Math.Abs(percentage) > 0.0001f)
+						m_RpcController.CallMethod(client, LightingProcessorClientDevice.SET_CACHED_LOAD_LEVEL_RPC, load.Id, percentage);
+				}
 
 			SendControlsToClient(client, GetShadesForRoom(room));
 			SendControlsToClient(client, GetShadeGroupsForRoom(room));
 			SendControlsToClient(client, GetPresetsForRoom(room));
 
 			// Send the room occupancy
-			eOccupancyState occupancy = m_Processor.GetOccupancyForRoom(room);
+			eOccupancyState occupancy = GetOccupancyForRoom(room);
+			
 			if (occupancy != default(eOccupancyState))
 				m_RpcController.CallMethod(client, LightingProcessorClientDevice.SET_CACHED_OCCUPANCY_RPC, occupancy);
 
 			// Send the room preset
-			int? activePreset = m_Processor.GetPresetForRoom(room);
-			if (activePreset != null)
-				m_RpcController.CallMethod(client, LightingProcessorClientDevice.SET_CACHED_ACTIVE_PRESET_RPC, activePreset);
+			if (m_Processor != null)
+			{
+				int? activePreset = m_Processor.GetPresetForRoom(room);
+				if (activePreset != null)
+					m_RpcController.CallMethod(client, LightingProcessorClientDevice.SET_CACHED_ACTIVE_PRESET_RPC, activePreset);
+			}
 		}
 
 		/// <summary>
@@ -615,7 +617,7 @@ namespace ICD.Connect.Lighting.Server
 		/// <returns></returns>
 		public override bool ContainsRoom(int room)
 		{
-			return m_Processor != null && m_Processor.ContainsRoom(room);
+			return m_ShadeOriginatorsByRoom.ContainsKey(room) || m_OccupancyControlsByRoom.ContainsKey(room) || m_Processor != null && m_Processor.ContainsRoom(room);
 		}
 
 		/// <summary>
@@ -625,7 +627,7 @@ namespace ICD.Connect.Lighting.Server
 		/// <returns></returns>
 		public override IEnumerable<LightingProcessorControl> GetLoadsForRoom(int room)
 		{
-			return m_Processor.GetLoadsForRoom(room);
+			return m_Processor == null ? Enumerable.Empty<LightingProcessorControl>() : m_Processor.GetLoadsForRoom(room);
 		}
 
 		/// <summary>
@@ -643,6 +645,10 @@ namespace ICD.Connect.Lighting.Server
 															LightingProcessorControl.ePeripheralType.Shade,
 															originator.Id, room, originator.Name, originator.ShadeType)));
 			}
+			
+			if (m_Processor == null)
+				return list;
+			
 			return m_Processor.GetShadesForRoom(room).Concat(list);
 		}
 
@@ -659,6 +665,10 @@ namespace ICD.Connect.Lighting.Server
 			                                            .Select(originator => new LightingProcessorControl(
 			                                            LightingProcessorControl.ePeripheralType.ShadeGroup,
 			                                            originator.Id, room, originator.Name, originator.ShadeType)));
+
+			if (m_Processor == null)
+				return list;
+			
 			return m_Processor.GetShadeGroupsForRoom(room).Concat(list);
 		}
 
@@ -669,17 +679,7 @@ namespace ICD.Connect.Lighting.Server
 		/// <returns></returns>
 		public override IEnumerable<LightingProcessorControl> GetPresetsForRoom(int room)
 		{
-			return m_Processor.GetPresetsForRoom(room);
-		}
-
-		/// <summary>
-		/// Gets the current occupancy state for the given room.
-		/// </summary>
-		/// <param name="room"></param>
-		/// <returns></returns>
-		public override eOccupancyState GetOccupancyForRoom(int room)
-		{
-			return m_Processor.GetOccupancyForRoom(room);
+			return m_Processor == null ? Enumerable.Empty<LightingProcessorControl>() : m_Processor.GetPresetsForRoom(room);
 		}
 
 		/// <summary>
@@ -689,6 +689,9 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="preset"></param>
 		public override void SetPresetForRoom(int room, int? preset)
 		{
+			if (m_Processor == null)
+				return;
+
 			m_Processor.SetPresetForRoom(room, preset);
 		}
 
@@ -698,7 +701,39 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="room"></param>
 		public override int? GetPresetForRoom(int room)
 		{
+			if (m_Processor == null)
+				return null;
+
 			return m_Processor.GetPresetForRoom(room);
+		}
+
+		public override eOccupancyState GetOccupancyForRoom(int room)
+		{
+			eOccupancyState occupancy = eOccupancyState.Unknown;
+
+			// Get the occupancy state from the processor, if there is one
+			if (m_Processor != null)
+			{
+				occupancy = m_Processor.GetOccupancyForRoom(room);
+				if (occupancy == eOccupancyState.Occupied)
+					return occupancy;
+			}
+				
+
+			// Get occupancy state from sensors
+			// Any sensor occupied overrides, 
+			IcdHashSet<IOccupancySensorControl> sensors;
+			if (m_OccupancyControlsByRoom.TryGetValue(room, out sensors))
+			{
+				if (sensors.Any(s => s.OccupancyState == eOccupancyState.Occupied))
+					return eOccupancyState.Occupied;
+				// If processor already set it to unoccupied, don't bother checking the sensors
+				if (occupancy == eOccupancyState.Unoccupied || sensors.Any(s => s.OccupancyState == eOccupancyState.Unoccupied))
+					return eOccupancyState.Unoccupied;
+			}
+
+			return occupancy;
+
 		}
 
 		/// <summary>
@@ -709,6 +744,9 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="percentage"></param>
 		public override void SetLoadLevel(int room, int load, float percentage)
 		{
+			if (m_Processor == null)
+				return;
+
 			m_Processor.SetLoadLevel(room, load, percentage);
 		}
 
@@ -729,6 +767,9 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="load"></param>
 		public override void StartRaisingLoadLevel(int room, int load)
 		{
+			if (m_Processor == null)
+				return;
+
 			m_Processor.StartRaisingLoadLevel(room, load);
 		}
 
@@ -739,6 +780,9 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="load"></param>
 		public override void StartLoweringLoadLevel(int room, int load)
 		{
+			if (m_Processor == null)
+				return;
+
 			m_Processor.StartLoweringLoadLevel(room, load);
 		}
 
@@ -749,6 +793,9 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="load"></param>
 		public override void StopRampingLoadLevel(int room, int load)
 		{
+			if (m_Processor == null)
+				return;
+
 			m_Processor.StopRampingLoadLevel(room, load);
 		}
 
