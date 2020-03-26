@@ -66,6 +66,8 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 		}
 
 #if SIMPLSHARP
+
+		#region Shade Callbacks
 		protected void SetShade(TShade shade)
 		{
 			if (shade == Shade)
@@ -88,11 +90,27 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 
 		protected virtual void Subscribe(TShade shade)
 		{
+			if (shade == null)
+				return;
+
+
+			shade.OnlineStatusChange += ShadeOnLineStatusChange;
 		}
 
 		protected virtual void Unsubscribe(TShade shade)
 		{
+			if (shade == null)
+				return;
+
+			shade.OnlineStatusChange -= ShadeOnLineStatusChange;
 		}
+
+		private void ShadeOnLineStatusChange(GenericBase currentDevice, OnlineOfflineEventArgs args)
+		{
+			UpdateCachedOnlineStatus();
+		}
+
+		#endregion
 #endif
 
 		public override void Open()
