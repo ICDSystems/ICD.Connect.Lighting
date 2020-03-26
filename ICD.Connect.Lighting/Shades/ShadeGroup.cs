@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Devices.EventArguments;
 using ICD.Connect.Lighting.Shades.Controls;
 using ICD.Connect.Settings;
 
@@ -31,6 +32,11 @@ namespace ICD.Connect.Lighting.Shades
 		protected override bool GetIsOnlineStatus()
 		{
 			return Shades.All(shade => shade.IsOnline);
+		}
+
+		private void ShadeOnIsOnlineStateChanged(object sender, DeviceBaseOnlineStateApiEventArgs deviceBaseOnlineStateApiEventArgs)
+		{
+			UpdateCachedOnlineStatus();
 		}
 
 		public override void Open()
@@ -104,6 +110,8 @@ namespace ICD.Connect.Lighting.Shades
 		{
 			m_Shades.Add(shade);
 
+			shade.OnIsOnlineStateChanged += ShadeOnIsOnlineStateChanged;
+
 			var lastDirectionControl = shade.Controls.GetControl<IShadeLastDirectionControl>();
 			if (lastDirectionControl != null)
 			{
@@ -114,6 +122,8 @@ namespace ICD.Connect.Lighting.Shades
 		private void RemoveShade(IShadeDevice shade)
 		{
 			m_Shades.Remove(shade);
+
+			shade.OnIsOnlineStateChanged -= ShadeOnIsOnlineStateChanged;
 
 			var lastDirectionControl = shade.Controls.GetControl<IShadeLastDirectionControl>();
 			if (lastDirectionControl != null)
