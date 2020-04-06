@@ -5,22 +5,27 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Devices.Mock;
 using ICD.Connect.Lighting.Environment;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Mock.Controls;
 using ICD.Connect.Lighting.Processors;
 using ICD.Connect.Misc.Occupancy;
+using ICD.Connect.Settings;
 
 namespace ICD.Connect.Lighting.Mock
 {
 	/// <summary>
 	/// Configurable ILightingProcessorDevice for testing lighting programs.
 	/// </summary>
-	public sealed class MockLightingProcessorDevice : AbstractLightingProcessorDevice<MockLightingProcessorDeviceSettings>
+	public sealed class MockLightingProcessorDevice : AbstractLightingProcessorDevice<MockLightingProcessorDeviceSettings>, IMockDevice
 	{
 		private readonly List<int> m_RoomIdsOrdered;
 		private readonly Dictionary<int, MockLightingRoom> m_IdToRooms;
 		private readonly SafeCriticalSection m_CacheSection;
+		private bool m_IsOnline;
+
+		public bool DefaultOffline { get; set; }
 
 		/// <summary>
 		/// Constructor.
@@ -148,6 +153,13 @@ namespace ICD.Connect.Lighting.Mock
 			GetRoom(room).AddPreset(preset);
 		}
 
+		public void SetIsOnlineState(bool isOnline)
+		{
+			m_IsOnline = isOnline;
+
+			UpdateCachedOnlineStatus();
+		}
+
 		#endregion
 
 		#region Private Methods
@@ -214,7 +226,7 @@ namespace ICD.Connect.Lighting.Mock
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-			return true;
+			return m_IsOnline;
 		}
 
 		#endregion
@@ -529,6 +541,43 @@ namespace ICD.Connect.Lighting.Mock
 
 		#endregion
 
+		#region Settings
+
+		/// <summary>
+		/// Override to apply settings to the instance.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		protected override void ApplySettingsFinal(MockLightingProcessorDeviceSettings settings, IDeviceFactory factory)
+		{
+			base.ApplySettingsFinal(settings, factory);
+
+			MockDeviceHelper.ApplySettings(this, settings);
+		}
+
+		/// <summary>
+		/// Override to apply properties to the settings instance.
+		/// </summary>
+		/// <param name="settings"></param>
+		protected override void CopySettingsFinal(MockLightingProcessorDeviceSettings settings)
+		{
+			base.CopySettingsFinal(settings);
+
+			MockDeviceHelper.CopySettings(this, settings);
+		}
+
+		/// <summary>
+		/// Override to clear the instance settings.
+		/// </summary>
+		protected override void ClearSettingsFinal()
+		{
+			base.ClearSettingsFinal();
+
+			MockDeviceHelper.ClearSettings(this);
+		}
+
+		#endregion
+
 		#region Console
 
 		/// <summary>
@@ -553,6 +602,9 @@ namespace ICD.Connect.Lighting.Mock
 			foreach (IConsoleCommand command in GetBaseConsoleCommands())
 				yield return command;
 
+			foreach (IConsoleCommand command in MockDeviceHelper.GetConsoleCommands(this))
+				yield return command;
+
 			yield return new GenericConsoleCommand<int>("AddRoom", "AddRoom <ROOM>", a => AddRoom(a));
 
 			string help = string.Format("SetRoomOccupancy <ROOM> <OCCUPANCY {0}>",
@@ -560,6 +612,17 @@ namespace ICD.Connect.Lighting.Mock
 			yield return
 				new GenericConsoleCommand<int, eOccupancyState>("SetRoomOccupancy", help,
 				                                                                       (a, b) => SetOccupancyForRoom(a, b));
+		}
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+			MockDeviceHelper.BuildConsoleStatus(this, addRow);
 		}
 
 		/// <summary>
