@@ -9,7 +9,6 @@ using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.IO;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Timers;
-using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Lighting.EventArguments;
@@ -239,7 +238,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 			}
 			catch (Exception e)
 			{
-				Log(eSeverity.Error, "Failed to load integration config {0} - {1}", fullPath, e.Message);
+				Logger.Log(eSeverity.Error, "Failed to load integration config {0} - {1}", fullPath, e.Message);
 				return;
 			}
 
@@ -296,7 +295,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		{
 			if (!IsConnected)
 			{
-				Log(eSeverity.Critical, "Unable to communicate with device");
+				Logger.Log(eSeverity.Critical, "Unable to communicate with device");
 
 				m_CommandQueuesSection.Enter();
 
@@ -464,7 +463,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 				Initialize();
 			else
 			{
-				Log(eSeverity.Critical, "Lost connection");
+				Logger.Log(eSeverity.Critical, "Lost connection");
 				m_ConnectionIsReady = false;
 				Initialized = false;
 			}
@@ -546,7 +545,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 			catch (FormatException)
 			{
 				message = String.Format("Couldn't get error code for  data {0}", data);
-				Log(eSeverity.Error, message);
+				Logger.Log(eSeverity.Error, message);
 				return;
 			}
 			
@@ -582,7 +581,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 					break;
 			}
 
-			Log(eSeverity.Error, message);
+			Logger.Log(eSeverity.Error, message);
 		}
 
 		/// <summary>
@@ -609,8 +608,6 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		}
 
 		#endregion
-
-
 
 		#region Parse Xml
 
@@ -686,7 +683,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 				}
 				catch (KeyNotFoundException)
 				{
-					Log(eSeverity.Error, "No serial Port with id {0}", settings.Port);
+					Logger.Log(eSeverity.Error, "No serial Port with id {0}", settings.Port);
 				}
 			}
 

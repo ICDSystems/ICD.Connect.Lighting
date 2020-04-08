@@ -34,17 +34,17 @@ namespace ICD.Connect.Lighting.Mock
 
 	    public override void Open()
 	    {
-		    Logger.AddEntry(eSeverity.Debug, "Mock Shade {0} Opening.", Id);
+		    Logger.Log(eSeverity.Debug, "Mock Shade {0} Opening.", Id);
 	    }
 
 	    public override void Close()
 	    {
-			Logger.AddEntry(eSeverity.Debug, "Mock Shade {0} Closing.", Id);
+			Logger.Log(eSeverity.Debug, "Mock Shade {0} Closing.", Id);
 		}
 
 	    public void Stop()
 	    {
-			Logger.AddEntry(eSeverity.Debug, "Mock Shade {0} Stopped.", Id);
+			Logger.Log(eSeverity.Debug, "Mock Shade {0} Stopped.", Id);
 		}
 
 	    #region Settings

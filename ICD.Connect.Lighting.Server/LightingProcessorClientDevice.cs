@@ -295,7 +295,7 @@ namespace ICD.Connect.Lighting.Server
 				}
 				catch (KeyNotFoundException)
 				{
-					Log(eSeverity.Error, "No Serial Port with id {0}", settings.Port);
+					Logger.Log(eSeverity.Error, "No Serial Port with id {0}", settings.Port);
 				}	
 			}
 

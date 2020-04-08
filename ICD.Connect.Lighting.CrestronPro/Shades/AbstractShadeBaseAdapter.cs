@@ -82,7 +82,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 
 			eDeviceRegistrationUnRegistrationResponse result;
 			if (Shade != null && !GenericBaseUtils.SetUp(Shade, this, out result))
-				Log(eSeverity.Error, "Unable to register {0} - {1}", Shade.GetType().Name, result);
+				Logger.Log(eSeverity.Error, "Unable to register {0} - {1}", Shade.GetType().Name, result);
 
 			Subscribe(Shade);
 			UpdateCachedOnlineStatus();

@@ -41,7 +41,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 			if (m_RoomsSection.Execute(() => m_Rooms.TryGetValue(roomId, out room)))
 				return room.GetLoads();
 
-			Log(eSeverity.Error, "No room with id {0}", roomId);
+			Logger.Log(eSeverity.Error, "No room with id {0}", roomId);
 			return Enumerable.Empty<LightingProcessorControl>();
 		}
 
@@ -57,7 +57,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 			if (m_RoomsSection.Execute(() => m_Rooms.TryGetValue(roomId, out room)))
 				return room.GetShades();
 
-			Log(eSeverity.Error, "No room with id {0}", roomId);
+			Logger.Log(eSeverity.Error, "No room with id {0}", roomId);
 			return Enumerable.Empty<LightingProcessorControl>();
 		}
 
@@ -83,7 +83,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 			if (m_RoomsSection.Execute(() => m_Rooms.TryGetValue(roomId, out room)))
 				return room.GetPresets();
 
-			Log(eSeverity.Error, "No room with id {0}", roomId);
+			Logger.Log(eSeverity.Error, "No room with id {0}", roomId);
 			return Enumerable.Empty<LightingProcessorControl>();
 		}
 
@@ -98,7 +98,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 			if (m_RoomsSection.Execute(() => m_Rooms.TryGetValue(roomId, out room)))
 				return room.Occupancy;
 
-			Log(eSeverity.Error, "No room with id {0}", roomId);
+			Logger.Log(eSeverity.Error, "No room with id {0}", roomId);
 			return eOccupancyState.Unknown;
 		}
 
@@ -116,7 +116,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 				return;
 			}
 
-			Log(eSeverity.Error, "No room with id {0}", roomId);
+			Logger.Log(eSeverity.Error, "No room with id {0}", roomId);
 		}
 
 		/// <summary>
@@ -129,7 +129,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 			if (m_RoomsSection.Execute(() => m_Rooms.TryGetValue(roomId, out room)))
 				return room.ActivePreset;
 
-			Log(eSeverity.Error, "No room with id {0}", roomId);
+			Logger.Log(eSeverity.Error, "No room with id {0}", roomId);
 			return null;
 		}
 
@@ -148,7 +148,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 				return;
 			}
 
-			Log(eSeverity.Error, "No room with id {0}", roomId);
+			Logger.Log(eSeverity.Error, "No room with id {0}", roomId);
 		}
 
 		/// <summary>
@@ -162,7 +162,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 			if (m_RoomsSection.Execute(() => m_Rooms.TryGetValue(roomId, out room)))
 				return room.GetLoadLevel(loadId);
 
-			Log(eSeverity.Error, "No room with id {0}", roomId);
+			Logger.Log(eSeverity.Error, "No room with id {0}", roomId);
 			return 0;
 		}
 
@@ -180,7 +180,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 				return;
 			}
 
-			Log(eSeverity.Error, "No room with id {0}", roomId);
+			Logger.Log(eSeverity.Error, "No room with id {0}", roomId);
 		}
 
 		/// <summary>
@@ -197,7 +197,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 				return;
 			}
 
-			Log(eSeverity.Error, "No room with id {0}", roomId);
+			Logger.Log(eSeverity.Error, "No room with id {0}", roomId);
 		}
 
 		/// <summary>
@@ -214,7 +214,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 				return;
 			}
 
-			Log(eSeverity.Error, "No room with id {0}", roomId);
+			Logger.Log(eSeverity.Error, "No room with id {0}", roomId);
 		}
 
 		/// <summary>
@@ -231,7 +231,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 				return;
 			}
 
-			Log(eSeverity.Error, "No room with id {0}", roomId);
+			Logger.Log(eSeverity.Error, "No room with id {0}", roomId);
 		}
 
 		/// <summary>
@@ -248,7 +248,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 				return;
 			}
 
-			Log(eSeverity.Error, "No room with id {0}", roomId);
+			Logger.Log(eSeverity.Error, "No room with id {0}", roomId);
 		}
 
 		/// <summary>
@@ -265,7 +265,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 				return;
 			}
 
-			Log(eSeverity.Error, "No room with id {0}", roomId);
+			Logger.Log(eSeverity.Error, "No room with id {0}", roomId);
 		}
 
 		/// <summary>

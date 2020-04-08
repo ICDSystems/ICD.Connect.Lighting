@@ -1,4 +1,5 @@
 ﻿using System;
+using ICD.Common.Logging.LoggingContexts;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Misc.CrestronPro;
 using ICD.Connect.Misc.CrestronPro.Utils;
@@ -27,8 +28,8 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 #if SIMPLSHARP
 			if (settings.CresnetId == null || !CresnetUtils.IsValidId(settings.CresnetId.Value))
 			{
-				Logger.AddEntry(eSeverity.Error, "{0} failed to instantiate {1} - CresnetId {2} is out of range",
-				                this, typeof(Crestron.SimplSharpPro.Shades.CsmQmt50Dccn).Name, settings.CresnetId);
+				Logger.Log(eSeverity.Error, "Failed to instantiate {0} - CresnetId {1} is out of range",
+				           typeof(Crestron.SimplSharpPro.Shades.CsmQmt50Dccn).Name, settings.CresnetId);
 				return;
 			}
 
@@ -44,9 +45,8 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 			}
 			catch (ArgumentException e)
 			{
-				string message = string.Format("{0} failed to instantiate {1} with Cresnet ID {2} - {3}",
-											   this, typeof(Crestron.SimplSharpPro.Shades.CsmQmt50Dccn).Name, settings.CresnetId, e.Message);
-				Logger.AddEntry(eSeverity.Error, e, message);
+				Logger.Log(eSeverity.Error, e, "Failed to instantiate {0} with Cresnet ID {1} - {2}",
+				           typeof(Crestron.SimplSharpPro.Shades.CsmQmt50Dccn).Name, settings.CresnetId, e.Message);
 			}
 
 			SetShade(shade);

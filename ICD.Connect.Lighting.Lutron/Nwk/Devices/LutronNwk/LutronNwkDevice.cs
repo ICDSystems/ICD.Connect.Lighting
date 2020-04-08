@@ -74,7 +74,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 			foreach (LutronNwkRoom room in items)
 			{
 				if (!AddRoom(room))
-					Log(eSeverity.Warning, "Already contains area {0}, skipping", room.Room);
+					Logger.Log(eSeverity.Warning, "Already contains area {0}, skipping", room.Room);
 			}
 		}
 
