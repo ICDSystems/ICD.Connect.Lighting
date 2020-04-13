@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+ - Added support for local Occupancy sensors on LightingProcessorServer
+ 
+### Changed
+ - Changed LightingProcessorServer to support configurations without an ILightingProcessor configured
 
 ## [5.0.1] - 2020-04-05
 ### Changed
