@@ -299,7 +299,7 @@ namespace ICD.Connect.Lighting.Server
 				}	
 			}
 
-			m_RpcController.SetPort(port);
+			ConfigurePort(port);
 		}
 
 		#endregion
