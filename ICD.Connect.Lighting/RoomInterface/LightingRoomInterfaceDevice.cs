@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
-using ICD.Connect.Devices;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Processors;
 using ICD.Connect.Misc.Occupancy;
@@ -11,8 +10,7 @@ using ICD.Connect.Settings;
 
 namespace ICD.Connect.Lighting.RoomInterface
 {
-	public sealed class LightingRoomInterfaceDevice : AbstractDevice<LightingRoomInterfaceDeviceSettings>,
-	                                                  ILightingRoomInterfaceDevice
+	public sealed class LightingRoomInterfaceDevice : AbstractLightingRoomInterfaceDevice<LightingRoomInterfaceDeviceSettings>
 	{
 		private ILightingProcessorDevice m_LightingProcessor;
 
@@ -20,7 +18,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 
 		private bool HasLightingProcessor { get { return m_LightingProcessor != null; } }
 
-	/// <summary>
+		/// <summary>
 		/// Gets the current online status of the device.
 		/// </summary>
 		/// <returns></returns>
@@ -134,16 +132,16 @@ namespace ICD.Connect.Lighting.RoomInterface
 
 		#region ILightingRoomInterfaceDevice Implementation
 
-		public event EventHandler<GenericEventArgs<eOccupancyState>> OnOccupancyChanged;
-		public event EventHandler<GenericEventArgs<int?>> OnPresetChanged;
-		public event EventHandler<LoadLevelEventArgs> OnLoadLevelChanged;
-		public event EventHandler OnControlsChanged;
+		public override event EventHandler<GenericEventArgs<eOccupancyState>> OnOccupancyChanged;
+		public override event EventHandler<GenericEventArgs<int?>> OnPresetChanged;
+		public override event EventHandler<LoadLevelEventArgs> OnLoadLevelChanged;
+		public override event EventHandler OnControlsChanged;
 
 		/// <summary>
 		/// Gets the available light loads for the room.
 		/// </summary>
 		/// <returns></returns>
-		public IEnumerable<LightingProcessorControl> GetLoads()
+		public override IEnumerable<LightingProcessorControl> GetLoads()
 		{
 			if (!HasLightingProcessor)
 				return Enumerable.Empty<LightingProcessorControl>();
@@ -156,7 +154,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// Gets the available individual shades for the room.
 		/// </summary>
 		/// <returns></returns>
-		public IEnumerable<LightingProcessorControl> GetShades()
+		public override IEnumerable<LightingProcessorControl> GetShades()
 		{
 			if (!HasLightingProcessor)
 				return Enumerable.Empty<LightingProcessorControl>();
@@ -168,7 +166,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// Gets the available shade groups for the room.
 		/// </summary>
 		/// <returns></returns>
-		public IEnumerable<LightingProcessorControl> GetShadeGroups()
+		public override IEnumerable<LightingProcessorControl> GetShadeGroups()
 		{
 			if (!HasLightingProcessor)
 				return Enumerable.Empty<LightingProcessorControl>();
@@ -180,7 +178,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// Gets the available presets for the room.
 		/// </summary>
 		/// <returns></returns>
-		public IEnumerable<LightingProcessorControl> GetPresets()
+		public override IEnumerable<LightingProcessorControl> GetPresets()
 		{
 			if (!HasLightingProcessor)
 				return Enumerable.Empty<LightingProcessorControl>();
@@ -192,7 +190,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// Gets the current occupancy state for the given room.
 		/// </summary>
 		/// <returns></returns>
-		public eOccupancyState GetOccupancy()
+		public override eOccupancyState GetOccupancy()
 		{
 			if (!HasLightingProcessor)
 				return eOccupancyState.Unknown;
@@ -204,7 +202,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// Sets the preset for the given room.
 		/// </summary>
 		/// <param name="preset"></param>
-		public void SetPreset(int? preset)
+		public override void SetPreset(int? preset)
 		{
 			if (!HasLightingProcessor)
 				return;
@@ -215,7 +213,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// <summary>
 		/// Gets the current preset for the given room.
 		/// </summary>
-		public int? GetPreset()
+		public override int? GetPreset()
 		{
 			if (!HasLightingProcessor)
 				return null;
@@ -228,7 +226,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// </summary>
 		/// <param name="load"></param>
 		/// <param name="percentage"></param>
-		public void SetLoadLevel(int load, float percentage)
+		public override void SetLoadLevel(int load, float percentage)
 		{
 			if (!HasLightingProcessor)
 				return;
@@ -240,7 +238,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// Gets the current lighting level for the given load.
 		/// </summary>
 		/// <param name="load"></param>
-		public float GetLoadLevel(int load)
+		public override float GetLoadLevel(int load)
 		{
 			if (!HasLightingProcessor)
 				return 0;
@@ -252,7 +250,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// Starts raising the lighting level for the given load.
 		/// </summary>
 		/// <param name="load"></param>
-		public void StartRaisingLoadLevel(int load)
+		public override void StartRaisingLoadLevel(int load)
 		{
 			if (!HasLightingProcessor)
 				return;
@@ -264,7 +262,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// Starts lowering the lighting level for the given load.
 		/// </summary>
 		/// <param name="load"></param>
-		public void StartLoweringLoadLevel(int load)
+		public override void StartLoweringLoadLevel(int load)
 		{
 			if (!HasLightingProcessor)
 				return;
@@ -276,7 +274,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// Stops raising/lowering the lighting level for the given load.
 		/// </summary>
 		/// <param name="load"></param>
-		public void StopRampingLoadLevel(int load)
+		public override void StopRampingLoadLevel(int load)
 		{
 			if (!HasLightingProcessor)
 				return;
@@ -288,7 +286,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// Starts raising the shade.
 		/// </summary>
 		/// <param name="shade"></param>
-		public void StartRaisingShade(int shade)
+		public override void StartRaisingShade(int shade)
 		{
 			if (!HasLightingProcessor)
 				return;
@@ -300,7 +298,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// Starts lowering the shade.
 		/// </summary>
 		/// <param name="shade"></param>
-		public void StartLoweringShade(int shade)
+		public override void StartLoweringShade(int shade)
 		{
 			if (!HasLightingProcessor)
 				return;
@@ -312,7 +310,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// Stops moving the shade.
 		/// </summary>
 		/// <param name="shade"></param>
-		public void StopMovingShade(int shade)
+		public override void StopMovingShade(int shade)
 		{
 			if (!HasLightingProcessor)
 				return;
@@ -324,7 +322,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// Starts raising the shade group.
 		/// </summary>
 		/// <param name="shadeGroup"></param>
-		public void StartRaisingShadeGroup(int shadeGroup)
+		public override void StartRaisingShadeGroup(int shadeGroup)
 		{
 			if (!HasLightingProcessor)
 				return;
@@ -336,7 +334,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// Starts lowering the shade group.
 		/// </summary>
 		/// <param name="shadeGroup"></param>
-		public void StartLoweringShadeGroup(int shadeGroup)
+		public override void StartLoweringShadeGroup(int shadeGroup)
 		{
 			if (!HasLightingProcessor)
 				return;
@@ -348,7 +346,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// Stops moving the shade group.
 		/// </summary>
 		/// <param name="shadeGroup"></param>
-		public void StopMovingShadeGroup(int shadeGroup)
+		public override void StopMovingShadeGroup(int shadeGroup)
 		{
 			if (!HasLightingProcessor)
 				return;

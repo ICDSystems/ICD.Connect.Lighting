@@ -1,5 +1,4 @@
 ﻿using ICD.Common.Utils.Xml;
-using ICD.Connect.Devices;
 using ICD.Connect.Lighting.Processors;
 using ICD.Connect.Settings.Attributes;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
@@ -7,7 +6,7 @@ using ICD.Connect.Settings.Attributes.SettingsProperties;
 namespace ICD.Connect.Lighting.RoomInterface
 {
 	[KrangSettings("LightingRoomInterface", typeof(LightingRoomInterfaceDevice))]
-	public sealed class LightingRoomInterfaceDeviceSettings : AbstractDeviceSettings
+	public sealed class LightingRoomInterfaceDeviceSettings : AbstractLightingRoomInterfaceDeviceSettings
 	{
 		private const string LIGHTING_PROCESSOR_ELEMENT = "LightingProcessor";
 		private const string ROOM_ID_ELEMENT = "RoomId";
