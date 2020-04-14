@@ -1,5 +1,5 @@
 ﻿using ICD.Common.Utils.Xml;
-using ICD.Connect.Lighting.Processors;
+using ICD.Connect.Lighting.RoomInterface;
 using ICD.Connect.Protocol.Network.Settings;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Settings.Attributes;
@@ -11,7 +11,7 @@ namespace ICD.Connect.Lighting.Server
 	/// Settings for the BmsLightingProcessorClientDevice.
 	/// </summary>
 	[KrangSettings("BmsLightingProcessorClient", typeof(LightingProcessorClientDevice))]
-	public sealed class LightingProcessorClientDeviceSettings : AbstractLightingProcessorDeviceSettings, ISecureNetworkSettings
+	public sealed class LightingProcessorClientDeviceSettings : AbstractLightingRoomInterfaceDeviceSettings, ISecureNetworkSettings
 	{
 		private const string PORT_ELEMENT = "Port";
 		private const string ROOM_ID_ELEMENT = "RoomId";
