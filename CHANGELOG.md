@@ -7,9 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
  - Added support for local Occupancy sensors on LightingProcessorServer
+ - Added AbstractLightingRoomInterfaceDevice with option OccupancySensorControl
  
 ### Changed
  - Changed LightingProcessorServer to support configurations without an ILightingProcessor configured
+ - Fixed LightingProcessorClient to correctly configure the attached port
+ - LightingProcessorClient and LightingRoomInterfaceDevice now inherit from AbstractLightingRoomInterfaceDevice
 
 ## [5.0.1] - 2020-04-05
 ### Changed
