@@ -10,7 +10,7 @@ using ICD.Connect.Lighting.Lutron.Nwk.Integrations;
 
 namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.QuantumNwk
 {
-	public sealed partial class LutronQuantumNwkDevice : AbstractLutronNwkDevice<LutronQuantumNwkDeviceSettings>
+	public sealed class LutronQuantumNwkDevice : AbstractLutronNwkDevice<LutronQuantumNwkDeviceSettings>
 	{
 
 		// Maintain integration order

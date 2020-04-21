@@ -177,7 +177,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public AbstractLutronNwkDeviceSettings()
+		protected AbstractLutronNwkDeviceSettings()
 		{
 			m_NetworkProperties = new SecureNetworkProperties
 			{
