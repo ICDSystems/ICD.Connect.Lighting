@@ -206,7 +206,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// Configures the given port for communication with the device.
 		/// </summary>
 		/// <param name="port"></param>
-		private void ConfigurePort(ISerialPort port)
+		private void ConfigurePort(IPort port)
 		{
 			// Com
 			if (port is IComPort)
