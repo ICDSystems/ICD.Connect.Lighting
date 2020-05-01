@@ -5,9 +5,9 @@ using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Nodes;
-using ICD.Connect.Devices;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Mock.Controls;
+using ICD.Connect.Lighting.RoomInterface;
 using ICD.Connect.Misc.Occupancy;
 using ICD.Connect.Protocol.Extensions;
 using ICD.Connect.Protocol.Network.RemoteProcedure;
@@ -21,7 +21,7 @@ namespace ICD.Connect.Lighting.Server
 	/// <summary>
 	/// Provides a way to communicate with the lighting features of BmsOS.
 	/// </summary>
-	public sealed partial class LightingProcessorClientDevice : AbstractDevice<LightingProcessorClientDeviceSettings>
+	public sealed class LightingProcessorClientDevice : AbstractLightingRoomInterfaceDevice<LightingProcessorClientDeviceSettings>
 	{
 		public const string CLEAR_CONTROLS_RPC = "ClearControls";
 		public const string SET_CACHED_ROOM_RPC = "SetCachedRoom";
@@ -31,6 +31,10 @@ namespace ICD.Connect.Lighting.Server
 		public const string SET_CACHED_LOAD_LEVEL_RPC = "SetCachedLoadLevel";
 
 		public event EventHandler<BoolEventArgs> OnConnectedStateChanged;
+		public override event EventHandler<GenericEventArgs<eOccupancyState>> OnOccupancyChanged;
+		public override event EventHandler<GenericEventArgs<int?>> OnPresetChanged;
+		public override event EventHandler<LoadLevelEventArgs> OnLoadLevelChanged;
+		public override event EventHandler OnControlsChanged;
 
 		private readonly ClientSerialRpcController m_RpcController;
 		private readonly SecureNetworkProperties m_NetworkProperties;
@@ -295,7 +299,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <returns></returns>
 		[PublicAPI]
-		public IEnumerable<LightingProcessorControl> GetLoads()
+		public override IEnumerable<LightingProcessorControl> GetLoads()
 		{
 			return m_Room == null ? new LightingProcessorControl[0] : m_Room.GetLoads();
 		}
@@ -305,7 +309,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <returns></returns>
 		[PublicAPI]
-		public IEnumerable<LightingProcessorControl> GetShades()
+		public override IEnumerable<LightingProcessorControl> GetShades()
 		{
 			return m_Room == null ? new LightingProcessorControl[0] : m_Room.GetShades();
 		}
@@ -315,7 +319,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <returns></returns>
 		[PublicAPI]
-		public IEnumerable<LightingProcessorControl> GetShadeGroups()
+		public override IEnumerable<LightingProcessorControl> GetShadeGroups()
 		{
 			return m_Room == null ? new LightingProcessorControl[0] : m_Room.GetShadeGroups();
 		}
@@ -325,7 +329,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <returns></returns>
 		[PublicAPI]
-		public IEnumerable<LightingProcessorControl> GetPresets()
+		public override IEnumerable<LightingProcessorControl> GetPresets()
 		{
 			return m_Room == null ? new LightingProcessorControl[0] : m_Room.GetPresets();
 		}
@@ -340,7 +344,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <returns></returns>
 		[PublicAPI]
-		public eOccupancyState GetOccupancy()
+		public override eOccupancyState GetOccupancy()
 		{
 			return m_Room == null ? eOccupancyState.Unknown : m_Room.Occupancy;
 		}
@@ -350,17 +354,16 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="preset"></param>
 		[PublicAPI]
-		public void SetPreset(int? preset)
+		public override void SetPreset(int? preset)
 		{
 			m_RpcController.CallMethod(LightingProcessorServer.SET_ROOM_PRESET_RPC, m_Room.Id, preset);
 		}
 
 		/// <summary>
-		/// Gets the current preset for the room.
-		/// Returns zero if we are waiting for a server response.
+		/// Gets the current preset for the given room.
 		/// </summary>
 		[PublicAPI]
-		public int? GetActivePreset()
+		public override int? GetPreset()
 		{
 			return m_Room.ActivePreset;
 		}
@@ -375,7 +378,7 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="load"></param>
 		/// <param name="percentage"></param>
 		[PublicAPI]
-		public void SetLoadLevel(int load, float percentage)
+		public override void SetLoadLevel(int load, float percentage)
 		{
 			m_RpcController.CallMethod(LightingProcessorServer.SET_LOAD_LEVEL_RPC, m_RoomId, load, percentage);
 		}
@@ -386,7 +389,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="load"></param>
 		[PublicAPI]
-		public float GetLoadLevel(int load)
+		public override float GetLoadLevel(int load)
 		{
 			return m_Room.GetLoad(load).LoadLevel;
 		}
@@ -396,7 +399,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="load"></param>
 		[PublicAPI]
-		public void StartRaisingLoadLevel(int load)
+		public override void StartRaisingLoadLevel(int load)
 		{
 			m_RpcController.CallMethod(LightingProcessorServer.START_RAISING_LOAD_LEVEL_RPC, m_RoomId, load);
 		}
@@ -406,7 +409,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="load"></param>
 		[PublicAPI]
-		public void StartLoweringLoadLevel(int load)
+		public override void StartLoweringLoadLevel(int load)
 		{
 			m_RpcController.CallMethod(LightingProcessorServer.START_LOWERING_LOAD_LEVEL_RPC, m_RoomId, load);
 		}
@@ -416,7 +419,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="load"></param>
 		[PublicAPI]
-		public void StopRampingLoadLevel(int load)
+		public override void StopRampingLoadLevel(int load)
 		{
 			m_RpcController.CallMethod(LightingProcessorServer.STOP_RAMPING_LOAD_LEVEL_RPC, m_RoomId, load);
 		}
@@ -430,7 +433,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="shade"></param>
 		[PublicAPI]
-		public void StartRaisingShade(int shade)
+		public override void StartRaisingShade(int shade)
 		{
 			m_RpcController.CallMethod(LightingProcessorServer.START_RAISING_SHADE_RPC, m_RoomId, shade);
 		}
@@ -440,7 +443,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="shade"></param>
 		[PublicAPI]
-		public void StartLoweringShade(int shade)
+		public override void StartLoweringShade(int shade)
 		{
 			m_RpcController.CallMethod(LightingProcessorServer.START_LOWERING_SHADE_RPC, m_RoomId, shade);
 		}
@@ -450,7 +453,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="shade"></param>
 		[PublicAPI]
-		public void StopMovingShade(int shade)
+		public override void StopMovingShade(int shade)
 		{
 			m_RpcController.CallMethod(LightingProcessorServer.STOP_MOVING_SHADE_RPC, m_RoomId, shade);
 		}
@@ -464,7 +467,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="shadeGroup"></param>
 		[PublicAPI]
-		public void StartRaisingShadeGroup(int shadeGroup)
+		public override void StartRaisingShadeGroup(int shadeGroup)
 		{
 			m_RpcController.CallMethod(LightingProcessorServer.START_RAISING_SHADE_GROUP_RPC, m_RoomId, shadeGroup);
 		}
@@ -474,7 +477,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="shadeGroup"></param>
 		[PublicAPI]
-		public void StartLoweringShadeGroup(int shadeGroup)
+		public override void StartLoweringShadeGroup(int shadeGroup)
 		{
 			m_RpcController.CallMethod(LightingProcessorServer.START_LOWERING_SHADE_GROUP_RPC, m_RoomId, shadeGroup);
 		}
@@ -484,7 +487,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="shadeGroup"></param>
 		[PublicAPI]
-		public void StopMovingShadeGroup(int shadeGroup)
+		public override void StopMovingShadeGroup(int shadeGroup)
 		{
 			m_RpcController.CallMethod(LightingProcessorServer.STOP_MOVING_SHADE_GROUP_RPC, m_RoomId, shadeGroup);
 		}
@@ -578,6 +581,7 @@ namespace ICD.Connect.Lighting.Server
 
 			addRow("IsConnected", IsConnected);
 			addRow("Room Id", m_RoomId);
+			addRow("OccupancyStatus", GetOccupancy());
 		}
 
 		#endregion

@@ -71,7 +71,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LightingProcessorClientDevice.cs" />
-    <Compile Include="LightingProcessorClientDevice.implementation.cs" />
     <Compile Include="LightingProcessorClientDeviceSettings.cs" />
     <Compile Include="LightingProcessorServer.cs" />
     <Compile Include="KrangPlugin.cs" />
