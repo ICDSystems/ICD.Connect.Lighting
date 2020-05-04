@@ -59,6 +59,8 @@ namespace ICD.Connect.Lighting.Server
 			m_RpcController = new ClientSerialRpcController(this);
 
 			Subscribe(m_RpcController);
+
+			Controls.Add(new LightingProcessorClientOccupancyControl(this, 0));
 		}
 
 		#region Methods
