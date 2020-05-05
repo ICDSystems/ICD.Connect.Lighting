@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added port configuration features to lighting devices
 
+## [3.4.0] - 2020-05-05
+### Added
+ - Added Occupancy Control for LightingProcessorClient
+
 ## [3.3.1] - 2020-03-06
 ### Changed
  - EiscLightingAdapterDevice - Unregister EISC when disposing device
