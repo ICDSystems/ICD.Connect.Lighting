@@ -456,7 +456,7 @@ namespace ICD.Connect.Lighting.Server
 		private void SetPresetForRoom(uint clientId, int room, int preset)
 		{
 			if (m_Processor != null)
-			m_Processor.SetPresetForRoom(room, preset);
+				m_Processor.SetPresetForRoom(room, preset);
 		}
 
 		#region Load
@@ -472,7 +472,7 @@ namespace ICD.Connect.Lighting.Server
 		private void SetLoadLevel(uint clientId, int room, int load, float percentage)
 		{
 			if (m_Processor != null)
-			m_Processor.SetLoadLevel(room, load, percentage);
+				m_Processor.SetLoadLevel(room, load, percentage);
 		}
 
 		/// <summary>
@@ -485,7 +485,7 @@ namespace ICD.Connect.Lighting.Server
 		private void StartRaisingLoadLevel(uint clientId, int room, int load)
 		{
 			if (m_Processor != null)
-			m_Processor.StartRaisingLoadLevel(room, load);
+				m_Processor.StartRaisingLoadLevel(room, load);
 		}
 
 		/// <summary>
@@ -498,7 +498,7 @@ namespace ICD.Connect.Lighting.Server
 		private void StartLoweringLoadLevel(uint clientId, int room, int load)
 		{
 			if (m_Processor != null)
-			m_Processor.StartLoweringLoadLevel(room, load);
+				m_Processor.StartLoweringLoadLevel(room, load);
 		}
 
 		/// <summary>
@@ -511,7 +511,7 @@ namespace ICD.Connect.Lighting.Server
 		private void StopRampingLoadLevel(uint clientId, int room, int load)
 		{
 			if (m_Processor != null)
-			m_Processor.StopRampingLoadLevel(room, load);
+				m_Processor.StopRampingLoadLevel(room, load);
 		}
 
 		#endregion
