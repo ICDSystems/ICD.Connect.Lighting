@@ -943,6 +943,7 @@ namespace ICD.Connect.Lighting.Server
 				yield return command;
 
 			yield return new ConsoleCommand("PrintOccSensors", "Prints Occupancy Sensors", () => PrintOccupancySensorsToConsole());
+			yield return new ConsoleCommand("PrintClientsToRooms", "Prints clients, and what room is associated with them", () => PrintClientsToRooms());
 		}
 
 		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
@@ -998,6 +999,19 @@ namespace ICD.Connect.Lighting.Server
 
 		}
 
+		private string PrintClientsToRooms()
+		{
+			KeyValuePair<uint, int>[] clientRoomMap = m_ClientRoomSection.Execute(() => m_ClientRoomMap.ToArray(m_ClientRoomMap.Count));
+
+			TableBuilder table = new TableBuilder("Client ID", "Room ID", "HostInfo");
+
+			foreach (var kvp in clientRoomMap)
+				table.AddRow(kvp.Key, m_Server.GetHostInfoForClientId(kvp.Key), kvp.Value);
+
+			table.AddSeparator();
+
+			return table.ToString();
+		}
 		#endregion
 
 		#region Settings
