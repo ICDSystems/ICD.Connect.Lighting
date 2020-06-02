@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ICD.Common.Utils.EventArguments;
 using ICD.Connect.Devices;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Misc.Occupancy;
 using ICD.Connect.Settings;
@@ -16,19 +17,6 @@ namespace ICD.Connect.Lighting.RoomInterface
 		#region Settings
 
 		/// <summary>
-		/// Override to apply settings to the instance.
-		/// </summary>
-		/// <param name="settings"></param>
-		/// <param name="factory"></param>
-		protected override void ApplySettingsFinal(T settings, IDeviceFactory factory)
-		{
-			base.ApplySettingsFinal(settings, factory);
-
-			if (settings.EnableOccupancyControl)
-				Controls.Add(new LightingRoomInterfaceOccupancyControl(this, OCCUPANCY_CONTROL_ID));
-		}
-
-		/// <summary>
 		/// Override to apply properties to the settings instance.
 		/// </summary>
 		/// <param name="settings"></param>
@@ -37,17 +25,20 @@ namespace ICD.Connect.Lighting.RoomInterface
 			base.CopySettingsFinal(settings);
 
 			settings.EnableOccupancyControl = Controls.Contains(OCCUPANCY_CONTROL_ID);
-
 		}
 
 		/// <summary>
-		/// Override to clear the instance settings.
+		/// Override to add controls to the device.
 		/// </summary>
-		protected override void ClearSettingsFinal()
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(T settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
 		{
-			base.ClearSettingsFinal();
+			base.AddControls(settings, factory, addControl);
 
-			Controls.Remove(OCCUPANCY_CONTROL_ID);
+			if (settings.EnableOccupancyControl)
+				addControl(new LightingRoomInterfaceOccupancyControl(this, OCCUPANCY_CONTROL_ID));
 		}
 
 		#endregion

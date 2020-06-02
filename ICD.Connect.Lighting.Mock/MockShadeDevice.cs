@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Devices.Mock;
 using ICD.Connect.Lighting.Shades;
 using ICD.Connect.Lighting.Shades.Controls;
@@ -16,11 +18,6 @@ namespace ICD.Connect.Lighting.Mock
 
 	    public bool DefaultOffline { get; set; }
 
-	    public MockShadeDevice()
-	    {
-			Controls.Add(new ShadeStopControl<MockShadeDevice>(this, 1));
-		}
-
 	    public void SetIsOnlineState(bool isOnline)
 	    {
 		    m_IsOnline = isOnline;
@@ -31,6 +28,8 @@ namespace ICD.Connect.Lighting.Mock
 	    {
 		    return m_IsOnline;
 	    }
+
+	    #region Methods
 
 	    public override void Open()
 	    {
@@ -46,6 +45,8 @@ namespace ICD.Connect.Lighting.Mock
 	    {
 			Logger.Log(eSeverity.Debug, "Mock Shade {0} Stopped.", Id);
 		}
+
+	    #endregion
 
 	    #region Settings
 
@@ -80,6 +81,19 @@ namespace ICD.Connect.Lighting.Mock
 		    base.ClearSettingsFinal();
 
 			MockDeviceHelper.ClearSettings(this);
+	    }
+
+	    /// <summary>
+	    /// Override to add controls to the device.
+	    /// </summary>
+	    /// <param name="settings"></param>
+	    /// <param name="factory"></param>
+	    /// <param name="addControl"></param>
+	    protected override void AddControls(MockShadeDeviceSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+	    {
+		    base.AddControls(settings, factory, addControl);
+
+			addControl(new ShadeStopControl<MockShadeDevice>(this, 1));
 	    }
 
 	    #endregion

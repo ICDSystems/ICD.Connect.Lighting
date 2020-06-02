@@ -1,5 +1,7 @@
 ﻿using System;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Misc.CrestronPro.Utils;
+using ICD.Connect.Settings;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
@@ -28,18 +30,6 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 
 		protected TShade Shade { get; private set; }
 #endif
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		protected AbstractShadeBaseAdapter()
-		{
-			Controls.Add(new ShadeStopControl<IShadeBaseAdapter>(this, 0));
-			Controls.Add(new ShadeSetPositionControl<IShadeBaseAdapter>(this, 1));
-			Controls.Add(new ShadeInMotionFeedbackControl<IShadeBaseAdapter>(this, 2));
-			Controls.Add(new ShadePositionFeedbackControl<IShadeBaseAdapter>(this, 3));
-			Controls.Add(new ShadeLastDirectionControl<IShadeBaseAdapter>(this, 4));
-		}
 
 		/// <summary>
 		/// Release resources.
@@ -112,6 +102,8 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 
 		#endregion
 #endif
+
+		#region Methods
 
 		public override void Open()
 		{
@@ -195,5 +187,28 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 			throw new NotSupportedException();
 #endif
 		}
+
+		#endregion
+
+		#region Settings
+
+		/// <summary>
+		/// Override to add controls to the device.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(TSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+		{
+			base.AddControls(settings, factory, addControl);
+
+			addControl(new ShadeStopControl<IShadeBaseAdapter>(this, 0));
+			addControl(new ShadeSetPositionControl<IShadeBaseAdapter>(this, 1));
+			addControl(new ShadeInMotionFeedbackControl<IShadeBaseAdapter>(this, 2));
+			addControl(new ShadePositionFeedbackControl<IShadeBaseAdapter>(this, 3));
+			addControl(new ShadeLastDirectionControl<IShadeBaseAdapter>(this, 4));
+		}
+
+		#endregion
 	}
 }
