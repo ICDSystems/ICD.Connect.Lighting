@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - MockShadeDevice now implement IMockDevice
  - Using new logging context
 
+## [5.2.0] - 2020-06-02
+### Added
+ - LightingProcessorServer - added console commands to print clients for rooms
+
 ## [5.1.0] - 2020-05-01
 ### Added
  - Added support for local Occupancy sensors on LightingProcessorServer
