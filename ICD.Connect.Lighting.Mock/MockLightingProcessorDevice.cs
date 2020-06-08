@@ -10,7 +10,7 @@ using ICD.Connect.Lighting.Environment;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Mock.Controls;
 using ICD.Connect.Lighting.Processors;
-using ICD.Connect.Misc.Occupancy;
+using ICD.Connect.Partitioning.Commercial.Controls.Occupancy;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Lighting.Mock

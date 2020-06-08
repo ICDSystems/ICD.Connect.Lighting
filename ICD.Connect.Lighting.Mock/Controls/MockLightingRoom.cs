@@ -8,7 +8,7 @@ using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Lighting.Environment;
 using ICD.Connect.Lighting.EventArguments;
-using ICD.Connect.Misc.Occupancy;
+using ICD.Connect.Partitioning.Commercial.Controls.Occupancy;
 
 namespace ICD.Connect.Lighting.Mock.Controls
 {

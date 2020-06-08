@@ -65,7 +65,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		/// <param name="room"></param>
 		/// <returns></returns>
-		Misc.Occupancy.eOccupancyState ILightingProcessorDevice.GetOccupancyForRoom(int room)
+		Partitioning.Commercial.Controls.Occupancy.eOccupancyState ILightingProcessorDevice.GetOccupancyForRoom(int room)
 		{
 			eOccupancyState state = GetRoomContainersForRoom(room).Select(a => a.OccupancyState)
 			                                                        .Unanimous(eOccupancyState.Unknown);

@@ -12,9 +12,9 @@ using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Lighting.EventArguments;
-using ICD.Connect.Misc.Occupancy;
 using ICD.Connect.Panels;
 using ICD.Connect.Panels.EventArguments;
+using ICD.Connect.Partitioning.Commercial.Controls.Occupancy;
 using ICD.Connect.Protocol.Sigs;
 using ICD.Connect.Settings;
 #if SIMPLSHARP

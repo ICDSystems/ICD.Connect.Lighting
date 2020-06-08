@@ -8,9 +8,9 @@ using ICD.Common.Utils.Xml;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter.Components;
-using ICD.Connect.Misc.Occupancy;
 using ICD.Connect.Panels;
 using ICD.Connect.Panels.EventArguments;
+using ICD.Connect.Partitioning.Commercial.Controls.Occupancy;
 using ICD.Connect.Protocol.Sigs;
 
 namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter

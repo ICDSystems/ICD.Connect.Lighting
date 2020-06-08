@@ -5,7 +5,7 @@ using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Processors;
-using ICD.Connect.Misc.Occupancy;
+using ICD.Connect.Partitioning.Commercial.Controls.Occupancy;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Lighting.RoomInterface

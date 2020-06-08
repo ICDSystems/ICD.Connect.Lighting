@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Lighting.Processors;
-using ICD.Connect.Misc.Occupancy;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Partitioning.Commercial.Controls.Occupancy;
 
 namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 {

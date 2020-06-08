@@ -701,18 +701,18 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		/// <param name="occupancy"></param>
 		/// <returns></returns>
-		protected static Misc.Occupancy.eOccupancyState GetOccupancyState(eOccupancyState occupancy)
+		protected static Partitioning.Commercial.Controls.Occupancy.eOccupancyState GetOccupancyState(eOccupancyState occupancy)
 		{
 			switch (occupancy)
 			{
 				case eOccupancyState.Unknown:
-					return Misc.Occupancy.eOccupancyState.Unknown;
+					return Partitioning.Commercial.Controls.Occupancy.eOccupancyState.Unknown;
 				case eOccupancyState.Inactive:
-					return Misc.Occupancy.eOccupancyState.Unknown;
+					return Partitioning.Commercial.Controls.Occupancy.eOccupancyState.Unknown;
 				case eOccupancyState.Occupied:
-					return Misc.Occupancy.eOccupancyState.Occupied;
+					return Partitioning.Commercial.Controls.Occupancy.eOccupancyState.Occupied;
 				case eOccupancyState.Unoccupied:
-					return Misc.Occupancy.eOccupancyState.Unoccupied;
+					return Partitioning.Commercial.Controls.Occupancy.eOccupancyState.Unoccupied;
 				default:
 					throw new ArgumentOutOfRangeException("occupancy", "Unexpected eOccupancyState " + occupancy);
 			}
