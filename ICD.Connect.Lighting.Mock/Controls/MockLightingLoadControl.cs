@@ -21,7 +21,6 @@ namespace ICD.Connect.Lighting.Mock.Controls
 		public event EventHandler<FloatEventArgs> OnLoadLevelChanged;
 
 		private readonly Repeater m_Repeater;
-		private bool m_Up;
 		private float m_LoadLevel;
 
 		#region Properties
@@ -56,9 +55,7 @@ namespace ICD.Connect.Lighting.Mock.Controls
 		public MockLightingLoadControl(int id, int room, string name)
 			: base(id, room, name)
 		{
-			m_Repeater = new Repeater(BETWEEN_REPEAT, BETWEEN_REPEAT);
-			m_Repeater.OnInitialRepeat += RepeaterOnRepeat;
-			m_Repeater.OnRepeat += RepeaterOnRepeat;
+			m_Repeater = new Repeater();
 		}
 
 		#region Methods
@@ -67,22 +64,17 @@ namespace ICD.Connect.Lighting.Mock.Controls
 		{
 			OnLoadLevelChanged = null;
 
-			m_Repeater.OnInitialRepeat -= RepeaterOnRepeat;
-			m_Repeater.OnRepeat -= RepeaterOnRepeat;
-
 			m_Repeater.Dispose();
 		}
 
 		public void StartRaising()
 		{
-			m_Up = true;
-			m_Repeater.Start();
+			m_Repeater.Start(b => RepeaterOnRepeat(true), BETWEEN_REPEAT, BETWEEN_REPEAT);
 		}
 
 		public void StartLowering()
 		{
-			m_Up = false;
-			m_Repeater.Start();
+			m_Repeater.Start(b => RepeaterOnRepeat(false), BETWEEN_REPEAT, BETWEEN_REPEAT);
 		}
 
 		public void StopRamping()
@@ -94,9 +86,9 @@ namespace ICD.Connect.Lighting.Mock.Controls
 
 		#region Repeater Callbacks
 
-		private void RepeaterOnRepeat(object sender, EventArgs eventArgs)
+		private void RepeaterOnRepeat(bool up)
 		{
-			float scale = m_Up ? 1.0f : -1.0f;
+			float scale = up ? 1.0f : -1.0f;
 			LoadLevel = MathUtils.Clamp(LoadLevel + INCREMENT_DELTA * scale, 0.0f, 1.0f);
 		}
 
