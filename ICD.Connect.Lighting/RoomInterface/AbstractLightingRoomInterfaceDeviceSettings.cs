@@ -34,7 +34,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 		{
 			base.ParseXml(xml);
 
-			EnableOccupancyControl = XmlUtils.TryReadChildElementContentAsBoolean(xml, OCCUPANCY_CONTROL_ELEMENT) ?? false;
+			EnableOccupancyControl = XmlUtils.TryReadChildElementContentAsBoolean(xml, OCCUPANCY_CONTROL_ELEMENT) ?? true;
 		}
 	}
 }
