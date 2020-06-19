@@ -6,10 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [6.0.0] - 2020-06-19
 ### Changed
  - MockLightingProcessor now implements IMockDevice
  - MockShadeDevice now implement IMockDevice
  - Using new logging context
+ - Occupancy features moved to ICD.Connect.Partitioning
 
 ## [5.2.1] - 2020-06-19
 ### Changed
