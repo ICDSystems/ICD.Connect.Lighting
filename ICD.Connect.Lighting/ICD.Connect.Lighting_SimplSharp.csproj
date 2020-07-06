@@ -115,7 +115,7 @@
     <Compile Include="EventArguments\RoomLoadLevelEventArgs.cs" />
     <Compile Include="EventArguments\RoomOccupancyEventArgs.cs" />
     <Compile Include="EventArguments\RoomPresetChangeEventArgs.cs" />
-    <None Include="ObfuscationSettings.cs" />
+    <Compile Include="ObfuscationSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shades\IShadeDeviceSettings.cs" />
     <Compile Include="Shades\IShadeGroupSettings.cs" />

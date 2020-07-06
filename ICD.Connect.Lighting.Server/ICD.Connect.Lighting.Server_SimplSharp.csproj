@@ -74,7 +74,7 @@
     <Compile Include="LightingProcessorClientDeviceSettings.cs" />
     <Compile Include="LightingProcessorServer.cs" />
     <Compile Include="KrangPlugin.cs" />
-    <None Include="ObfuscationSettings.cs" />
+    <Compile Include="ObfuscationSettings.cs" />
     <Compile Include="LightingProcessorServerSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Properties\ControlSystem.cfg" />
