@@ -16,6 +16,8 @@ namespace ICD.Connect.Lighting.Server
 
 		private const string SHADES_ELEMENT = "Shades";
 		private const string SHADE_ELEMENT = "Shade";
+
+		private const string SHADE_GROUPS_ELEMENT = "ShadeGroups";
 		private const string SHADE_GROUP_ELEMENT = "ShadeGroup";
 
 		private const string LOADS_ELEMENT = "Loads";
@@ -147,7 +149,7 @@ namespace ICD.Connect.Lighting.Server
 												content => ParseChildPeripheral(content))
 							   .ToIcdHashSet();
 			
-			ShadeGroupIds = XmlUtils.ReadListFromXml(xml, SHADES_ELEMENT, SHADE_GROUP_ELEMENT,
+			ShadeGroupIds = XmlUtils.ReadListFromXml(xml, SHADE_GROUPS_ELEMENT, SHADE_GROUP_ELEMENT,
 													 content => ParseChildPeripheral(content))
 									.ToIcdHashSet();
 
@@ -231,6 +233,9 @@ namespace ICD.Connect.Lighting.Server
 				writer.WriteValue(shade);
 				writer.WriteEndElement();
 			}
+			writer.WriteEndElement();
+
+			writer.WriteStartElement(SHADE_GROUPS_ELEMENT);
 			foreach (int shade in ShadeGroupIds)
 			{
 				writer.WriteStartElement(SHADE_GROUP_ELEMENT);
