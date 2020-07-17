@@ -118,9 +118,12 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 				Name = name
 			};
 
-			room.ParsePresets(presetsXml);
-			room.ParseLoads(loadsXml);
-			room.ParseShades(shadesXml);
+			if (!String.IsNullOrEmpty(presetsXml))
+				room.ParsePresets(presetsXml);
+			if (!String.IsNullOrEmpty(loadsXml))
+				room.ParseLoads(loadsXml);
+			if (!String.IsNullOrEmpty(shadesXml))
+				room.ParseShades(shadesXml);
 
 			return room;
 		}
