@@ -1,18 +1,20 @@
 ﻿using ICD.Common.Utils.Xml;
-using ICD.Connect.Misc.CrestronPro;
-using ICD.Connect.Misc.CrestronPro.Utils;
+using ICD.Connect.Misc.CrestronPro.Cresnet;
 using ICD.Connect.Settings.Attributes;
-using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 {
 	[KrangSettings("CsmQmt50Dccn", typeof(CsmQmt50DccnAdapter))]
 	public sealed class CsmQmt50DccnAdapterSettings : AbstractShadeWithBasicSettingsAdapterSettings, ICsmQmt50DccnAdapterSettings, ICresnetDeviceSettings
 	{
-		[CrestronByteSettingsProperty]
-		public byte? CresnetId { get; set; }
-		public int? ParentId { get; set; }
-		public int? BranchId { get; set; }
+		private readonly CresnetDeviceSettings m_CresnetDeviceSettings;
+
+		public CresnetDeviceSettings CresnetDeviceSettings { get { return m_CresnetDeviceSettings; } }
+
+		public CsmQmt50DccnAdapterSettings()
+		{
+			m_CresnetDeviceSettings = new CresnetDeviceSettings();
+		}
 
 		/// <summary>
 		/// Writes property elements to xml.
@@ -22,7 +24,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 		{
 			base.WriteElements(writer);
 
-			CresnetSettingsUtils.WritePropertiesToXml(this, writer);
+			m_CresnetDeviceSettings.WriteElements(writer);
 		}
 
 		/// <summary>
@@ -33,7 +35,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 		{
 			base.ParseXml(xml);
 
-			CresnetSettingsUtils.ReadPropertiesFromXml(this, xml);
+			m_CresnetDeviceSettings.ParseXml(xml);
 		}
 	}
 }

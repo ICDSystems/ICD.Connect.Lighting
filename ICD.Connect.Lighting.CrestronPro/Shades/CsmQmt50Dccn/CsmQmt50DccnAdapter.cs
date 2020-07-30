@@ -1,19 +1,32 @@
 ﻿using System;
 using ICD.Common.Logging.LoggingContexts;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Misc.CrestronPro;
+using ICD.Connect.Misc.CrestronPro.Cresnet;
 using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 {
 #if SIMPLSHARP
-	public sealed class CsmQmt50DccnAdapter : AbstractShadeWithBasicSettingsAdapter<Crestron.SimplSharpPro.Shades.CsmQmt50Dccn, 
-																			 CsmQmt50DccnAdapterSettings>
+	public sealed class CsmQmt50DccnAdapter :
+		AbstractShadeWithBasicSettingsAdapter<Crestron.SimplSharpPro.Shades.CsmQmt50Dccn, CsmQmt50DccnAdapterSettings>,
+		ICresnetDevice
 #else
-	public sealed class CsmQmt50DccnAdapter : AbstractShadeWithBasicSettingsAdapter<CsmQmt50DccnAdapterSettings>
+	public sealed class CsmQmt50DccnAdapter :
+		AbstractShadeWithBasicSettingsAdapter<CsmQmt50DccnAdapterSettings>,
+		ICresnetDevice
 #endif
 	{
+		private CresnetDeviceInfo m_CresnetDeviceInfo;
+
+		#region Properties
+
+		public CresnetDeviceInfo CresnetDeviceInfo { get { return m_CresnetDeviceInfo; } }
+
+		#endregion
+
 		#region Settings
 
 		/// <summary>
@@ -25,28 +38,29 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 		{
 			base.ApplySettingsFinal(settings, factory);
 
+			m_CresnetDeviceInfo = new CresnetDeviceInfo(settings);
 #if SIMPLSHARP
-			if (settings.CresnetId == null || !CresnetUtils.IsValidId(settings.CresnetId.Value))
+			if (m_CresnetDeviceInfo.CresnetId == null || !CresnetUtils.IsValidId(m_CresnetDeviceInfo.CresnetId.Value))
 			{
 				Logger.Log(eSeverity.Error, "Failed to instantiate {0} - CresnetId {1} is out of range",
-				           typeof(Crestron.SimplSharpPro.Shades.CsmQmt50Dccn).Name, settings.CresnetId);
+						   typeof(Crestron.SimplSharpPro.Shades.CsmQmt50Dccn).Name, m_CresnetDeviceInfo.CresnetId);
 				return;
 			}
 
 			Crestron.SimplSharpPro.Shades.CsmQmt50Dccn shade = null;
 			try
 			{
-				shade = CresnetUtils.InstantiateCresnetDevice(settings.CresnetId.Value,
-															  settings.BranchId,
-															  settings.ParentId,
+				shade = CresnetUtils.InstantiateCresnetDevice(m_CresnetDeviceInfo.CresnetId.Value,
+															  m_CresnetDeviceInfo.BranchId,
+															  m_CresnetDeviceInfo.ParentId,
 															  factory,
-															  cresnetId => new Crestron.SimplSharpPro.Shades.CsmQmt50Dccn(cresnetId, ProgramInfo.ControlSystem),
-															  (cresnetId, branch) => new Crestron.SimplSharpPro.Shades.CsmQmt50Dccn(cresnetId, branch));
+															  cresnet => new Crestron.SimplSharpPro.Shades.CsmQmt50Dccn(cresnet, ProgramInfo.ControlSystem),
+															  (cresnet, branch) => new Crestron.SimplSharpPro.Shades.CsmQmt50Dccn(cresnet, branch));
 			}
 			catch (ArgumentException e)
 			{
 				Logger.Log(eSeverity.Error, e, "Failed to instantiate {0} with Cresnet ID {1} - {2}",
-				           typeof(Crestron.SimplSharpPro.Shades.CsmQmt50Dccn).Name, settings.CresnetId, e.Message);
+						   typeof(Crestron.SimplSharpPro.Shades.CsmQmt50Dccn).Name, m_CresnetDeviceInfo.CresnetId, e.Message);
 			}
 
 			SetShade(shade);
@@ -57,20 +71,33 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 		{
 			base.CopySettingsFinal(settings);
 
-#if SIMPLSHARP
-			settings.CresnetId = Shade == null ? (byte)0 : (byte)Shade.ID;
-#else
-            settings.CresnetId = 0;
-#endif
+			m_CresnetDeviceInfo.CopySettings(settings);
 		}
 
 		protected override void ClearSettingsFinal()
 		{
 			base.ClearSettingsFinal();
 
+			m_CresnetDeviceInfo.ClearSettings();
+
 #if SIMPLSHARP
 			SetShade(null);
 #endif
+		}
+
+		#endregion
+
+		#region Console
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+			CresnetDeviceConsole.BuildConsoleStatus(this, addRow);
 		}
 
 		#endregion
