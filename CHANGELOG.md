@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Using new logging context
  - Occupancy features moved to ICD.Connect.Partitioning
 
+## [5.2.2] - 2020-08-03
+### Changed
+ - EiscLightingAdapterDevice - changed to not blow up if configuration doesn't include presets/loads/shades
+ - LightingProcessorServer - changed configuration of shade groups to be in consisten parent tag
+
 ## [5.2.1] - 2020-06-19
 ### Changed
  - AbstractLightingRoomInterface - changed default for EnableOccupancyControl to true for backwards compatibility
