@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [5.2.2] - 2020-08-03
 ### Changed
  - EiscLightingAdapterDevice - changed to not blow up if configuration doesn't include presets/loads/shades
  - LightingProcessorServer - changed configuration of shade groups to be in consisten parent tag
