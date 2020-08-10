@@ -12,6 +12,9 @@ namespace ICD.Connect.Lighting.Server
 	[KrangSettings("LightingProcessorServer", typeof(LightingProcessorServer))]
 	public sealed class LightingProcessorServerSettings : AbstractLightingProcessorDeviceSettings
 	{
+		private const int DEFAULT_MAX_CLIENTS = 32;
+		private const bool DEFAULT_SECURE_SERVER = false;
+		
 		private const string LIGHTING_PROCESSOR_ID_ELEMENT = "LightingProcessorId";
 
 		private const string SHADES_ELEMENT = "Shades";
@@ -31,6 +34,7 @@ namespace ICD.Connect.Lighting.Server
 
 		private const string ROOM_ID_ELEMENT = "RoomId";
 
+		private const string SERVER_USE_SECURE_ELEMENT = "UseSecureServer";
 		private const string SERVER_PORT_ELEMENT = "ServerPort";
 		private const string SERVER_CLIENTS_ELEMENT = "ServerMaxClients";
 
@@ -39,6 +43,7 @@ namespace ICD.Connect.Lighting.Server
 		public int? LightingProcessorId { get; set; }
 		public ushort ServerPort { get; set; }
 		public int ServerMaxClients { get; set; }
+		public bool UseSecureServer { get; set; }
 
 		[HiddenSettingsProperty]
 		public IcdHashSet<int> ShadeIds { get; private set; }
@@ -167,8 +172,8 @@ namespace ICD.Connect.Lighting.Server
 
 
 			ServerPort = XmlUtils.ReadChildElementContentAsUShort(xml, SERVER_PORT_ELEMENT);
-			ServerMaxClients = XmlUtils.ReadChildElementContentAsInt(xml, SERVER_CLIENTS_ELEMENT);
-
+			ServerMaxClients = XmlUtils.TryReadChildElementContentAsInt(xml, SERVER_CLIENTS_ELEMENT) ?? DEFAULT_MAX_CLIENTS;
+			UseSecureServer = XmlUtils.TryReadChildElementContentAsBoolean(xml, SERVER_USE_SECURE_ELEMENT) ?? DEFAULT_SECURE_SERVER;
 		}
 
 		/// <summary>
@@ -182,8 +187,8 @@ namespace ICD.Connect.Lighting.Server
 			writer.WriteElementString(LIGHTING_PROCESSOR_ID_ELEMENT, LightingProcessorId.ToString());
 
 			writer.WriteElementString(SERVER_PORT_ELEMENT, IcdXmlConvert.ToString(ServerPort));
-			
 			writer.WriteElementString(SERVER_CLIENTS_ELEMENT, IcdXmlConvert.ToString(ServerMaxClients));
+			writer.WriteElementString(SERVER_USE_SECURE_ELEMENT, IcdXmlConvert.ToString(UseSecureServer));
 
 			WriteLoads(writer);
 

@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+ - LightingProcessorServer - UseSecureServer setting when set to true will use IcdSecureTcpServer otherwise IcdTcpServer will be used.
+
 ### Changed
  - Applied Cresnet settings and console improvments to CsmQmt50DccnAdapter
  - Fixed a bug where LightingProcessorClientDevice was not being initialized with a room id in the correct order

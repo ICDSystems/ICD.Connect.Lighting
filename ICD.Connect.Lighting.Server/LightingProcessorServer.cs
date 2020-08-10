@@ -17,8 +17,10 @@ using ICD.Connect.Lighting.Shades.Controls;
 using ICD.Connect.Partitioning.Commercial.Controls.Occupancy;
 using ICD.Connect.Protocol.EventArguments;
 using ICD.Connect.Protocol.Network.Ports.Tcp;
+using ICD.Connect.Protocol.Network.Ports.TcpSecure;
 using ICD.Connect.Protocol.Network.RemoteProcedure;
 using ICD.Connect.Protocol.Network.Attributes.Rpc;
+using ICD.Connect.Protocol.Network.Servers;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Lighting.Server
@@ -51,7 +53,7 @@ namespace ICD.Connect.Lighting.Server
 		#region Private Members
 		private readonly ServerSerialRpcController m_RpcController;
 
-		private IcdTcpServer m_Server;
+		private INetworkServer m_Server;
 		private ILightingProcessorDevice m_Processor;
 
 		private readonly Dictionary<uint, int> m_ClientRoomMap;
@@ -116,7 +118,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="server"></param>
 		[PublicAPI]
-		public void SetServer(IcdTcpServer server)
+		public void SetServer(INetworkServer server)
 		{
 			if (server == m_Server)
 				return;
@@ -343,7 +345,7 @@ namespace ICD.Connect.Lighting.Server
 		/// Subscribe to server events.
 		/// </summary>
 		/// <param name="server"></param>
-		private void Subscribe(IcdTcpServer server)
+		private void Subscribe(INetworkServer server)
 		{
 			if (server == null)
 				return;
@@ -356,7 +358,7 @@ namespace ICD.Connect.Lighting.Server
 		/// Unsubscribe from server events.
 		/// </summary>
 		/// <param name="server"></param>
-		private void Unsubscribe(IcdTcpServer server)
+		private void Unsubscribe(INetworkServer server)
 		{
 			if (server == null)
 				return;
@@ -1076,11 +1078,25 @@ namespace ICD.Connect.Lighting.Server
 				Subscribe(occupancySensorControl);
 			}
 
-			var tcpServer = new IcdTcpServer
+			INetworkServer tcpServer;
+
+			if (settings.UseSecureServer)
 			{
-				Port = settings.ServerPort,
-				MaxNumberOfClients = settings.ServerMaxClients
-			};
+				tcpServer = new IcdSecureTcpServer
+				{
+					Port = settings.ServerPort,
+					MaxNumberOfClients = settings.ServerMaxClients
+				};
+			}
+			else
+			{
+				tcpServer = new IcdTcpServer
+				{
+					Port = settings.ServerPort,
+					MaxNumberOfClients = settings.ServerMaxClients
+				};
+			}
+
 			tcpServer.Start();
 			SetServer(tcpServer);
 		}
