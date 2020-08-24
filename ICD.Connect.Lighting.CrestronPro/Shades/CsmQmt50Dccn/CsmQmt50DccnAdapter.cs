@@ -19,13 +19,18 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 		ICresnetDevice
 #endif
 	{
-		private CresnetInfo m_CresnetInfo;
+		private readonly CresnetInfo m_CresnetInfo;
 
 		#region Properties
 
 		public CresnetInfo CresnetInfo { get { return m_CresnetInfo; } }
 
 		#endregion
+
+		public CsmQmt50DccnAdapter()
+		{
+			m_CresnetInfo = new CresnetInfo();
+		}
 
 		#region Settings
 
@@ -38,7 +43,8 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			m_CresnetInfo = new CresnetInfo(settings);
+			CresnetInfo.ApplySettings(settings);
+
 #if SIMPLSHARP
 			if (m_CresnetInfo.CresnetId == null || !CresnetUtils.IsValidId(m_CresnetInfo.CresnetId.Value))
 			{
@@ -71,14 +77,14 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 		{
 			base.CopySettingsFinal(settings);
 
-			m_CresnetInfo.CopySettings(settings);
+			CresnetInfo.CopySettings(settings);
 		}
 
 		protected override void ClearSettingsFinal()
 		{
 			base.ClearSettingsFinal();
 
-			m_CresnetInfo.ClearSettings();
+			CresnetInfo.ClearSettings();
 
 #if SIMPLSHARP
 			SetShade(null);
