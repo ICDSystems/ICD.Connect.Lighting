@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
@@ -39,7 +40,7 @@ namespace ICD.Connect.Lighting.Server
 		private readonly ClientSerialRpcController m_RpcController;
 		private readonly SecureNetworkProperties m_NetworkProperties;
 
-		private int m_RoomId;
+		[CanBeNull]
 		private MockLightingRoom m_Room;
 
 		/// <summary>
@@ -90,15 +91,7 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public void SetRoomId(int roomId)
 		{
-			if (roomId == m_RoomId)
-				return;
-
-			m_RoomId = roomId;
-
-			ClearCache();
-
-			if (IsConnected)
-				m_RpcController.CallMethod(LightingProcessorServer.REGISTER_FEEDBACK_RPC, m_RoomId);
+			SetCachedRoom(roomId);
 		}
 
 		#endregion
@@ -146,8 +139,8 @@ namespace ICD.Connect.Lighting.Server
 			OnConnectedStateChanged.Raise(this, new BoolEventArgs(args.Data));
 			UpdateCachedOnlineStatus();
 
-			if (args.Data)
-				m_RpcController.CallMethod(LightingProcessorServer.REGISTER_FEEDBACK_RPC, m_RoomId);
+			if (m_Room != null && args.Data)
+				m_RpcController.CallMethod(LightingProcessorServer.REGISTER_FEEDBACK_RPC, m_Room.Id);
 		}
 
 		#endregion
@@ -191,7 +184,7 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="args"></param>
 		private void RoomOnOccupancyChanged(object sender, RoomOccupancyEventArgs args)
 		{
-			if (m_RoomId == args.RoomId)
+			if (m_Room != null && m_Room.Id == args.RoomId)
 				OnOccupancyChanged.Raise(this, new GenericEventArgs<eOccupancyState>(args.OccupancyState));
 		}
 
@@ -202,7 +195,7 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="args"></param>
 		private void RoomOnLoadLevelChanged(object sender, RoomLoadLevelEventArgs args)
 		{
-			if (m_RoomId == args.RoomId)
+			if (m_Room != null && args.RoomId == m_Room.Id)
 				OnLoadLevelChanged.Raise(this, new LoadLevelEventArgs(args.LoadId, args.Percentage));
 		}
 
@@ -213,7 +206,7 @@ namespace ICD.Connect.Lighting.Server
 		/// <param name="args"></param>
 		private void RoomOnActivePresetChanged(object sender, RoomPresetChangeEventArgs args)
 		{
-			if(m_RoomId == args.RoomId)
+			if (m_Room != null && args.RoomId == m_Room.Id)
 				OnPresetChanged.Raise(this, new GenericEventArgs<int?>(args.Preset));
 		}
 
@@ -239,7 +232,7 @@ namespace ICD.Connect.Lighting.Server
 		{
 			base.CopySettingsFinal(settings);
 
-			settings.RoomId = m_RoomId;
+			settings.RoomId = m_Room == null ? 0 : m_Room.Id;
 			settings.Port = m_RpcController.PortNumber;
 
 			settings.Copy(m_NetworkProperties);
@@ -253,7 +246,7 @@ namespace ICD.Connect.Lighting.Server
 			base.ClearSettingsFinal();
 
 			m_RpcController.SetPort(null);
-			m_RoomId = 0;
+			ClearCache();
 
 			m_NetworkProperties.ClearNetworkProperties();
 		}
@@ -301,7 +294,7 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public override IEnumerable<LightingProcessorControl> GetLoads()
 		{
-			return m_Room == null ? new LightingProcessorControl[0] : m_Room.GetLoads();
+			return m_Room == null ? Enumerable.Empty<LightingProcessorControl>() : m_Room.GetLoads();
 		}
 
 		/// <summary>
@@ -311,7 +304,7 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public override IEnumerable<LightingProcessorControl> GetShades()
 		{
-			return m_Room == null ? new LightingProcessorControl[0] : m_Room.GetShades();
+			return m_Room == null ? Enumerable.Empty<LightingProcessorControl>() : m_Room.GetShades();
 		}
 
 		/// <summary>
@@ -321,7 +314,7 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public override IEnumerable<LightingProcessorControl> GetShadeGroups()
 		{
-			return m_Room == null ? new LightingProcessorControl[0] : m_Room.GetShadeGroups();
+			return m_Room == null ? Enumerable.Empty<LightingProcessorControl>() : m_Room.GetShadeGroups();
 		}
 
 		/// <summary>
@@ -331,7 +324,7 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public override IEnumerable<LightingProcessorControl> GetPresets()
 		{
-			return m_Room == null ? new LightingProcessorControl[0] : m_Room.GetPresets();
+			return m_Room == null ? Enumerable.Empty<LightingProcessorControl>() : m_Room.GetPresets();
 		}
 
 		#endregion
@@ -356,6 +349,9 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public override void SetPreset(int? preset)
 		{
+			if (m_Room == null)
+				throw new InvalidOperationException("No Room has been configured");
+
 			m_RpcController.CallMethod(LightingProcessorServer.SET_ROOM_PRESET_RPC, m_Room.Id, preset);
 		}
 
@@ -365,7 +361,7 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public override int? GetPreset()
 		{
-			return m_Room.ActivePreset;
+			return m_Room == null ? null : m_Room.ActivePreset;
 		}
 
 		#endregion
@@ -380,7 +376,10 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public override void SetLoadLevel(int load, float percentage)
 		{
-			m_RpcController.CallMethod(LightingProcessorServer.SET_LOAD_LEVEL_RPC, m_RoomId, load, percentage);
+			if (m_Room == null)
+				throw new InvalidOperationException("No Room has been configured");
+
+			m_RpcController.CallMethod(LightingProcessorServer.SET_LOAD_LEVEL_RPC, m_Room.Id, load, percentage);
 		}
 
 		/// <summary>
@@ -391,7 +390,7 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public override float GetLoadLevel(int load)
 		{
-			return m_Room.GetLoad(load).LoadLevel;
+			return m_Room == null ? 0.0f : m_Room.GetLoad(load).LoadLevel;
 		}
 
 		/// <summary>
@@ -401,7 +400,10 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public override void StartRaisingLoadLevel(int load)
 		{
-			m_RpcController.CallMethod(LightingProcessorServer.START_RAISING_LOAD_LEVEL_RPC, m_RoomId, load);
+			if (m_Room == null)
+				throw new InvalidOperationException("No Room has been configured");
+
+			m_RpcController.CallMethod(LightingProcessorServer.START_RAISING_LOAD_LEVEL_RPC, m_Room.Id, load);
 		}
 
 		/// <summary>
@@ -411,7 +413,10 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public override void StartLoweringLoadLevel(int load)
 		{
-			m_RpcController.CallMethod(LightingProcessorServer.START_LOWERING_LOAD_LEVEL_RPC, m_RoomId, load);
+			if (m_Room == null)
+				throw new InvalidOperationException("No Room has been configured");
+
+			m_RpcController.CallMethod(LightingProcessorServer.START_LOWERING_LOAD_LEVEL_RPC, m_Room.Id, load);
 		}
 
 		/// <summary>
@@ -421,7 +426,10 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public override void StopRampingLoadLevel(int load)
 		{
-			m_RpcController.CallMethod(LightingProcessorServer.STOP_RAMPING_LOAD_LEVEL_RPC, m_RoomId, load);
+			if (m_Room == null)
+				throw new InvalidOperationException("No Room has been configured");
+
+			m_RpcController.CallMethod(LightingProcessorServer.STOP_RAMPING_LOAD_LEVEL_RPC, m_Room.Id, load);
 		}
 
 		#endregion
@@ -435,7 +443,10 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public override void StartRaisingShade(int shade)
 		{
-			m_RpcController.CallMethod(LightingProcessorServer.START_RAISING_SHADE_RPC, m_RoomId, shade);
+			if (m_Room == null)
+				throw new InvalidOperationException("No Room has been configured");
+
+			m_RpcController.CallMethod(LightingProcessorServer.START_RAISING_SHADE_RPC, m_Room.Id, shade);
 		}
 
 		/// <summary>
@@ -445,7 +456,10 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public override void StartLoweringShade(int shade)
 		{
-			m_RpcController.CallMethod(LightingProcessorServer.START_LOWERING_SHADE_RPC, m_RoomId, shade);
+			if (m_Room == null)
+				throw new InvalidOperationException("No Room has been configured");
+
+			m_RpcController.CallMethod(LightingProcessorServer.START_LOWERING_SHADE_RPC, m_Room.Id, shade);
 		}
 
 		/// <summary>
@@ -455,7 +469,10 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public override void StopMovingShade(int shade)
 		{
-			m_RpcController.CallMethod(LightingProcessorServer.STOP_MOVING_SHADE_RPC, m_RoomId, shade);
+			if (m_Room == null)
+				throw new InvalidOperationException("No Room has been configured");
+
+			m_RpcController.CallMethod(LightingProcessorServer.STOP_MOVING_SHADE_RPC, m_Room.Id, shade);
 		}
 
 		#endregion
@@ -469,7 +486,10 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public override void StartRaisingShadeGroup(int shadeGroup)
 		{
-			m_RpcController.CallMethod(LightingProcessorServer.START_RAISING_SHADE_GROUP_RPC, m_RoomId, shadeGroup);
+			if (m_Room == null)
+				throw new InvalidOperationException("No Room has been configured");
+
+			m_RpcController.CallMethod(LightingProcessorServer.START_RAISING_SHADE_GROUP_RPC, m_Room.Id, shadeGroup);
 		}
 
 		/// <summary>
@@ -479,7 +499,10 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public override void StartLoweringShadeGroup(int shadeGroup)
 		{
-			m_RpcController.CallMethod(LightingProcessorServer.START_LOWERING_SHADE_GROUP_RPC, m_RoomId, shadeGroup);
+			if (m_Room == null)
+				throw new InvalidOperationException("No Room has been configured");
+
+			m_RpcController.CallMethod(LightingProcessorServer.START_LOWERING_SHADE_GROUP_RPC, m_Room.Id, shadeGroup);
 		}
 
 		/// <summary>
@@ -489,7 +512,10 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public override void StopMovingShadeGroup(int shadeGroup)
 		{
-			m_RpcController.CallMethod(LightingProcessorServer.STOP_MOVING_SHADE_GROUP_RPC, m_RoomId, shadeGroup);
+			if (m_Room == null)
+				throw new InvalidOperationException("No Room has been configured");
+
+			m_RpcController.CallMethod(LightingProcessorServer.STOP_MOVING_SHADE_GROUP_RPC, m_Room.Id, shadeGroup);
 		}
 
 		#endregion
@@ -519,10 +545,15 @@ namespace ICD.Connect.Lighting.Server
 		[Rpc(SET_CACHED_ROOM_RPC), UsedImplicitly]
 		private void SetCachedRoom(int roomId)
 		{
-			ClearCache();
+			if (m_Room != null && roomId == m_Room.Id)
+				return;
 
+			ClearCache();
 			m_Room = new MockLightingRoom(roomId);
 			Subscribe(m_Room);
+
+			if (IsConnected)
+				m_RpcController.CallMethod(LightingProcessorServer.REGISTER_FEEDBACK_RPC, m_Room.Id);
 		}
 
 		/// <summary>
@@ -532,8 +563,14 @@ namespace ICD.Connect.Lighting.Server
 		[Rpc(ADD_CACHED_CONTROL_RPC), UsedImplicitly]
 		private void AddCachedControl(LightingProcessorControl control)
 		{
-			if (m_Room != null && control.Room == m_Room.Id)
-				m_Room.AddControl(control);
+			if (m_Room == null)
+				throw new InvalidOperationException("No Room has been configured");
+
+			// Server tells us about controls for all rooms?
+			if (control.Room != m_Room.Id)
+				return;
+
+			m_Room.AddControl(control);
 		}
 
 		/// <summary>
@@ -543,6 +580,9 @@ namespace ICD.Connect.Lighting.Server
 		[Rpc(SET_CACHED_OCCUPANCY_RPC), UsedImplicitly]
 		private void SetCachedOccupancy(eOccupancyState occupancy)
 		{
+			if (m_Room == null)
+				throw new InvalidOperationException("No Room has been configured");
+
 			m_Room.Occupancy = occupancy;
 		}
 
@@ -553,6 +593,9 @@ namespace ICD.Connect.Lighting.Server
 		[Rpc(SET_CACHED_ACTIVE_PRESET_RPC), UsedImplicitly]
 		private void SetCachedPreset(int preset)
 		{
+			if (m_Room == null)
+				throw new InvalidOperationException("No Room has been configured");
+
 			m_Room.ActivePreset = preset;
 		}
 
@@ -564,6 +607,9 @@ namespace ICD.Connect.Lighting.Server
 		[Rpc(SET_CACHED_LOAD_LEVEL_RPC), UsedImplicitly]
 		private void SetCachedLoadLevel(int load, float percentage)
 		{
+			if (m_Room == null)
+				throw new InvalidOperationException("No Room has been configured");
+
 			m_Room.GetLoad(load).LoadLevel = percentage;
 		}
 
@@ -580,7 +626,7 @@ namespace ICD.Connect.Lighting.Server
 			base.BuildConsoleStatus(addRow);
 
 			addRow("IsConnected", IsConnected);
-			addRow("Room Id", m_RoomId);
+			addRow("Room Id", m_Room == null ? null : m_Room.Id.ToString());
 			addRow("OccupancyStatus", GetOccupancy());
 		}
 
