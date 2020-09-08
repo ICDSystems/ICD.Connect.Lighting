@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Changed
  - Applied Cresnet settings and console improvments to CsmQmt50DccnAdapter
+ - Fixed a bug where LightingProcessorClientDevice was not being initialized with a room id in the correct order
 
 ## [6.0.0] - 2020-06-19
 ### Changed
