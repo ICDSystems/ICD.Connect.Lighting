@@ -5,6 +5,7 @@ using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Mock.Controls;
@@ -632,8 +633,44 @@ namespace ICD.Connect.Lighting.Server
 			base.BuildConsoleStatus(addRow);
 
 			addRow("IsConnected", IsConnected);
-			addRow("Room Id", m_Room == null ? null : m_Room.Id.ToString());
+			addRow("Room Id", m_RoomId);
 			addRow("OccupancyStatus", GetOccupancy());
+		}
+
+		/// <summary>
+		/// Gets the child console commands.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
+		{
+			foreach (IConsoleCommand command in GetBaseConsoleCommands())
+				yield return command;
+
+			yield return new ConsoleCommand("Connect", "Connects the RPC", () => m_RpcController.Connect());
+			yield return new ConsoleCommand("Disconnect", "Disconnect the RPC", () => m_RpcController.Disconnect());
+		}
+
+		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
+		{
+			return base.GetConsoleCommands();
+		}
+
+		/// <summary>
+		/// Gets the child console nodes.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleNodeBase> GetConsoleNodes()
+		{
+			foreach (IConsoleNodeBase node in GetBaseConsoleNodes())
+				yield return node;
+
+			if (m_Room != null)
+				yield return m_Room;
+		}
+
+		private IEnumerable<IConsoleNodeBase> GetBaseConsoleNodes()
+		{
+			return base.GetConsoleNodes();
 		}
 
 		#endregion
