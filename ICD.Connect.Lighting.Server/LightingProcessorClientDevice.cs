@@ -43,6 +43,8 @@ namespace ICD.Connect.Lighting.Server
 		[CanBeNull]
 		private MockLightingRoom m_Room;
 
+		private int m_RoomId;
+
 		/// <summary>
 		/// Gets the connected state of the client.
 		/// </summary>
@@ -91,7 +93,12 @@ namespace ICD.Connect.Lighting.Server
 		[PublicAPI]
 		public void SetRoomId(int roomId)
 		{
-			SetCachedRoom(roomId);
+			ClearCache();
+
+			m_RoomId = roomId;
+
+			if (IsConnected)
+				m_RpcController.CallMethod(LightingProcessorServer.REGISTER_FEEDBACK_RPC, m_RoomId);
 		}
 
 		#endregion
@@ -139,8 +146,10 @@ namespace ICD.Connect.Lighting.Server
 			OnConnectedStateChanged.Raise(this, new BoolEventArgs(args.Data));
 			UpdateCachedOnlineStatus();
 
-			if (m_Room != null && args.Data)
-				m_RpcController.CallMethod(LightingProcessorServer.REGISTER_FEEDBACK_RPC, m_Room.Id);
+			if (args.Data)
+				m_RpcController.CallMethod(LightingProcessorServer.REGISTER_FEEDBACK_RPC, m_RoomId);
+			else
+				ClearCache();
 		}
 
 		#endregion
@@ -232,7 +241,7 @@ namespace ICD.Connect.Lighting.Server
 		{
 			base.CopySettingsFinal(settings);
 
-			settings.RoomId = m_Room == null ? 0 : m_Room.Id;
+			settings.RoomId = m_RoomId;
 			settings.Port = m_RpcController.PortNumber;
 
 			settings.Copy(m_NetworkProperties);
@@ -551,9 +560,6 @@ namespace ICD.Connect.Lighting.Server
 			ClearCache();
 			m_Room = new MockLightingRoom(roomId);
 			Subscribe(m_Room);
-
-			if (IsConnected)
-				m_RpcController.CallMethod(LightingProcessorServer.REGISTER_FEEDBACK_RPC, m_Room.Id);
 		}
 
 		/// <summary>
