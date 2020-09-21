@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
  - LightingProcessorServer - UseSecureServer setting when set to true will use IcdSecureTcpServer otherwise IcdTcpServer will be used.
+ - LightingProcessorServer - Added default values for UseSecureServer (false) and MaxClients (32)
+### Changed
+ - LightingProcessorClient - Fixed issues around intialization - RoomId is now stored discretely by the client
+ - LightingProcessorClient - Added console commands for Connect/Disconnect RPC, added console access to lighting room object
+ - MockLightingRoom - Added presets access to console
 
 ### Changed
  - Applied Cresnet settings and console improvments to CsmQmt50DccnAdapter
