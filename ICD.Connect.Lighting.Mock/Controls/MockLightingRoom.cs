@@ -341,6 +341,9 @@ namespace ICD.Connect.Lighting.Mock.Controls
 		/// <returns></returns>
 		public IEnumerable<IConsoleNodeBase> GetConsoleNodes()
 		{
+			IPresetEnvironmentPeripheral[] presets = m_CacheSection.Execute(() => m_IdToPreset.Values.ToArray());
+			yield return ConsoleNodeGroup.KeyNodeMap("Presets", presets, control => (uint)control.Id);
+
 			ILightingLoadEnvironmentPeripheral[] loads = m_CacheSection.Execute(() => m_IdToLoad.Values.ToArray());
 			yield return ConsoleNodeGroup.KeyNodeMap("Loads", loads, control => (uint)control.Id);
 
