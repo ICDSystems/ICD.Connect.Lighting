@@ -127,8 +127,6 @@ namespace ICD.Connect.Lighting.Server
 			Subscribe(m_Server);
 
 			UpdateCachedOnlineStatus();
-
-			InitializeClients();
 		}
 
 		/// <summary>
@@ -1081,7 +1079,7 @@ namespace ICD.Connect.Lighting.Server
 				Port = settings.ServerPort,
 				MaxNumberOfClients = settings.ServerMaxClients
 			};
-			tcpServer.Start();
+
 			SetServer(tcpServer);
 		}
 
@@ -1143,6 +1141,18 @@ namespace ICD.Connect.Lighting.Server
 
 			m_OccupancyControlsByRoom.Clear();
 			m_OccupancyControlForRooms.Clear();
+		}
+
+		/// <summary>
+		/// Override to add actions on StartSettings
+		/// This should be used to start communications with devices and perform initial actions
+		/// </summary>
+		protected override void StartSettingsFinal()
+		{
+			base.StartSettingsFinal();
+
+			m_Server.Start();
+			InitializeClients();
 		}
 
 		private void LogApplySettingsError(string message)
