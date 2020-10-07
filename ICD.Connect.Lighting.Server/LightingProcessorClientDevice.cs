@@ -252,7 +252,7 @@ namespace ICD.Connect.Lighting.Server
 		{
 			base.ClearSettingsFinal();
 
-			m_RpcController.SetPort(null);
+			m_RpcController.SetPort(null, false);
 			m_RoomId = 0;
 
 			m_NetworkProperties.ClearNetworkProperties();
@@ -285,7 +285,18 @@ namespace ICD.Connect.Lighting.Server
 				}	
 			}
 
-			m_RpcController.SetPort(port);
+			m_RpcController.SetPort(port, false);
+		}
+
+		/// <summary>
+		/// Override to add actions on StartSettings
+		/// This should be used to start communications with devices and perform initial actions
+		/// </summary>
+		protected override void StartSettingsFinal()
+		{
+			base.StartSettingsFinal();
+
+			m_RpcController.Start();
 		}
 
 		#endregion
