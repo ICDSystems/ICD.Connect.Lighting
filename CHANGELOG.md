@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Using new logging context
  - Occupancy features moved to ICD.Connect.Partitioning
 
+## [5.3.0] - 2020-10-06
+### Changed
+ - Implemented StartSettings to start communications with devices
+
 ## [5.2.2] - 2020-08-03
 ### Changed
  - EiscLightingAdapterDevice - changed to not blow up if configuration doesn't include presets/loads/shades

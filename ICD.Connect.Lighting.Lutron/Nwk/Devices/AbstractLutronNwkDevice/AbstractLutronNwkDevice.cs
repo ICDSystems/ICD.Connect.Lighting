@@ -199,7 +199,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		[PublicAPI]
 		public void SetPort(ISerialPort port)
 		{
-			m_ConnectionStateManager.SetPort(port);
+			m_ConnectionStateManager.SetPort(port, false);
 		}
 
 		/// <summary>
@@ -687,11 +687,22 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 				}
 			}
 
-			m_ConnectionStateManager.SetPort(port);
+			SetPort(port);
 
 			// Load the integrations
 			if (!string.IsNullOrEmpty(settings.IntegrationConfig))
 				LoadIntegrationConfig(settings.IntegrationConfig);
+		}
+
+		/// <summary>
+		/// Override to add actions on StartSettings
+		/// This should be used to start communications with devices and perform initial actions
+		/// </summary>
+		protected override void StartSettingsFinal()
+		{
+			base.StartSettingsFinal();
+
+			m_ConnectionStateManager.Start();
 		}
 
 		#endregion
