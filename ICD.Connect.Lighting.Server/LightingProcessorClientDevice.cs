@@ -657,8 +657,8 @@ namespace ICD.Connect.Lighting.Server
 			foreach (IConsoleCommand command in GetBaseConsoleCommands())
 				yield return command;
 
-			yield return new ConsoleCommand("Connect", "Connects the RPC", () => m_RpcController.Connect());
-			yield return new ConsoleCommand("Disconnect", "Disconnect the RPC", () => m_RpcController.Disconnect());
+			yield return new ConsoleCommand("Start", "Starts the RPC", () => m_RpcController.Start());
+			yield return new ConsoleCommand("Stop", "Stops the RPC", () => m_RpcController.Stop());
 		}
 
 		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
