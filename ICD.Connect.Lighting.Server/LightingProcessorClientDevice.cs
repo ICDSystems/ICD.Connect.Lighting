@@ -12,6 +12,7 @@ using ICD.Connect.Lighting.Mock.Controls;
 using ICD.Connect.Lighting.RoomInterface;
 using ICD.Connect.Partitioning.Commercial.Controls.Occupancy;
 using ICD.Connect.Protocol.Extensions;
+using ICD.Connect.Protocol.Network.Ports;
 using ICD.Connect.Protocol.Network.RemoteProcedure;
 using ICD.Connect.Protocol.Network.Attributes.Rpc;
 using ICD.Connect.Protocol.Network.Settings;
@@ -62,7 +63,7 @@ namespace ICD.Connect.Lighting.Server
 		{
 			m_NetworkProperties = new SecureNetworkProperties();
 
-			m_RpcController = new ClientSerialRpcController(this);
+			m_RpcController = new ClientSerialRpcController(this) {ConfigurePort = ConfigurePort};
 
 			Subscribe(m_RpcController);
 		}
@@ -113,6 +114,19 @@ namespace ICD.Connect.Lighting.Server
 		protected override bool GetIsOnlineStatus()
 		{
 			return m_RpcController != null && m_RpcController.IsOnline;
+		}
+
+		/// <summary>
+		/// Configures the given port for communication with the device.
+		/// </summary>
+		/// <param name="port"></param>
+		private void ConfigurePort(IPort port)
+		{
+			// Network (TCP, UDP, SSH)
+			if (port is ISecureNetworkPort)
+				(port as ISecureNetworkPort).ApplyDeviceConfiguration(m_NetworkProperties);
+			else if (port is INetworkPort)
+				(port as INetworkPort).ApplyDeviceConfiguration(m_NetworkProperties);
 		}
 
 		#endregion

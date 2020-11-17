@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
  - LightingProcessorClient - Fixed issues around intialization - RoomId is now stored discretely by the client
  - LightingProcessorClient - Added console commands for Connect/Disconnect RPC, added console access to lighting room object
+ - LightingProcessorClient - Client now configures the port correctly
  - MockLightingRoom - Added presets access to console
 
 ### Changed
