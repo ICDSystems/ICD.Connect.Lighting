@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - LightingProcessorClient - Added console commands for Connect/Disconnect RPC, added console access to lighting room object
  - LightingProcessorClient - Client now configures the port correctly
  - MockLightingRoom - Added presets access to console
+ - AbstractLutronNwkDevice - fixed issue where commands weren't being sent after the first command
 
 ### Changed
  - Applied Cresnet settings and console improvments to CsmQmt50DccnAdapter

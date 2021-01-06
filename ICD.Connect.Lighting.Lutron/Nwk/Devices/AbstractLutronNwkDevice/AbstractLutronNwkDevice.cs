@@ -43,7 +43,6 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 	/// </summary>
 	public abstract partial class AbstractLutronNwkDevice<T> : AbstractDevice<T>, ILutronNwkDevice where T : ILutronNwkDeviceSettings, new()
 	{
-		
 		/// <summary>
 		/// How often we send a new data string to the lighting processor.
 		/// </summary>
@@ -155,7 +154,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 			m_ExecuteQueue = new Queue<string>();
 			m_CommandQueuesSection = new SafeCriticalSection();
 
-			m_CommandTimer = new SafeTimer(CommandTimerCallback, COMMUNICATION_INTERVAL_MILLISECONDS);
+			m_CommandTimer = new SafeTimer(CommandTimerCallback, COMMUNICATION_INTERVAL_MILLISECONDS, COMMUNICATION_INTERVAL_MILLISECONDS);
 
 			m_SerialBuffer = new LutronQuantumNwkSerialBuffer();
 			Subscribe(m_SerialBuffer);
