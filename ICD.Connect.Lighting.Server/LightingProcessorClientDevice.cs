@@ -135,7 +135,7 @@ namespace ICD.Connect.Lighting.Server
 
 		private void Subscribe(ClientSerialRpcController rpcController)
 		{
-			if (m_RpcController == null)
+			if (rpcController == null)
 				return;
 
 			rpcController.OnConnectedStateChanged += RpcControllerOnConnectedStateChanged;
@@ -144,7 +144,7 @@ namespace ICD.Connect.Lighting.Server
 
 		private void Unsubscribe(ClientSerialRpcController rpcController)
 		{
-			if (m_RpcController == null)
+			if (rpcController == null)
 				return;
 
 			rpcController.OnConnectedStateChanged -= RpcControllerOnConnectedStateChanged;
