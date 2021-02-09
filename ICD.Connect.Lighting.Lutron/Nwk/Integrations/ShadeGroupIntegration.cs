@@ -1,4 +1,5 @@
 ﻿using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
+using ICD.Connect.Lighting.Lutron.Nwk.Integrations.Abstracts;
 using ICD.Connect.Lighting.Shades;
 
 namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
@@ -10,8 +11,6 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 		/// </summary>
 		protected override string Command { get { return LutronUtils.COMMAND_SHADEGROUP; } }
 
-		public eShadeType ShadeType { get; private set; }
-
 		#region Constructors
 
 		/// <summary>
@@ -22,9 +21,8 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 		/// <param name="parent"></param>
 		/// <param name="shadeType"></param>
 		private ShadeGroupIntegration(int integrationId, string name, ILutronNwkDevice parent, eShadeType shadeType)
-			: base(integrationId, name, parent)
+			: base(integrationId, name, parent, shadeType)
 		{
-			ShadeType = shadeType;
 		}
 
 		/// <summary>
@@ -35,7 +33,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 		/// <returns></returns>
 		public static ShadeGroupIntegration FromXml(string xml, ILutronNwkDevice parent)
 		{
-			int integrationId = GetIntegrationIdFromXml(xml);
+			int integrationId = GetIntegrationIdIntFromXml(xml);
 			string name = GetNameFromXml(xml);
 			eShadeType type = GetShadeTypeFromXml(xml);
 

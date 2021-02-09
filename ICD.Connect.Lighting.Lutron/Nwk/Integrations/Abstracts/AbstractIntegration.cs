@@ -1,42 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using ICD.Common.Properties;
-using ICD.Common.Utils.EventArguments;
-using ICD.Common.Utils.Xml;
-using ICD.Connect.API.Commands;
-using ICD.Connect.API.Nodes;
+﻿using ICD.Common.Utils.EventArguments;
 using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
 
-namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
+namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations.Abstracts
 {
 	/// <summary>
-	/// Base class for all Lutron QuantumNwk integrations that communicate with the device.
+	/// Integrations that communicate with the parent, and register for feedback, etc.
 	/// </summary>
-	public abstract class AbstractIntegration : IDisposable, IConsoleNode
+	public abstract class AbstractIntegration<TIntegrationId> : AbstractIntegrationBase<TIntegrationId>
 	{
-		private readonly int m_IntegrationId;
-		private readonly string m_Name;
-		private readonly ILutronNwkDevice m_Parent;
-
 		#region Properties
-
-		/// <summary>
-		/// Gets the unique integration id.
-		/// </summary>
-		public int IntegrationId { get { return m_IntegrationId; } }
-
-		/// <summary>
-		/// Gets the name of the integration.
-		/// </summary>
-		[PublicAPI]
-		public string Name { get { return m_Name; } }
 
 		/// <summary>
 		/// The string prefix for communication with the lighting processor, e.g. SHADES.
 		/// </summary>
 		protected abstract string Command { get; }
-
-		protected ILutronNwkDevice Parent { get { return m_Parent; } }
 
 		#endregion
 
@@ -46,22 +23,11 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 		/// <param name="integrationId"></param>
 		/// <param name="name"></param>
 		/// <param name="parent"></param>
-		protected AbstractIntegration(int integrationId, string name, ILutronNwkDevice parent)
+		protected AbstractIntegration(TIntegrationId integrationId, string name, ILutronNwkDevice parent) : base(integrationId, name, parent)
 		{
-			m_IntegrationId = integrationId;
-			m_Name = name;
-			m_Parent = parent;
-
-			Subscribe(m_Parent);
 		}
 
-		/// <summary>
-		/// Release resources.
-		/// </summary>
-		public virtual void Dispose()
-		{
-			Unsubscribe(m_Parent);
-		}
+		
 
 		#region Private Methods
 
@@ -99,28 +65,8 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 		/// <param name="parameters"></param>
 		private void SendDataWithComponent(char mode, int component, int action, params object[] parameters)
 		{
-			string data = LutronUtils.BuildDataWithComponent(mode, Command, IntegrationId, component, action, parameters);
-			m_Parent.EnqueueData(data);
-		}
-
-		/// <summary>
-		/// Gets the integration id from the element attributes.
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		protected static int GetIntegrationIdFromXml(string xml)
-		{
-			return XmlUtils.GetAttributeAsInt(xml, "integrationId");
-		}
-
-		/// <summary>
-		/// Gets the integration name from the element attributes.
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		protected static string GetNameFromXml(string xml)
-		{
-			return XmlUtils.GetAttributeAsString(xml, "name");
+			string data = LutronUtils.BuildDataWithComponent(mode, Command, IntegrationId.ToString(), component, action, parameters);
+			Parent.EnqueueData(data);
 		}
 
 		/// <summary>
@@ -130,7 +76,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 		/// <returns></returns>
 		private string GetKey()
 		{
-			return LutronUtils.GetKey(Command, IntegrationId);
+			return LutronUtils.GetKey(Command, IntegrationId.ToString());
 		}
 
 		/// <summary>
@@ -148,8 +94,13 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 		/// Subscribe to the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Subscribe(ILutronNwkDevice parent)
+		protected override void Subscribe(ILutronNwkDevice parent)
 		{
+			base.Subscribe(parent);
+
+			if (parent == null)
+				return;
+
 			parent.OnInitializedChanged += ParentOnInitializedChanged;
 			parent.RegisterIntegrationCallback(GetKey(), ParentOnOutput);
 		}
@@ -158,8 +109,13 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 		/// Unsubscribe from the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Unsubscribe(ILutronNwkDevice parent)
+		protected override void Unsubscribe(ILutronNwkDevice parent)
 		{
+			base.Unsubscribe(parent);
+
+			if (parent == null)
+				return;
+
 			parent.OnInitializedChanged -= ParentOnInitializedChanged;
 			parent.UnregisterIntegrationCallback(GetKey(), ParentOnOutput);
 		}
@@ -182,43 +138,5 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 		protected abstract void ParentOnOutput(ILutronNwkDevice sender, string data);
 
 		#endregion
-
-		/// <summary>
-		/// Gets the name of the node.
-		/// </summary>
-		public string ConsoleName { get { return Name; } }
-
-		/// <summary>
-		/// Gets the help information for the node.
-		/// </summary>
-		public string ConsoleHelp { get { return "Lutron Integration Component"; } }
-
-		/// <summary>
-		/// Gets the child console nodes.
-		/// </summary>
-		/// <returns></returns>
-		public virtual IEnumerable<IConsoleNodeBase> GetConsoleNodes()
-		{
-			yield break;
-		}
-
-		/// <summary>
-		/// Calls the delegate for each console status item.
-		/// </summary>
-		/// <param name="addRow"></param>
-		public virtual void BuildConsoleStatus(AddStatusRowDelegate addRow)
-		{
-			addRow("Name", Name);
-			addRow("Id", IntegrationId);
-		}
-
-		/// <summary>
-		/// Gets the child console commands.
-		/// </summary>
-		/// <returns></returns>
-		public virtual IEnumerable<IConsoleCommand> GetConsoleCommands()
-		{
-			yield break;
-		}
 	}
 }

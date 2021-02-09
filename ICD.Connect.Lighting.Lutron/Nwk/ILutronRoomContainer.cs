@@ -4,6 +4,7 @@ using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Connect.Lighting.Lutron.Nwk.EventArguments;
 using ICD.Connect.Lighting.Lutron.Nwk.Integrations;
+using ICD.Connect.Lighting.Lutron.Nwk.Integrations.Interfaces;
 
 namespace ICD.Connect.Lighting.Lutron.Nwk
 {
@@ -39,14 +40,14 @@ namespace ICD.Connect.Lighting.Lutron.Nwk
 		/// <param name="integrationId"></param>
 		/// <returns></returns>
 		[PublicAPI]
-		ZoneIntegration GetZoneIntegration(int integrationId);
+		IZoneIntegration GetZoneIntegration(int integrationId);
 
 		/// <summary>
 		/// Gets the zones.
 		/// </summary>
 		/// <returns></returns>
 		[PublicAPI]
-		IEnumerable<ZoneIntegration> GetZoneIntegrations();
+		IEnumerable<IZoneIntegration> GetZoneIntegrations();
 
 		/// <summary>
 		/// Gets the shade group with the given integration id.
@@ -54,14 +55,14 @@ namespace ICD.Connect.Lighting.Lutron.Nwk
 		/// <param name="integrationId"></param>
 		/// <returns></returns>
 		[PublicAPI]
-		ShadeGroupIntegration GetShadeGroupIntegration(int integrationId);
+		IShadeIntegration GetShadeGroupIntegration(int integrationId);
 
 		/// <summary>
 		/// Gets the shade groups.
 		/// </summary>
 		/// <returns></returns>
 		[PublicAPI]
-		IEnumerable<ShadeGroupIntegration> GetShadeGroupIntegrations();
+		IEnumerable<IShadeIntegration> GetShadeGroupIntegrations();
 
 		/// <summary>
 		/// Gets the shade with the given integration id.
@@ -69,14 +70,14 @@ namespace ICD.Connect.Lighting.Lutron.Nwk
 		/// <param name="integrationId"></param>
 		/// <returns></returns>
 		[PublicAPI]
-		ShadeIntegration GetShadeIntegration(int integrationId);
+		IShadeIntegration GetShadeIntegration(int integrationId);
 
 		/// <summary>
 		/// Gets the shades.
 		/// </summary>
 		/// <returns></returns>
 		[PublicAPI]
-		IEnumerable<ShadeIntegration> GetShadeIntegrations();
+		IEnumerable<IShadeIntegration> GetShadeIntegrations();
 
 		/// <summary>
 		/// Gets the scene with the given integration id.

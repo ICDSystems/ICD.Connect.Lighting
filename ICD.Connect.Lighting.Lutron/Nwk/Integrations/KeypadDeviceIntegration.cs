@@ -4,10 +4,11 @@ using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
+using ICD.Connect.Lighting.Lutron.Nwk.Integrations.Abstracts;
 
 namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 {
-	public sealed class KeypadDeviceIntegration : AbstractIntegrationWithComponent
+	public sealed class KeypadDeviceIntegration : AbstractIntegrationWithComponent<int>
 	{
 
 		private const int ACTION_BUTTON_PRESS = 3;

@@ -28,8 +28,6 @@
     <None Remove="SIMPLSharpLogs\**" />
   </ItemGroup>
   <ItemGroup>
-  </ItemGroup>
-  <ItemGroup>
     <None Remove=".gitignore" />
     <None Remove="ICD.Connect.Lighting.Lutron_SimplSharp.suo" />
     <None Remove="ICD.Connect.Lighting.projectinfo" />

@@ -1,21 +1,10 @@
 ﻿using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
+using ICD.Connect.Lighting.Lutron.Nwk.Integrations.Abstracts;
 
 namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 {
-	public sealed class SceneIntegration : AbstractIntegrationWithoutComponent
+	public sealed class SceneIntegration : AbstractIntegrationBase<int>
 	{
-		/// <summary>
-		/// The string prefix for communication with the lighting processor, e.g. SHADES.
-		/// </summary>
-		protected override string Command
-		{
-			get
-			{
-				// This is a hack, we're not actually expecting any feedback from the device for scenes.
-				return "SCENE";
-			}
-		}
-
 		/// <summary>
 		/// Constructor.
 		/// </summary>
@@ -35,7 +24,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 		/// <returns></returns>
 		public static SceneIntegration FromXml(string xml, ILutronNwkDevice parent)
 		{
-			int integrationId = GetIntegrationIdFromXml(xml);
+			int integrationId = GetIntegrationIdIntFromXml(xml);
 			string name = GetNameFromXml(xml);
 
 			return new SceneIntegration(integrationId, name, parent);

@@ -366,5 +366,6 @@ namespace ICD.Connect.Lighting.RoomInterface
 		}
 
 		#endregion
+
 	}
 }

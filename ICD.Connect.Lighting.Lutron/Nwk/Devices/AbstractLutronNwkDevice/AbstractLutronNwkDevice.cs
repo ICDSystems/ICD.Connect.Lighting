@@ -539,7 +539,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 			string message;
 			try
 			{
-				 id = LutronUtils.GetIntegrationId(data);
+				 id = int.Parse(LutronUtils.GetIntegrationId(data));
 			}
 			catch (FormatException)
 			{

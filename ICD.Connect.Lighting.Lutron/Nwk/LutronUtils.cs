@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using ICD.Common.Properties;
 using ICD.Common.Utils;
 
 namespace ICD.Connect.Lighting.Lutron.Nwk
@@ -13,6 +14,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk
 		private static readonly char[] s_Modes = {MODE_EXECUTE, MODE_QUERY, MODE_RESPONSE};
 
 		public const string QNET = "QNET>";
+		public const string QSE = "QSE>";
 
 		public const string LOGIN_PROMPT = "login:";
 		public const string LOGIN_SUCCESS = "connection established";
@@ -77,7 +79,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk
 		/// <param name="actionNumber"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
-		public static string BuildDataWithComponent(char mode, string command, int integrationId, int component,
+		public static string BuildDataWithComponent(char mode, string command, string integrationId, int component,
 		                                            int actionNumber, params object[] parameters)
 		{
 			string[] paramsArray = parameters.Select<object, string>(ParameterToString)
@@ -181,17 +183,11 @@ namespace ICD.Connect.Lighting.Lutron.Nwk
 		/// </summary>
 		/// <param name="data"></param>
 		/// <returns></returns>
-		public static int GetIntegrationId(string data)
+		[NotNull]
+		public static string GetIntegrationId(string data)
 		{
 			string[] split = SplitData(data);
-			string integrationIdString = split.Length > 1 ? split[1] : string.Empty;
-
-			int integrationId;
-			if (StringUtils.TryParse(integrationIdString, out integrationId))
-				return integrationId;
-
-			string message = string.Format("Data \"{0}\" has no Integration ID", data);
-			throw new FormatException(message);
+			return split.Length > 1 ? split[1] : string.Empty;
 		}
 
 		/// <summary>
@@ -330,7 +326,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk
 		/// <param name="command"></param>
 		/// <param name="integrationId"></param>
 		/// <returns></returns>
-		public static string GetKey(string command, int integrationId)
+		public static string GetKey(string command, string integrationId)
 		{
 			return string.Format("{0}{1}{2}", command, DELIMITER, integrationId);
 		}
@@ -343,7 +339,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk
 		public static string GetKeyFromData(string data)
 		{
 			string command = GetCommand(data);
-			int integrationId = GetIntegrationId(data);
+			string integrationId = GetIntegrationId(data);
 			return GetKey(command, integrationId);
 		}
 	}

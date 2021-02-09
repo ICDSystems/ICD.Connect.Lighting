@@ -13,7 +13,8 @@ namespace ICD.Connect.Lighting.Lutron.Nwk
 		private static readonly string[] s_Delimiters =
 		{
 			LutronUtils.CRLF,
-			LutronUtils.QNET
+			LutronUtils.QNET,
+			LutronUtils.QSE
 		};
 
 		// These cause the buffer to immideately return, incluing the short circuit string

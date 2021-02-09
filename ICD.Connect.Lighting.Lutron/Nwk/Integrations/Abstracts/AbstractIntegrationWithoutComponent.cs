@@ -1,8 +1,8 @@
 ﻿using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
 
-namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
+namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations.Abstracts
 {
-	public abstract class AbstractIntegrationWithoutComponent : AbstractIntegration
+	public abstract class AbstractIntegrationWithoutComponent : AbstractIntegration<int>
 	{
 		/// <summary>
 		/// Constructor.

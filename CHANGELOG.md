@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+ - Added support for Lutron Grafik Eye lights/shades
+ 
+### Changed
+ - Refactor of Lutron integrations to support Graifk Eye integration better
 
 ### [6.1.0] - 2021-01-14
 ### Added

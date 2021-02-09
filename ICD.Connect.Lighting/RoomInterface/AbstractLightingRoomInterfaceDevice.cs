@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using ICD.Common.Utils.EventArguments;
+using ICD.Connect.API.Commands;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Lighting.EventArguments;
@@ -157,6 +160,52 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// </summary>
 		/// <param name="shadeGroup"></param>
 		public abstract void StopMovingShadeGroup(int shadeGroup);
+
+		#endregion
+
+		#region Console
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+			addRow("Preset", GetPreset());
+		}
+
+		/// <summary>
+		/// Gets the child console commands.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
+		{
+			foreach (IConsoleCommand command in GetBaseConsoleCommands())
+				yield return command;
+
+			yield return new ConsoleCommand("PrintPresets", "Prints all presets for the room", PrintPresets);
+			yield return new GenericConsoleCommand<int>("RecallPreset", "RecallPreset <int>", (preset) => SetPreset(preset));
+		}
+
+		private string PrintPresets()
+		{
+			StringBuilder response = new StringBuilder();
+			response.AppendLine("Presets");
+			foreach (var preset in GetPresets())
+			{
+				response.AppendFormat("{0} - {1}", preset.Id, preset.Name);
+				response.AppendLine();
+			}
+			
+			return response.ToString();
+		}
+
+		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
+		{
+			return base.GetConsoleCommands();
+		}
 
 		#endregion
 	}

@@ -2,14 +2,15 @@
 using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
+using ICD.Connect.Lighting.Lutron.Nwk.Integrations.Interfaces;
 using ICD.Connect.Lighting.Shades;
 
-namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
+namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations.Abstracts
 {
 	/// <summary>
 	/// Base class for shade integrations.
 	/// </summary>
-	public abstract class AbstractShadeIntegration : AbstractIntegrationWithoutComponent
+	public abstract class AbstractShadeIntegration : AbstractIntegrationWithoutComponent, IShadeIntegration
 	{
 		private const int ACTION_RAISE = 2;
 		private const int ACTION_LOWER = 3;
@@ -21,10 +22,16 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 		/// <param name="integrationId"></param>
 		/// <param name="name"></param>
 		/// <param name="parent"></param>
-		protected AbstractShadeIntegration(int integrationId, string name, ILutronNwkDevice parent)
+		protected AbstractShadeIntegration(int integrationId, string name, ILutronNwkDevice parent, eShadeType shadeType)
 			: base(integrationId, name, parent)
 		{
+			ShadeType = shadeType;
 		}
+
+		/// <summary>
+		/// Specifies the type of shade this is
+		/// </summary>
+		public eShadeType ShadeType { get; private set; }
 
 		#region Methods
 
@@ -57,7 +64,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations
 
 		#endregion
 
-		protected static eShadeType GetShadeTypeFromXml(string xml)
+		public static eShadeType GetShadeTypeFromXml(string xml)
 		{
 			eShadeType shadeType;
 			bool parsed = EnumUtils.TryParseStrict(XmlUtils.GetAttributeAsString(xml, "shadeType"), true, out shadeType);

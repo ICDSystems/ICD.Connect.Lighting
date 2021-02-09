@@ -9,6 +9,7 @@ using ICD.Common.Utils.Xml;
 using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
 using ICD.Connect.Lighting.Lutron.Nwk.EventArguments;
 using ICD.Connect.Lighting.Lutron.Nwk.Integrations;
+using ICD.Connect.Lighting.Lutron.Nwk.Integrations.Interfaces;
 
 namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 {
@@ -299,7 +300,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 		/// <param name="integrationId"></param>
 		/// <returns></returns>
 		[PublicAPI]
-		public ZoneIntegration GetZoneIntegration(int integrationId)
+		public IZoneIntegration GetZoneIntegration(int integrationId)
 		{
 			return m_IdToZone[integrationId];
 		}
@@ -309,7 +310,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 		/// </summary>
 		/// <returns></returns>
 		[PublicAPI]
-		public IEnumerable<ZoneIntegration> GetZoneIntegrations()
+		public IEnumerable<IZoneIntegration> GetZoneIntegrations()
 		{
 			return m_Zones.Select(i => m_IdToZone[i]).ToArray();
 		}
@@ -320,7 +321,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 		/// <param name="integrationId"></param>
 		/// <returns></returns>
 		[PublicAPI]
-		public ShadeGroupIntegration GetShadeGroupIntegration(int integrationId)
+		public IShadeIntegration GetShadeGroupIntegration(int integrationId)
 		{
 			return m_IdToShadeGroup[integrationId];
 		}
@@ -330,7 +331,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 		/// </summary>
 		/// <returns></returns>
 		[PublicAPI]
-		public IEnumerable<ShadeGroupIntegration> GetShadeGroupIntegrations()
+		public IEnumerable<IShadeIntegration> GetShadeGroupIntegrations()
 		{
 			return m_ShadeGroups.Select(i => m_IdToShadeGroup[i]).ToArray();
 		}
@@ -341,7 +342,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 		/// <param name="integrationId"></param>
 		/// <returns></returns>
 		[PublicAPI]
-		public ShadeIntegration GetShadeIntegration(int integrationId)
+		public IShadeIntegration GetShadeIntegration(int integrationId)
 		{
 			return m_IdToShade[integrationId];
 		}
@@ -351,7 +352,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.LutronNwk
 		/// </summary>
 		/// <returns></returns>
 		[PublicAPI]
-		public IEnumerable<ShadeIntegration> GetShadeIntegrations()
+		public IEnumerable<IShadeIntegration> GetShadeIntegrations()
 		{
 			return m_Shades.Select(i => m_IdToShade[i]).ToArray();
 		}
