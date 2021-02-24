@@ -185,8 +185,8 @@ namespace ICD.Connect.Lighting.RoomInterface
 			foreach (IConsoleCommand command in GetBaseConsoleCommands())
 				yield return command;
 
-			yield return new ConsoleCommand("PrintPresets", "Prints all presets for the room", PrintPresets);
-			yield return new GenericConsoleCommand<int>("RecallPreset", "RecallPreset <int>", (preset) => SetPreset(preset));
+			yield return new ConsoleCommand("PrintPresets", "Prints all presets for the room", () => PrintPresets());
+			yield return new GenericConsoleCommand<int>("RecallPreset", "RecallPreset <int>", preset => SetPreset(preset));
 		}
 
 		private string PrintPresets()

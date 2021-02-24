@@ -69,6 +69,21 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Nwk\Devices\GrafikEyeNwk\GrafikEyeNwkDevice.cs" />
+    <Compile Include="Nwk\Devices\GrafikEyeNwk\GrafikEyeNwkDeviceSettings.cs" />
+    <Compile Include="Nwk\Devices\GrafikEyeNwk\GrafikEyeRoom.cs" />
+    <Compile Include="Nwk\Integrations\Abstracts\AbstractIntegration.cs" />
+    <Compile Include="Nwk\Integrations\Abstracts\AbstractIntegrationBase.cs" />
+    <Compile Include="Nwk\Integrations\Abstracts\AbstractIntegrationWithComponent.cs" />
+    <Compile Include="Nwk\Integrations\Abstracts\AbstractIntegrationWithoutComponent.cs" />
+    <Compile Include="Nwk\Integrations\Abstracts\AbstractShadeIntegration.cs" />
+    <Compile Include="Nwk\Integrations\GrafikEyeIntegrations\AbstractGrafikEyeIntegration.cs" />
+    <Compile Include="Nwk\Integrations\GrafikEyeIntegrations\GrafikEyeDeviceIntegration.cs" />
+    <Compile Include="Nwk\Integrations\GrafikEyeIntegrations\GrafikEyeShadeIntegration.cs" />
+    <Compile Include="Nwk\Integrations\GrafikEyeIntegrations\GrafikEyeZoneIntegration.cs" />
+    <Compile Include="Nwk\Integrations\Interfaces\IIntegration.cs" />
+    <Compile Include="Nwk\Integrations\Interfaces\IShadeIntegration.cs" />
+    <Compile Include="Nwk\Integrations\Interfaces\IZoneIntegration.cs" />
     <Compile Include="ObfuscationSettings.cs" />
     <Compile Include="KrangPlugin.cs" />
     <Compile Include="Nwk\Devices\AbstractLutronNwkDevice\AbstractLutronNwkDevice.cs" />
@@ -84,10 +99,6 @@
     <Compile Include="Nwk\EventArguments\OccupancyStateEventArgs.cs" />
     <Compile Include="Nwk\EventArguments\ZoneOutputLevelEventArgs.cs" />
     <Compile Include="Nwk\ILutronRoomContainer.cs" />
-    <Compile Include="Nwk\Integrations\AbstractIntegration.cs" />
-    <Compile Include="Nwk\Integrations\AbstractIntegrationWithComponent.cs" />
-    <Compile Include="Nwk\Integrations\AbstractIntegrationWithoutComponent.cs" />
-    <Compile Include="Nwk\Integrations\AbstractShadeIntegration.cs" />
     <Compile Include="Nwk\Integrations\AreaIntegration.cs" />
     <Compile Include="Nwk\Integrations\KeypadDeviceIntegration.cs" />
     <Compile Include="Nwk\Integrations\SceneIntegration.cs" />

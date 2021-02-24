@@ -196,7 +196,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.GrafikEyeNwk
 		/// <returns></returns>
 		IEnumerable<IZoneIntegration> ILutronRoomContainer.GetZoneIntegrations()
 		{
-			return GetZoneIntegrations();
+			return GetZoneIntegrations().Cast<IZoneIntegration>();
 		}
 
 		/// <summary>
@@ -255,7 +255,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.GrafikEyeNwk
 		/// <returns></returns>
 		IEnumerable<IShadeIntegration> ILutronRoomContainer.GetShadeIntegrations()
 		{
-			return GetShadeIntegrations();
+			return GetShadeIntegrations().Cast<IShadeIntegration>();
 		}
 
 		/// <summary>

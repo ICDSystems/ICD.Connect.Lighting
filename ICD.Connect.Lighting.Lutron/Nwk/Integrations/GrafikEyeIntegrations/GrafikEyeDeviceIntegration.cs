@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
@@ -149,7 +150,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations.GrafikEyeIntegrations
 		private void HandleCurrentSceneFeedback(string scene)
 		{
 			int sceneId;
-			if (!int.TryParse(scene, out sceneId))
+			if (!StringUtils.TryParse(scene, out sceneId))
 				throw new FormatException(string.Format("Scene ID couldn't be parsed to an int - received {0}",
 				                                        scene));
 			
