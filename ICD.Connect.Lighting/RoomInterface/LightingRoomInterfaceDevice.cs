@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Lighting.EventArguments;
 using ICD.Connect.Lighting.Processors;
 using ICD.Connect.Partitioning.Commercial.Controls.Occupancy;
@@ -12,11 +14,10 @@ namespace ICD.Connect.Lighting.RoomInterface
 {
 	public sealed class LightingRoomInterfaceDevice : AbstractLightingRoomInterfaceDevice<LightingRoomInterfaceDeviceSettings>
 	{
+		[CanBeNull]
 		private ILightingProcessorDevice m_LightingProcessor;
 
 		private int m_RoomId;
-
-		private bool HasLightingProcessor { get { return m_LightingProcessor != null; } }
 
 		/// <summary>
 		/// Gets the current online status of the device.
@@ -24,7 +25,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-			return HasLightingProcessor && m_LightingProcessor.IsOnline;
+			return m_LightingProcessor != null && m_LightingProcessor.IsOnline;
 		}
 
 		#region Settings
@@ -40,7 +41,18 @@ namespace ICD.Connect.Lighting.RoomInterface
 
 			m_RoomId = settings.LightingRoomId;
 
-			m_LightingProcessor = factory.GetOriginatorById<ILightingProcessorDevice>(settings.LightingProcessorDeviceId);
+			if (settings.LightingProcessorDeviceId != null)
+			{
+				try
+				{
+					m_LightingProcessor =
+						factory.GetOriginatorById<ILightingProcessorDevice>((int)settings.LightingProcessorDeviceId);
+				}
+				catch (KeyNotFoundException)
+				{
+					Logger.Log(eSeverity.Error, "No lighting processor device with id {0}", settings.LightingProcessorDeviceId);
+				}
+			}
 
 			Subscribe(m_LightingProcessor);
 		}
@@ -68,7 +80,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 			base.CopySettingsFinal(settings);
 
 			settings.LightingRoomId = m_RoomId;
-			settings.LightingProcessorDeviceId = m_LightingProcessor == null ? 0 : m_LightingProcessor.Id;
+			settings.LightingProcessorDeviceId = m_LightingProcessor == null ? (int?)null : m_LightingProcessor.Id;
 		}
 
 		#endregion
@@ -143,11 +155,9 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// <returns></returns>
 		public override IEnumerable<LightingProcessorControl> GetLoads()
 		{
-			if (!HasLightingProcessor)
-				return Enumerable.Empty<LightingProcessorControl>();
-
-			return m_LightingProcessor.GetLoadsForRoom(m_RoomId);
-
+			return m_LightingProcessor == null
+				? Enumerable.Empty<LightingProcessorControl>()
+				: m_LightingProcessor.GetLoadsForRoom(m_RoomId);
 		}
 
 		/// <summary>
@@ -156,10 +166,9 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// <returns></returns>
 		public override IEnumerable<LightingProcessorControl> GetShades()
 		{
-			if (!HasLightingProcessor)
-				return Enumerable.Empty<LightingProcessorControl>();
-
-			return m_LightingProcessor.GetShadesForRoom(m_RoomId);
+			return m_LightingProcessor == null
+				? Enumerable.Empty<LightingProcessorControl>()
+				: m_LightingProcessor.GetShadesForRoom(m_RoomId);
 		}
 
 		/// <summary>
@@ -168,10 +177,9 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// <returns></returns>
 		public override IEnumerable<LightingProcessorControl> GetShadeGroups()
 		{
-			if (!HasLightingProcessor)
-				return Enumerable.Empty<LightingProcessorControl>();
-
-			return m_LightingProcessor.GetShadeGroupsForRoom(m_RoomId);
+			return m_LightingProcessor == null
+				? Enumerable.Empty<LightingProcessorControl>()
+				: m_LightingProcessor.GetShadeGroupsForRoom(m_RoomId);
 		}
 
 		/// <summary>
@@ -180,10 +188,9 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// <returns></returns>
 		public override IEnumerable<LightingProcessorControl> GetPresets()
 		{
-			if (!HasLightingProcessor)
-				return Enumerable.Empty<LightingProcessorControl>();
-
-			return m_LightingProcessor.GetPresetsForRoom(m_RoomId);
+			return m_LightingProcessor == null
+				? Enumerable.Empty<LightingProcessorControl>()
+				: m_LightingProcessor.GetPresetsForRoom(m_RoomId);
 		}
 
 		/// <summary>
@@ -192,10 +199,9 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// <returns></returns>
 		public override eOccupancyState GetOccupancy()
 		{
-			if (!HasLightingProcessor)
-				return eOccupancyState.Unknown;
-
-			return m_LightingProcessor.GetOccupancyForRoom(m_RoomId);
+			return m_LightingProcessor == null
+				? eOccupancyState.Unknown
+				: m_LightingProcessor.GetOccupancyForRoom(m_RoomId);
 		}
 
 		/// <summary>
@@ -204,10 +210,8 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// <param name="preset"></param>
 		public override void SetPreset(int? preset)
 		{
-			if (!HasLightingProcessor)
-				return;
-
-			m_LightingProcessor.SetPresetForRoom(m_RoomId, preset);
+			if (m_LightingProcessor != null)
+				m_LightingProcessor.SetPresetForRoom(m_RoomId, preset);
 		}
 
 		/// <summary>
@@ -215,10 +219,9 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// </summary>
 		public override int? GetPreset()
 		{
-			if (!HasLightingProcessor)
-				return null;
-
-			return m_LightingProcessor.GetPresetForRoom(m_RoomId);
+			return m_LightingProcessor == null
+				? null
+				: m_LightingProcessor.GetPresetForRoom(m_RoomId);
 		}
 
 		/// <summary>
@@ -228,10 +231,8 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// <param name="percentage"></param>
 		public override void SetLoadLevel(int load, float percentage)
 		{
-			if (!HasLightingProcessor)
-				return;
-
-			m_LightingProcessor.SetLoadLevel(m_RoomId, load, percentage);
+			if (m_LightingProcessor != null)
+				m_LightingProcessor.SetLoadLevel(m_RoomId, load, percentage);
 		}
 
 		/// <summary>
@@ -240,10 +241,7 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// <param name="load"></param>
 		public override float GetLoadLevel(int load)
 		{
-			if (!HasLightingProcessor)
-				return 0;
-
-			return m_LightingProcessor.GetLoadLevel(m_RoomId, load);
+			return m_LightingProcessor == null ? 0 : m_LightingProcessor.GetLoadLevel(m_RoomId, load);
 		}
 
 		/// <summary>
@@ -252,10 +250,8 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// <param name="load"></param>
 		public override void StartRaisingLoadLevel(int load)
 		{
-			if (!HasLightingProcessor)
-				return;
-
-			m_LightingProcessor.StartRaisingLoadLevel(m_RoomId, load);
+			if (m_LightingProcessor != null)
+				m_LightingProcessor.StartRaisingLoadLevel(m_RoomId, load);
 		}
 
 		/// <summary>
@@ -264,10 +260,8 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// <param name="load"></param>
 		public override void StartLoweringLoadLevel(int load)
 		{
-			if (!HasLightingProcessor)
-				return;
-
-			m_LightingProcessor.StartLoweringLoadLevel(m_RoomId, load);
+			if (m_LightingProcessor != null)
+				m_LightingProcessor.StartLoweringLoadLevel(m_RoomId, load);
 		}
 
 		/// <summary>
@@ -276,10 +270,8 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// <param name="load"></param>
 		public override void StopRampingLoadLevel(int load)
 		{
-			if (!HasLightingProcessor)
-				return;
-
-			m_LightingProcessor.StopRampingLoadLevel(m_RoomId, load);
+			if (m_LightingProcessor != null)
+				m_LightingProcessor.StopRampingLoadLevel(m_RoomId, load);
 		}
 
 		/// <summary>
@@ -288,10 +280,8 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// <param name="shade"></param>
 		public override void StartRaisingShade(int shade)
 		{
-			if (!HasLightingProcessor)
-				return;
-
-			m_LightingProcessor.StartRaisingShade(m_RoomId, shade);
+			if (m_LightingProcessor != null)
+				m_LightingProcessor.StartRaisingShade(m_RoomId, shade);
 		}
 
 		/// <summary>
@@ -300,10 +290,8 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// <param name="shade"></param>
 		public override void StartLoweringShade(int shade)
 		{
-			if (!HasLightingProcessor)
-				return;
-
-			m_LightingProcessor.StartLoweringShade(m_RoomId, shade);
+			if (m_LightingProcessor != null)
+				m_LightingProcessor.StartLoweringShade(m_RoomId, shade);
 		}
 
 		/// <summary>
@@ -312,10 +300,8 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// <param name="shade"></param>
 		public override void StopMovingShade(int shade)
 		{
-			if (!HasLightingProcessor)
-				return;
-
-			m_LightingProcessor.StopMovingShade(m_RoomId, shade);
+			if (m_LightingProcessor != null)
+				m_LightingProcessor.StopMovingShade(m_RoomId, shade);
 		}
 
 		/// <summary>
@@ -324,10 +310,8 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// <param name="shadeGroup"></param>
 		public override void StartRaisingShadeGroup(int shadeGroup)
 		{
-			if (!HasLightingProcessor)
-				return;
-
-			m_LightingProcessor.StartRaisingShadeGroup(m_RoomId, shadeGroup);
+			if (m_LightingProcessor != null)
+				m_LightingProcessor.StartRaisingShadeGroup(m_RoomId, shadeGroup);
 		}
 
 		/// <summary>
@@ -336,10 +320,8 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// <param name="shadeGroup"></param>
 		public override void StartLoweringShadeGroup(int shadeGroup)
 		{
-			if (!HasLightingProcessor)
-				return;
-
-			m_LightingProcessor.StartLoweringShadeGroup(m_RoomId, shadeGroup);
+			if (m_LightingProcessor != null)
+				m_LightingProcessor.StartLoweringShadeGroup(m_RoomId, shadeGroup);
 		}
 
 		/// <summary>
@@ -348,10 +330,8 @@ namespace ICD.Connect.Lighting.RoomInterface
 		/// <param name="shadeGroup"></param>
 		public override void StopMovingShadeGroup(int shadeGroup)
 		{
-			if (!HasLightingProcessor)
-				return;
-
-			m_LightingProcessor.StopMovingShadeGroup(m_RoomId, shadeGroup);
+			if (m_LightingProcessor != null)
+				m_LightingProcessor.StopMovingShadeGroup(m_RoomId, shadeGroup);
 		}
 
 		#endregion

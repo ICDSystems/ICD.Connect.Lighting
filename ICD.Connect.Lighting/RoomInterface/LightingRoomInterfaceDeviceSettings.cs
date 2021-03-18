@@ -11,9 +11,8 @@ namespace ICD.Connect.Lighting.RoomInterface
 		private const string LIGHTING_PROCESSOR_ELEMENT = "LightingProcessor";
 		private const string ROOM_ID_ELEMENT = "RoomId";
 		
-
 		[OriginatorIdSettingsProperty(typeof(ILightingProcessorDevice))]
-		public int LightingProcessorDeviceId { get; set; }
+		public int? LightingProcessorDeviceId { get; set; }
 
 		public int LightingRoomId { get; set; }
 
@@ -37,8 +36,8 @@ namespace ICD.Connect.Lighting.RoomInterface
 		{
 			base.ParseXml(xml);
 
-			LightingProcessorDeviceId = XmlUtils.ReadChildElementContentAsInt(xml, LIGHTING_PROCESSOR_ELEMENT);
-			LightingRoomId = XmlUtils.ReadChildElementContentAsInt(xml, ROOM_ID_ELEMENT);
+			LightingProcessorDeviceId = XmlUtils.TryReadChildElementContentAsInt(xml, LIGHTING_PROCESSOR_ELEMENT);
+			LightingRoomId = XmlUtils.TryReadChildElementContentAsInt(xml, ROOM_ID_ELEMENT) ?? 0;
 		}
 	}
 }
