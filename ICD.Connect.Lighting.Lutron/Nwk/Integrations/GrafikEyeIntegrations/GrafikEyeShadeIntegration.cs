@@ -1,5 +1,4 @@
-﻿using System;
-using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
+﻿using ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice;
 using ICD.Connect.Lighting.Lutron.Nwk.Devices.GrafikEyeNwk;
 using ICD.Connect.Lighting.Lutron.Nwk.Integrations.Abstracts;
 using ICD.Connect.Lighting.Lutron.Nwk.Integrations.Interfaces;
