@@ -21,6 +21,7 @@ using ICD.Connect.Protocol.Network.Ports.TcpSecure;
 using ICD.Connect.Protocol.Network.RemoteProcedure;
 using ICD.Connect.Protocol.Network.Attributes.Rpc;
 using ICD.Connect.Protocol.Network.Servers;
+using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Lighting.Server
@@ -1006,7 +1007,12 @@ namespace ICD.Connect.Lighting.Server
 			TableBuilder table = new TableBuilder("Client ID", "Room ID", "HostInfo");
 
 			foreach (var kvp in clientRoomMap)
-				table.AddRow(kvp.Key, m_Server.GetClientInfo(kvp.Key), kvp.Value);
+			{
+				HostInfo info;
+				m_Server.TryGetClientInfo(kvp.Key, out info);
+
+				table.AddRow(kvp.Key, info, kvp.Value);
+			}
 
 			table.AddSeparator();
 
