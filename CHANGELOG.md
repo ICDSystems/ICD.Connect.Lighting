@@ -6,23 +6,27 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+ - Changed LightingRoomInterfaceOccupancyControl to implement new IOccupancySensorControl elements
+
 ## [7.0.1] - 2021-07-26
 ### Changed
  - Added default network and comspec for Lutron devices and LightingProcessorClient
 
-### [7.0.0] - 2021-05-14
+## [7.0.0] - 2021-05-14
 ### Added
  - Added support for Lutron Grafik Eye lights/shades
  
 ### Changed
  - Refactor of Lutron integrations to support Graifk Eye integration better
 
-### [6.1.0] - 2021-01-14
+## [6.1.0] - 2021-01-14
 ### Added
  - LightingProcessorServer - UseSecureServer setting when set to true will use IcdSecureTcpServer otherwise IcdTcpServer will be used.
  - LightingProcessorServer - Added default values for UseSecureServer (false) and MaxClients (32)
  - Added CrestronSPlus Lighting Project
  - Added LightingRoomInterfaceShim
+
 ### Changed
  - LightingProcessorClient - Fixed issues around intialization - RoomId is now stored discretely by the client
  - LightingProcessorClient - Added console commands for Connect/Disconnect RPC, added console access to lighting room object
