@@ -64,8 +64,11 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations.GrafikEyeIntegrations
 		/// <param name="parent"></param>
 		/// <param name="scenes"></param>
 		/// <param name="zones"></param>
+		/// <param name="shades"></param>
 		public GrafikEyeDeviceIntegration(string integrationId, string name, ILutronNwkDevice parent,
-		                                  IEnumerable<SceneIntegration> scenes, IEnumerable<GrafikEyeZoneIntegration> zones, IEnumerable<GrafikEyeShadeIntegration> shades) : base(integrationId, name, parent)
+		                                  IEnumerable<SceneIntegration> scenes, IEnumerable<GrafikEyeZoneIntegration> zones,
+		                                  IEnumerable<GrafikEyeShadeIntegration> shades)
+			: base(integrationId, name, parent)
 		{
 			m_Scenes = new Dictionary<int, SceneIntegration>();
 			m_Zones = new Dictionary<int, GrafikEyeZoneIntegration>();

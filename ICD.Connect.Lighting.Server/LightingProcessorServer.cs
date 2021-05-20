@@ -54,7 +54,7 @@ namespace ICD.Connect.Lighting.Server
 		#region Private Members
 		private readonly ServerSerialRpcController m_RpcController;
 
-		private INetworkServer m_Server;
+		private ITcpServer m_Server;
 		private ILightingProcessorDevice m_Processor;
 
 		private readonly Dictionary<uint, int> m_ClientRoomMap;
@@ -119,7 +119,7 @@ namespace ICD.Connect.Lighting.Server
 		/// </summary>
 		/// <param name="server"></param>
 		[PublicAPI]
-		public void SetServer(INetworkServer server)
+		public void SetServer(ITcpServer server)
 		{
 			if (server == m_Server)
 				return;
@@ -1082,7 +1082,7 @@ namespace ICD.Connect.Lighting.Server
 				Subscribe(occupancySensorControl);
 			}
 
-			INetworkServer tcpServer;
+			ITcpServer tcpServer;
 
 			if (settings.UseSecureServer)
 			{

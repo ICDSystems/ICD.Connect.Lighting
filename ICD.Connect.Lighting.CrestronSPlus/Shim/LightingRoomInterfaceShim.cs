@@ -439,12 +439,12 @@ namespace ICD.Connect.Lighting.CrestronSPlus.Shim
 				return;
 			}
 
-			LightingProcessorControl preset;
 			ushort presetIndex;
 
 			m_PresetControlsSection.Enter();
 			try
 			{
+				LightingProcessorControl preset;
 				if (!m_PresetControlsById.TryGetValue(presetId.Value, out preset))
 					return;
 				if (!m_PresetControlsByIndex.TryGetKey(preset, out presetIndex))

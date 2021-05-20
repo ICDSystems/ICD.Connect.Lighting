@@ -22,6 +22,7 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Integrations.Abstracts
 		/// <param name="integrationId"></param>
 		/// <param name="name"></param>
 		/// <param name="parent"></param>
+		/// <param name="shadeType"></param>
 		protected AbstractShadeIntegration(int integrationId, string name, ILutronNwkDevice parent, eShadeType shadeType)
 			: base(integrationId, name, parent)
 		{
