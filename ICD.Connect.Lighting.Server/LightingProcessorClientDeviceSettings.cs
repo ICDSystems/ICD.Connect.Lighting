@@ -1,4 +1,6 @@
-﻿using ICD.Common.Utils.Xml;
+﻿using System;
+using ICD.Common.Properties;
+using ICD.Common.Utils.Xml;
 using ICD.Connect.Lighting.RoomInterface;
 using ICD.Connect.Protocol.Network.Settings;
 using ICD.Connect.Protocol.Ports;
@@ -112,6 +114,16 @@ namespace ICD.Connect.Lighting.Server
 			RoomId = XmlUtils.TryReadChildElementContentAsInt(xml, ROOM_ID_ELEMENT) ?? 0;
 
 			m_NetworkProperties.ParseXml(xml);
+
+			UpdateNetworkDefaults(m_NetworkProperties);
+		}
+
+		private void UpdateNetworkDefaults([NotNull] SecureNetworkProperties networkProperties)
+		{
+			if (networkProperties == null)
+				throw new ArgumentNullException("networkProperties");
+			
+			networkProperties.ApplyDefaultValues(null, 8027);
 		}
 	}
 }

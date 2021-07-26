@@ -1,4 +1,6 @@
-﻿using ICD.Common.Utils.Xml;
+﻿using System;
+using ICD.Common.Properties;
+using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
 using ICD.Connect.Protocol.Network.Settings;
 using ICD.Connect.Protocol.Ports;
@@ -179,22 +181,12 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 		/// </summary>
 		protected AbstractLutronNwkDeviceSettings()
 		{
-			m_NetworkProperties = new SecureNetworkProperties
-			{
-				NetworkPort = 23
-			};
+			m_NetworkProperties = new SecureNetworkProperties();
+			m_ComSpecProperties = new ComSpecProperties();
 
-			m_ComSpecProperties = new ComSpecProperties
-			{
-				ComSpecBaudRate = eComBaudRates.BaudRate115200,
-				ComSpecNumberOfDataBits = eComDataBits.DataBits8,
-				ComSpecParityType = eComParityType.None,
-				ComSpecNumberOfStopBits = eComStopBits.StopBits1,
-				ComSpecProtocolType = eComProtocolType.Rs232,
-				ComSpecHardwareHandshake = eComHardwareHandshakeType.None,
-				ComSpecSoftwareHandshake = eComSoftwareHandshakeType.None,
-				ComSpecReportCtsChanges = false
-			};
+			// ReSharper disable once DoNotCallOverridableMethodsInConstructor
+			UpdateComSpecDefaults(m_ComSpecProperties);
+			UpdateNetworkDefaults(m_NetworkProperties);
 		}
 
 		#region Methods
@@ -229,7 +221,31 @@ namespace ICD.Connect.Lighting.Lutron.Nwk.Devices.AbstractLutronNwkDevice
 
 			m_NetworkProperties.ParseXml(xml);
 			m_ComSpecProperties.ParseXml(xml);
+
+			UpdateNetworkDefaults(m_NetworkProperties);
+			UpdateComSpecDefaults(m_ComSpecProperties);
+
+
 		}
+
+		/// <summary>
+		/// Sets the default network port values if no other values have been set
+		/// </summary>
+		/// <param name="networkProperties"></param>
+		private void UpdateNetworkDefaults([NotNull] SecureNetworkProperties networkProperties)
+		{
+			if (networkProperties == null)
+				throw new ArgumentNullException("networkProperties");
+
+			networkProperties.ApplyDefaultValues(null, 23);
+		}
+
+		/// <summary>
+		/// Sets the default comspec values if no other values have been set
+		/// </summary>
+		/// <remarks>Called from AbstractLutronNwkDeviceSettings constructor</remarks>
+		/// <param name="comSpecProperties"></param>
+		protected abstract void UpdateComSpecDefaults([NotNull] ComSpecProperties comSpecProperties);
 
 		#endregion
 	}
