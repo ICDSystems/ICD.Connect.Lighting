@@ -17,7 +17,7 @@ using ICD.Connect.Panels.EventArguments;
 using ICD.Connect.Partitioning.Commercial.Controls.Occupancy;
 using ICD.Connect.Protocol.Sigs;
 using ICD.Connect.Settings;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.EthernetCommunication;
@@ -47,7 +47,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 
 		#region Fields
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		private EthernetIntersystemCommunications m_Eisc;
 #endif
 		private byte? m_Ipid;
@@ -78,7 +78,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			return m_Eisc != null && m_Eisc.IsOnline;
 #else
 			return false;
@@ -168,7 +168,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 			if (!disposing)
 				return;
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			SetEisc(null);
 #endif
 			ClearRooms();
@@ -189,7 +189,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 
 			ClearRooms();
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			SetEisc(null);
 #endif
 		}
@@ -228,7 +228,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 			m_Address = settings.Address;
 			m_Ipid = settings.Ipid;
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			EthernetIntersystemCommunications eisc = new EthernetIntersystemCommunications(m_Ipid.Value, m_Address,
 			                                                                               ProgramInfo.ControlSystem)
 			{
@@ -246,7 +246,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 
 		#region EISC Callbacks
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		private void SetEisc(EthernetIntersystemCommunications eisc)
 		{
 			if (m_Eisc == eisc)
@@ -303,7 +303,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 
 		internal void SendDigitalJoin(uint join, bool value)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (m_Eisc != null)
 				m_Eisc.BooleanInput[join].BoolValue = value;
 #endif
@@ -311,7 +311,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 
 		internal void SendAnalogJoin(uint join, ushort value)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (m_Eisc != null)
 				m_Eisc.UShortInput[join].UShortValue = value;
 #endif
@@ -319,7 +319,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 
 		internal void SendStringJoin(uint join, string value)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (m_Eisc != null)
 				m_Eisc.StringInput[join].StringValue = value;
 #endif
@@ -346,7 +346,7 @@ namespace ICD.Connect.Lighting.CrestronPro.EiscLightingAdapter
 		                                        Action<SigCallbackManager, SigInfoEventArgs> callback)
 		{
 			m_SigCallbacks.RegisterSigChangeCallback(number, type, callback);
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (m_Eisc != null)
 			{
 				switch (type)

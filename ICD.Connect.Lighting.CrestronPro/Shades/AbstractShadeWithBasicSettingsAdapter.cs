@@ -1,6 +1,6 @@
 ﻿namespace ICD.Connect.Lighting.CrestronPro.Shades
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractShadeWithBasicSettingsAdapter<TShade, TSettings> : AbstractShadeBaseAdapter<TShade, TSettings>, IShadeWithBasicSettingsAdapter
 		where TShade : Crestron.SimplSharpPro.Shades.ShadeWithBasicSettings
 #else

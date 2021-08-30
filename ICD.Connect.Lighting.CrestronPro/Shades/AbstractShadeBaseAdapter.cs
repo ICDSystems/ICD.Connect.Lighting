@@ -2,7 +2,7 @@
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Settings;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using ICD.Connect.Misc.CrestronPro.Extensions;
@@ -15,7 +15,7 @@ using ICD.Connect.Lighting.Shades.Controls;
 
 namespace ICD.Connect.Lighting.CrestronPro.Shades
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractShadeBaseAdapter<TShade, TSettings> : AbstractShadeDevice<TSettings>, IShadeBaseAdapter
 		where TShade : ShadeBase
 #else
@@ -25,7 +25,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 	{
 		public event EventHandler OnDirectionChanged;
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		private eShadeDirection m_LastDirection = eShadeDirection.Neither;
 
 		protected TShade Shade { get; private set; }
@@ -48,14 +48,14 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			return Shade != null && Shade.IsOnline;
 #else
 			return false;
 #endif
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 
 		#region Shade Callbacks
 		protected void SetShade(TShade shade)
@@ -107,7 +107,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 
 		public override void Open()
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			Shade.Open();
 			if (m_LastDirection == eShadeDirection.Open)
 				return;
@@ -120,7 +120,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 
 		public override void Close()
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			Shade.Close();
 			if (m_LastDirection == eShadeDirection.Close)
 				return;
@@ -133,7 +133,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 
 		public void Stop()
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			Shade.Stop();
 #else
 			throw new NotSupportedException();
@@ -142,7 +142,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 
 		public eShadeDirection GetLastDirection()
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			switch (Shade.LastDirection)
 			{
 				case eShadeMovement.NA:
@@ -161,7 +161,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 
 		public bool GetIsInMotion()
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			return Shade.IsRaising.GetBoolValueOrDefault() || Shade.IsLowering.GetBoolValueOrDefault();
 #else
 			throw new NotSupportedException();
@@ -170,7 +170,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 
 		public float GetPosition()
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			return MathUtils.MapRange(0, ushort.MaxValue, 0, 1, (float)Shade.PositionFeedback.GetUShortValueOrDefault());
 #else
 			throw new NotSupportedException();
@@ -179,7 +179,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 
 		public void SetPosition(float position)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			position = MathUtils.Clamp(position, 0, 1);
 			float floatPosition = MathUtils.MapRange(0, 1, 0, ushort.MaxValue, position);
 			Shade.SetPosition((ushort)floatPosition);

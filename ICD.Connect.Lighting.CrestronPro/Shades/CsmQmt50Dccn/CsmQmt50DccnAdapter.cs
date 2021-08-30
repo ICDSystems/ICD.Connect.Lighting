@@ -9,7 +9,7 @@ using ICD.Connect.Settings;
 
 namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public sealed class CsmQmt50DccnAdapter :
 		AbstractShadeWithBasicSettingsAdapter<Crestron.SimplSharpPro.Shades.CsmQmt50Dccn, CsmQmt50DccnAdapterSettings>,
 		ICresnetDevice
@@ -45,7 +45,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 
 			CresnetInfo.ApplySettings(settings);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (m_CresnetInfo.CresnetId == null || !CresnetUtils.IsValidId(m_CresnetInfo.CresnetId.Value))
 			{
 				Logger.Log(eSeverity.Error, "Failed to instantiate {0} - CresnetId {1} is out of range",
@@ -86,7 +86,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades.CsmQmt50Dccn
 
 			CresnetInfo.ClearSettings();
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			SetShade(null);
 #endif
 		}
