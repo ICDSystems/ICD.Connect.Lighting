@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Devices.EventArguments;
 using ICD.Connect.Lighting.Shades.Controls;
 using ICD.Connect.Settings;
@@ -172,6 +173,22 @@ namespace ICD.Connect.Lighting.Shades
 			base.CopySettingsFinal(settings);
 
 			settings.ShadeIds = m_Shades.Select(shade => (int?)shade.Id);
+		}
+
+		/// <summary>
+		/// Override to add controls to the device.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(ShadeGroupSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+		{
+			base.AddControls(settings, factory, addControl);
+
+			addControl(new ShadeStopControl<ShadeGroup>(this, 0));
+			addControl(new ShadeSetPositionControl<ShadeGroup>(this, 1));
+			addControl(new ShadeInMotionFeedbackControl<ShadeGroup>(this, 2));
+			addControl(new ShadeLastDirectionControl<ShadeGroup>(this, 4));
 		}
 
 		#endregion

@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+ - Added controls to ShadeGroup - Stop, SetPosition, InMotionFeedback, LastDirection
 
 ## [7.0.1] - 2021-07-26
 ### Changed
