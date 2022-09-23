@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.EventArguments;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices.Controls;
@@ -10,7 +10,7 @@ namespace ICD.Connect.Lighting.Shades.Controls
 	public sealed class ShadeLastDirectionControl<T> : AbstractDeviceControl<T>, IShadeLastDirectionControl
 		where T : IShadeWithLastDirectionFeedback
 	{
-		public event EventHandler OnDirectionChanged;
+		public event EventHandler<GenericEventArgs<eShadeDirection>> OnLastDirectionChanged;
 
 		/// <summary>
 		/// Constructor.
@@ -19,19 +19,19 @@ namespace ICD.Connect.Lighting.Shades.Controls
 		/// <param name="id"></param>
 		public ShadeLastDirectionControl(T parent, int id) : base(parent, id)
 		{
-			Parent.OnDirectionChanged += ParentOnDirectionChanged;
+			Parent.OnLastDirectionChanged += ParentOnLastDirectionChanged;
 		}
 
-		private void ParentOnDirectionChanged(object sender, EventArgs eventArgs)
+		private void ParentOnLastDirectionChanged(object sender, GenericEventArgs<eShadeDirection> args)
 		{
-			OnDirectionChanged.Raise(this);
+			OnLastDirectionChanged.Raise(this, args.Data);
 		}
 
 		#region IShadeLastDirectionControl
 
-		public eShadeDirection GetLastDirection()
+		public eShadeDirection LastDirection
 		{
-			return Parent.GetLastDirection();
+			get { return Parent.LastDirection; }
 		}
 
 		#endregion
@@ -65,7 +65,7 @@ namespace ICD.Connect.Lighting.Shades.Controls
 		{
 			base.BuildConsoleStatus(addRow);
 
-			addRow("Last Direction", GetLastDirection());
+			addRow("Last Direction", LastDirection);
 		}
 
 		#endregion

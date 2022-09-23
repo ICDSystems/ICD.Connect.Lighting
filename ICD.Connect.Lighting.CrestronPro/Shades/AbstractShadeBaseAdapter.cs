@@ -8,7 +8,7 @@ using Crestron.SimplSharpPro.DeviceSupport;
 using ICD.Connect.Misc.CrestronPro.Extensions;
 #endif
 using ICD.Common.Utils;
-using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Lighting.Shades;
 using ICD.Connect.Lighting.Shades.Controls;
@@ -23,11 +23,30 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 #endif
 		where TSettings : IShadeBaseAdapterSettings, new()
 	{
-		public event EventHandler OnDirectionChanged;
+		/// <summary>
+		/// Raised when the last direction changes
+		/// </summary>
+		public event EventHandler<GenericEventArgs<eShadeDirection>> OnLastDirectionChanged;
 
-#if !NETSTANDARD
 		private eShadeDirection m_LastDirection = eShadeDirection.Neither;
 
+		/// <summary>
+		/// Last direction the shade moved
+		/// </summary>
+		public eShadeDirection LastDirection
+		{
+			get { return m_LastDirection; }
+			private set
+			{
+				if (m_LastDirection == value)
+					return;
+
+				m_LastDirection = value;
+				
+				OnLastDirectionChanged.Raise(this, m_LastDirection);
+			}
+		}
+#if !NETSTANDARD
 		protected TShade Shade { get; private set; }
 #endif
 
@@ -37,7 +56,7 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 		/// <param name="disposing"></param>
 		protected override void DisposeFinal(bool disposing)
 		{
-			OnDirectionChanged = null;
+			OnLastDirectionChanged = null;
 
 			base.DisposeFinal(disposing);
 		}
@@ -109,10 +128,9 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 		{
 #if !NETSTANDARD
 			Shade.Open();
-			if (m_LastDirection == eShadeDirection.Open)
+			if (LastDirection == eShadeDirection.Open)
 				return;
-			m_LastDirection = eShadeDirection.Open;
-			OnDirectionChanged.Raise(this);
+			LastDirection = eShadeDirection.Open;
 #else
 			throw new NotSupportedException();
 #endif
@@ -122,10 +140,9 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 		{
 #if !NETSTANDARD
 			Shade.Close();
-			if (m_LastDirection == eShadeDirection.Close)
+			if (LastDirection == eShadeDirection.Close)
 				return;
-			m_LastDirection = eShadeDirection.Close;
-			OnDirectionChanged.Raise(this);
+			LastDirection = eShadeDirection.Close;
 #else
 			throw new NotSupportedException();
 #endif
@@ -135,25 +152,6 @@ namespace ICD.Connect.Lighting.CrestronPro.Shades
 		{
 #if !NETSTANDARD
 			Shade.Stop();
-#else
-			throw new NotSupportedException();
-#endif
-		}
-
-		public eShadeDirection GetLastDirection()
-		{
-#if !NETSTANDARD
-			switch (Shade.LastDirection)
-			{
-				case eShadeMovement.NA:
-					return eShadeDirection.Neither;
-				case eShadeMovement.Opened:
-					return eShadeDirection.Open;
-				case eShadeMovement.Closed:
-					return eShadeDirection.Close;
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
 #else
 			throw new NotSupportedException();
 #endif

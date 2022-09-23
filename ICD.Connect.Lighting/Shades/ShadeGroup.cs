@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Devices.EventArguments;
@@ -21,9 +22,23 @@ namespace ICD.Connect.Lighting.Shades
 		private eShadeDirection m_LastDirection = eShadeDirection.Neither;
 		#endregion
 
-		public event EventHandler OnDirectionChanged;
+		public event EventHandler<GenericEventArgs<eShadeDirection>> OnLastDirectionChanged;
 
 		public IEnumerable<IShadeDevice> Shades { get { return m_Shades; } }
+
+		public eShadeDirection LastDirection
+		{
+			get { return m_LastDirection; }
+			private set
+			{
+				if (m_LastDirection == value)
+					return;
+
+				m_LastDirection = value;
+				
+				OnLastDirectionChanged.Raise(this, m_LastDirection);
+			}
+		}
 
 		#region IShadeDevice
 		/// <summary>
@@ -82,16 +97,15 @@ namespace ICD.Connect.Lighting.Shades
 		#region IShadeWithLastDirectionFeedback
 		public eShadeDirection GetLastDirection()
 		{
-			return m_LastDirection;
+			return LastDirection;
 		}
 
-		private void ShadeLastDirectionChanged(object sender, EventArgs eventArgs)
+		private void ShadeLastLastDirectionChanged(object sender, EventArgs eventArgs)
 		{
-			OnDirectionChanged.Raise(this);
 			var lastDirectionControl = sender as IShadeLastDirectionControl;
 			if (lastDirectionControl != null)
 			{
-				m_LastDirection = lastDirectionControl.GetLastDirection();
+				LastDirection = lastDirectionControl.LastDirection;
 			}
 		}
 		#endregion
@@ -116,7 +130,7 @@ namespace ICD.Connect.Lighting.Shades
 			var lastDirectionControl = shade.Controls.GetControl<IShadeLastDirectionControl>();
 			if (lastDirectionControl != null)
 			{
-				lastDirectionControl.OnDirectionChanged += ShadeLastDirectionChanged;
+				lastDirectionControl.OnLastDirectionChanged += ShadeLastLastDirectionChanged;
 			}
 		}
 
@@ -129,7 +143,7 @@ namespace ICD.Connect.Lighting.Shades
 			var lastDirectionControl = shade.Controls.GetControl<IShadeLastDirectionControl>();
 			if (lastDirectionControl != null)
 			{
-				lastDirectionControl.OnDirectionChanged -= ShadeLastDirectionChanged;
+				lastDirectionControl.OnLastDirectionChanged -= ShadeLastLastDirectionChanged;
 			}
 		}
 

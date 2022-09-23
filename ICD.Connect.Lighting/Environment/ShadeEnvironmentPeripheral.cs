@@ -62,7 +62,7 @@ namespace ICD.Connect.Lighting.Environment
 				return;
 
 			IShadeWithLastDirectionFeedback feedbackShade = (IShadeWithLastDirectionFeedback)shade;
-			feedbackShade.OnDirectionChanged += FeedbackShadeOnDirectionChanged;
+			feedbackShade.OnLastDirectionChanged += FeedbackShadeOnLastDirectionChanged;
 		}
 
 		private void Unsubscribe(IShadeWithStop shade)
@@ -71,13 +71,13 @@ namespace ICD.Connect.Lighting.Environment
 				return;
 
 			IShadeWithLastDirectionFeedback feedbackShade = (IShadeWithLastDirectionFeedback)shade;
-			feedbackShade.OnDirectionChanged -= FeedbackShadeOnDirectionChanged;
+			feedbackShade.OnLastDirectionChanged -= FeedbackShadeOnLastDirectionChanged;
 		}
 
-		private void FeedbackShadeOnDirectionChanged(object sender, EventArgs eventArgs)
+		private void FeedbackShadeOnLastDirectionChanged(object sender, EventArgs eventArgs)
 		{
 			IShadeWithLastDirectionFeedback feedbackShade = (IShadeWithLastDirectionFeedback)sender;
-			m_LastDirection = feedbackShade.GetLastDirection();
+			m_LastDirection = feedbackShade.LastDirection;
 		}
 
 		#region IShadeEnvironmentPeripheral
