@@ -84,7 +84,6 @@
     <Compile Include="Nwk\Integrations\Interfaces\IIntegration.cs" />
     <Compile Include="Nwk\Integrations\Interfaces\IShadeIntegration.cs" />
     <Compile Include="Nwk\Integrations\Interfaces\IZoneIntegration.cs" />
-    <Compile Include="ObfuscationSettings.cs" />
     <Compile Include="KrangPlugin.cs" />
     <Compile Include="Nwk\Devices\AbstractLutronNwkDevice\AbstractLutronNwkDevice.cs" />
     <Compile Include="Nwk\Devices\AbstractLutronNwkDevice\AbstractLutronNwkDevice.implementation.cs" />

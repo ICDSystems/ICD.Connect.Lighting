@@ -81,7 +81,6 @@
     <Compile Include="MockLightingProcessorDeviceSettings.cs" />
     <Compile Include="MockShadeDevice.cs" />
     <Compile Include="MockShadeDeviceSettings.cs" />
-    <Compile Include="ObfuscationSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>
