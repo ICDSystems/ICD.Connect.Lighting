@@ -17,9 +17,18 @@ namespace ICD.Connect.Lighting.Shades
 		{
 			base.ParseXml(xml);
 
-			var shadeType = XmlUtils.TryReadChildElementContentAsEnum<eShadeType>(xml, SHADE_TYPE_ELEMENT, true);
-			if (shadeType != null)
-				ShadeType = shadeType.Value;
+			ShadeType = XmlUtils.TryReadChildElementContentAsEnum<eShadeType>(xml, SHADE_TYPE_ELEMENT, true) ?? eShadeType.None;
 		}
+
+	    /// <summary>
+	    /// Writes property elements to xml.
+	    /// </summary>
+	    /// <param name="writer"></param>
+	    protected override void WriteElements(IcdXmlTextWriter writer)
+	    {
+	        base.WriteElements(writer);
+
+            writer.WriteElementString(SHADE_TYPE_ELEMENT, IcdXmlConvert.ToString(ShadeType));
+	    }
 	}
 }
